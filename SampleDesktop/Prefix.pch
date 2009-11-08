@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'SampleDesktop' target in the 'SampleDesktop' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
