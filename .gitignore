@@ -1,0 +1,11 @@
+build
+*xcodeproj/*mode*
+*xcodeproj/*pbxuser
+*xcodeproj/*perspective*
+**/build
+**/*xcodeproj/*mode*
+**/*xcodeproj/*pbxuser
+**/*xcodeproj/*perspective*
+*tmproj
+**/~*
+.DS_Store
