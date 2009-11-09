@@ -1,8 +1,14 @@
 #import "AppDelegate.h"
+#import "ZSync.h"
 
 @implementation AppDelegate
 
 @synthesize window;
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+  [[ZSyncHandler shared] startBroadcasting];
+}
 
 - (NSString *)applicationSupportDirectory 
 {
@@ -97,6 +103,8 @@
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender 
 {
+  [[ZSyncHandler shared] stopBroadcasting];
+  
   if (!managedObjectContext) return NSTerminateNow;
   
   if (![managedObjectContext commitEditing]) {

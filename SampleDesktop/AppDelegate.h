@@ -1,3 +1,4 @@
+
 @interface AppDelegate : NSObject 
 {
   NSWindow *window;
