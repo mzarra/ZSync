@@ -1,8 +1,8 @@
 //
-//  ZSync.h
-//  SampleDesktop
+//  ZSyncTouchHandler.h
+//  SampleTouch
 //
-//  Created by Marcus S. Zarra on 11/8/09.
+//  Created by Marcus S. Zarra on 11/11/09.
 //  Copyright 2009 Zarra Studios, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -26,5 +26,24 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
-#import "NSSocket+ZSExtensions.h"
-#import "ZSyncHandler.h"
+
+@interface ZSyncTouchHandler : NSObject
+{
+  NSNetServiceBrowser *netServiceBrowser;
+  NSFileHandle *socketHandle;
+  
+  NSOutputStream *outputStream;
+  
+  NSData *dataToPush;
+  NSUInteger byteOffset;
+}
+
+@property (nonatomic, retain) NSFileHandle *socketHandle;
+@property (nonatomic, retain) NSOutputStream *outputStream;
+@property (nonatomic, retain) NSData *dataToPush;
+
++ (id)shared;
+
+- (void)startBrowser;
+
+@end

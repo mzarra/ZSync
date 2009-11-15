@@ -13,9 +13,27 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
 		B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E14910A768840063E436 /* ZSyncHandler.m */; };
 		B6C2E15810A76F950063E436 /* NSSocket+ZSExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E15710A76F950063E436 /* NSSocket+ZSExtensions.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B6457E3010B058CD00A96714 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D5B49B6048680CD000E48DA;
+			remoteInfo = SyncSchema;
+		};
+		B6457E3410B058FE00A96714 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
+			remoteInfo = SyncSchema;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -31,6 +49,9 @@
 		77C8280C06725ACE000B614F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SampleDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncSchema.xcodeproj; path = SyncSchema/SyncSchema.xcodeproj; sourceTree = "<group>"; };
+		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
+		B6457EA410B05DFC00A96714 /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C2E14810A768840063E436 /* ZSyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncHandler.h; sourceTree = "<group>"; };
 		B6C2E14910A768840063E436 /* ZSyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncHandler.m; sourceTree = "<group>"; };
 		B6C2E15610A76F950063E436 /* NSSocket+ZSExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSSocket+ZSExtensions.h"; sourceTree = "<group>"; };
@@ -44,6 +65,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* SampleDesktop.app */,
+				B6457EA410B05DFC00A96714 /* SyncSchema.syncschema */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -88,6 +111,7 @@
 		29B97314FDCFA39411CA2CEA /* SampleDesktop */ = {
 			isa = PBXGroup;
 			children = (
+				B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */,
 				B6C2E14710A765CD0063E436 /* DesktopCode */,
 				7756732906782D8800D1FEB8 /* Models */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -123,6 +147,7 @@
 			children = (
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				B6457E4010B059EC00A96714 /* SyncServices.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -133,6 +158,14 @@
 				770B37EC0679A11B001EADE2 /* DataModel.xcdatamodel */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		B6457E2D10B058CD00A96714 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6457E3110B058CD00A96714 /* SyncSchema.syncschema */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		B6C2E14710A765CD0063E436 /* DesktopCode */ = {
@@ -162,6 +195,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B6457E3510B058FE00A96714 /* PBXTargetDependency */,
 			);
 			name = SampleDesktop;
 			productInstallPath = "$(HOME)/Applications";
@@ -179,12 +213,28 @@
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SampleDesktop */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B6457E2D10B058CD00A96714 /* Products */;
+					ProjectRef = B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* SampleDesktop */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B6457E3110B058CD00A96714 /* SyncSchema.syncschema */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SyncSchema.syncschema;
+			remoteRef = B6457E3010B058CD00A96714 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D1107290486CEB800E47090 /* Resources */ = {
@@ -212,6 +262,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B6457E3510B058FE00A96714 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SyncSchema;
+			targetProxy = B6457E3410B058FE00A96714 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {

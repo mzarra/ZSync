@@ -14,6 +14,7 @@
 		28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28860BE40F44EE6400985440 /* CoreData.framework */; };
 		2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
+		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */; };
@@ -32,6 +33,9 @@
 		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		B631391910AB4E7F00E27635 /* ZSyncTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouch.h; sourceTree = "<group>"; };
+		B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouchHandler.h; sourceTree = "<group>"; };
+		B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncTouchHandler.m; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -74,6 +78,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				B631391810AB4E5700E27635 /* DeviceCode */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -112,6 +117,17 @@
 				28860BE40F44EE6400985440 /* CoreData.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B631391810AB4E5700E27635 /* DeviceCode */ = {
+			isa = PBXGroup;
+			children = (
+				B631391910AB4E7F00E27635 /* ZSyncTouch.h */,
+				B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */,
+				B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */,
+			);
+			name = DeviceCode;
+			path = ../DeviceCode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,6 +195,7 @@
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
 				B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */,
+				B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +231,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = SampleTouch;
 			};
 			name = Debug;

@@ -1,6 +1,8 @@
 #import "AppDelegate.h"
 #import "RootViewController.h"
 
+#import "ZSyncTouch.h"
+
 @implementation AppDelegate
 
 @synthesize window;
@@ -16,6 +18,8 @@
 	
 	[window addSubview:[navigationController view]];
   [window makeKeyAndVisible];
+  
+  [[ZSyncTouchHandler shared] startBrowser];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application 

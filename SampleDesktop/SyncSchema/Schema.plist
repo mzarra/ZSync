@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DataClasses</key>
+	<array>
+		<dict>
+			<key>ImagePath</key>
+			<string>SyncDataClass.tiff</string>
+			<key>Name</key>
+			<string>com.mycompany.myschema.dataclass</string>
+		</dict>
+	</array>
+	<key>Entities</key>
+	<array>
+		<dict>
+			<key>Attributes</key>
+			<array>
+				<dict>
+					<key>Name</key>
+					<string>firstNameAttribute</string>
+					<key>Type</key>
+					<string>string</string>
+				</dict>
+			</array>
+			<key>DataClass</key>
+			<string>com.mycompany.myschema.dataclass</string>
+			<key>IdentityProperties</key>
+			<array>
+				<string>firstNameAttribute</string>
+			</array>
+			<key>Name</key>
+			<string>com.mycompany.myschema.firstnames</string>
+			<key>Relationships</key>
+			<array>
+				<dict>
+					<key>DeleteRule</key>
+					<string>nullify</string>
+					<key>Name</key>
+					<string>friends</string>
+					<key>Ordinality</key>
+					<string>many</string>
+					<key>Target</key>
+					<array>
+						<string>com.mycompany.myschema.firstnames</string>
+					</array>
+				</dict>
+			</array>
+		</dict>
+	</array>
+	<key>Name</key>
+	<string>com.mycompany.myschema</string>
+</dict>
+</plist>

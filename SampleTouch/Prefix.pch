@@ -1,6 +1,15 @@
-//
-// Prefix header for all source files of the 'SampleTouch' target in the 'SampleTouch' project
-//
+#ifdef VERBOSE_LOGGING
+  #define VLog(...) NSLog(__VA_ARGS__)
+#else
+  #define VLog(...) /* */
+#endif
+#ifdef DEBUG
+  #define DLog(...) NSLog(__VA_ARGS__)
+#else
+  #define DLog(...) /* */
+  #define NS_BLOCK_ASSERTIONS
+#endif
+#define ALog(...) NSLog(__VA_ARGS__)
 
 #import <Availability.h>
 

@@ -30,6 +30,10 @@
 #import "ZSyncHandler.h"
 #import "NSSocket+ZSExtensions.h"
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
 #define kDomainName @"local."
 #define kServiceName @"_zsync._tcp"
 //TODO Change this to reflect a unique name of the machine
@@ -45,8 +49,7 @@
 
 static ZSyncHandler *zsSharedSyncHandler;
 
-@synthesize receiveSocket;
-@synthesize serverConnection;
+@synthesize listeningHandle;
 @synthesize serverService;
 
 + (id)shared;
@@ -73,23 +76,68 @@ static ZSyncHandler *zsSharedSyncHandler;
 
 - (void)connectionReceived:(NSNotification*)notification
 {
-  DLog(@"%s Received a connection", __PRETTY_FUNCTION__);
+  /* TODO: This probably needs to be handled async */
+  NSFileHandle *handle = [[notification userInfo] objectForKey:NSFileHandleNotificationFileHandleItem];
+  NSData *data = [handle readDataToEndOfFile];
+  NSString *test = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  DLog(@"%s string received %@", __PRETTY_FUNCTION__, test);
+  [test release];
+  
+  /* Each connection causes the socket to stop listening */
+  [listeningHandle acceptConnectionInBackgroundAndNotify];
 }
 
 - (void)startBroadcasting;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
-  receiveSocket = [[NSSocketPort alloc] init];
+  [[NSNotificationCenter defaultCenter] addObserver:self 
+                                           selector:@selector(connectionReceived:) 
+                                               name:NSFileHandleConnectionAcceptedNotification 
+                                             object:nil];
   
-  serverConnection = [[NSConnection alloc] initWithReceivePort:receiveSocket sendPort:nil];
-  [serverConnection setRootObject:self];
+  uint16_t chosenPort = 0;
   
-  serverService = [[NSNetService alloc] initWithDomain:kDomainName type:kServiceName name:kServerName port:[receiveSocket port]];
+  int fdForListening;
+  struct sockaddr_in serverAddress;
+  socklen_t namelen = sizeof(serverAddress);
+  
+  fdForListening = socket(AF_INET, SOCK_STREAM, 0);
+  NSAssert(fdForListening > 0, @"Error creating socket");
+  
+  memset(&serverAddress, 0, sizeof(serverAddress));
+  serverAddress.sin_family = AF_INET;
+  serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+  serverAddress.sin_port = 0; /* TODO: Need to set this at some point (probably) */
+  
+  if (bind(fdForListening, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0) {
+    close(fdForListening);
+    ALog(@"%s failed to create service", __PRETTY_FUNCTION__);
+    return;
+  }
+  
+  // Find out what port number was chosen for us.
+  if (getsockname(fdForListening, (struct sockaddr *)&serverAddress, &namelen) < 0) {
+    close(fdForListening);
+    ALog(@"%s failed to get port number", __PRETTY_FUNCTION__);
+    return;
+  }
+  
+  chosenPort = ntohs(serverAddress.sin_port);
+  
+  if(listen(fdForListening, 1) == 0) {
+    listeningHandle = [[NSFileHandle alloc] initWithFileDescriptor:fdForListening 
+                                                    closeOnDealloc:YES];
+  }
+  
+  serverService = [[NSNetService alloc] initWithDomain:kDomainName 
+                                                  type:kServiceName 
+                                                  name:kServerName 
+                                                  port:chosenPort];
   
   [serverService setDelegate:self];
+  [listeningHandle acceptConnectionInBackgroundAndNotify];
   [serverService publish];
   
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(connectionReceived:) name:NSFileHandleConnectionAcceptedNotification object:receiveSocket];
 }
 
 - (void)stopBroadcasting;
@@ -97,8 +145,7 @@ static ZSyncHandler *zsSharedSyncHandler;
   DLog(@"%s entered", __PRETTY_FUNCTION__);
   [serverService stop];
   [serverService release], serverService = nil;
-  [serverConnection release], serverConnection = nil;
-  [receiveSocket release], receiveSocket = nil;
+  [listeningHandle release], listeningHandle = nil;
 }
 
 #pragma mark -

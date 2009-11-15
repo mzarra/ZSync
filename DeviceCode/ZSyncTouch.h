@@ -1,8 +1,8 @@
 //
-//  ZSync.h
-//  SampleDesktop
+//  ZSyncTouch.h
+//  SampleTouch
 //
-//  Created by Marcus S. Zarra on 11/8/09.
+//  Created by Marcus S. Zarra on 11/11/09.
 //  Copyright 2009 Zarra Studios, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -26,5 +26,4 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
-#import "NSSocket+ZSExtensions.h"
-#import "ZSyncHandler.h"
+#import "ZSyncTouchHandler.h"

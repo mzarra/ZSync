@@ -28,16 +28,15 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <SyncServices/SyncServices.h>
 
-@interface ZSyncHandler : NSObject 
+@interface ZSyncHandler : NSObject <NSPersistentStoreCoordinatorSyncing>
 {
-  NSSocketPort *receiveSocket;
-  NSConnection *serverConnection;
+  NSFileHandle *listeningHandle;
   NSNetService *serverService;
 }
 
-@property (retain) NSSocketPort *receiveSocket;
-@property (retain) NSConnection *serverConnection;
+@property (retain) NSFileHandle *listeningHandle;
 @property (retain) NSNetService *serverService;
 
 + (id)shared;

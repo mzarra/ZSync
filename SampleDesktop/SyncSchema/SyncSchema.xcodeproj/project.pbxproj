@@ -1,0 +1,246 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5A08A9540729C81600F70D60 /* SyncDataClass.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */; };
+		5A08A9660729C81D00F70D60 /* Schema-strings.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A08A95D0729C81D00F70D60 /* Schema-strings.m */; };
+		5A08A9770729C83A00F70D60 /* Schema.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A9740729C83A00F70D60 /* Schema.strings */; };
+		5AA81A61067145AD002E4978 /* Schema.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA81A60067145AD002E4978 /* Schema.plist */; };
+		5AEAB1D9072D8CEB000A3587 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A73157F072D6ED900F51B4F /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SyncDataClass.tiff; sourceTree = SOURCE_ROOT; };
+		5A08A9580729C81D00F70D60 /* Schema-strings.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "Schema-strings.h"; sourceTree = SOURCE_ROOT; };
+		5A08A95D0729C81D00F70D60 /* Schema-strings.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = "Schema-strings.m"; sourceTree = SOURCE_ROOT; };
+		5A08A9680729C82200F70D60 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Schema.strings; sourceTree = SOURCE_ROOT; };
+		5A5A71900674E7A100E5A5E1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5A73157F072D6ED900F51B4F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		5A731589072D787F00F51B4F /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		5AA81A60067145AD002E4978 /* Schema.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = Schema.plist; sourceTree = "<group>"; };
+		8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D5B49B3048680CD000E48DA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AEAB1D9072D8CEB000A3587 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* SyncSchema */ = {
+			isa = PBXGroup;
+			children = (
+				5AEAAE81072D7DF3000A3587 /* Sources */,
+				5A5A71900674E7A100E5A5E1 /* Info.plist */,
+				5A5A718B0674E78700E5A5E1 /* Resources */,
+				5A73157A072D6EBD00F51B4F /* Frameworks */,
+				19C28FB8FE9D52D311CA2CBB /* Products */,
+			);
+			name = SyncSchema;
+			sourceTree = "<group>";
+		};
+		19C28FB8FE9D52D311CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5A5A718B0674E78700E5A5E1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5AA81A60067145AD002E4978 /* Schema.plist */,
+				5A08A9740729C83A00F70D60 /* Schema.strings */,
+				5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		5A73157A072D6EBD00F51B4F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5AEAAE9B072D7E4B000A3587 /* Linked Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5AEAAE81072D7DF3000A3587 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				5A731589072D787F00F51B4F /* Prefix.pch */,
+				5A08A9580729C81D00F70D60 /* Schema-strings.h */,
+				5A08A95D0729C81D00F70D60 /* Schema-strings.m */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		5AEAAE9B072D7E4B000A3587 /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5A73157F072D6ED900F51B4F /* Foundation.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D5B49AC048680CD000E48DA /* SyncSchema */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AE1077508A96056006FCEC0 /* Build configuration list for PBXNativeTarget "SyncSchema" */;
+			buildPhases = (
+				8D5B49AF048680CD000E48DA /* Resources */,
+				8D5B49B1048680CD000E48DA /* Sources */,
+				8D5B49B3048680CD000E48DA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SyncSchema;
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = SyncSchema;
+			productReference = 8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 5AE1077908A96056006FCEC0 /* Build configuration list for PBXProject "SyncSchema" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 089C166AFE841209C02AAC07 /* SyncSchema */;
+			projectDirPath = "";
+			projectRoot = ..;
+			targets = (
+				8D5B49AC048680CD000E48DA /* SyncSchema */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D5B49AF048680CD000E48DA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AA81A61067145AD002E4978 /* Schema.plist in Resources */,
+				5A08A9540729C81600F70D60 /* SyncDataClass.tiff in Resources */,
+				5A08A9770729C83A00F70D60 /* Schema.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D5B49B1048680CD000E48DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A08A9660729C81D00F70D60 /* Schema-strings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		5A08A9740729C83A00F70D60 /* Schema.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5A08A9680729C82200F70D60 /* English */,
+			);
+			name = Schema.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		5AE1077608A96056006FCEC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_NAME = SyncSchema;
+				WRAPPER_EXTENSION = syncschema;
+			};
+			name = Debug;
+		};
+		5AE1077708A96056006FCEC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_NAME = SyncSchema;
+				SKIP_INSTALL = NO;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WRAPPER_EXTENSION = syncschema;
+			};
+			name = Release;
+		};
+		5AE1077A08A96056006FCEC0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+			};
+			name = Debug;
+		};
+		5AE1077B08A96056006FCEC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_MODEL_TUNING = G5;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5AE1077508A96056006FCEC0 /* Build configuration list for PBXNativeTarget "SyncSchema" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AE1077608A96056006FCEC0 /* Debug */,
+				5AE1077708A96056006FCEC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5AE1077908A96056006FCEC0 /* Build configuration list for PBXProject "SyncSchema" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AE1077A08A96056006FCEC0 /* Debug */,
+				5AE1077B08A96056006FCEC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}
