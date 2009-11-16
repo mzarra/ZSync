@@ -36,6 +36,7 @@
 		B631391910AB4E7F00E27635 /* ZSyncTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouch.h; sourceTree = "<group>"; };
 		B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouchHandler.h; sourceTree = "<group>"; };
 		B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncTouchHandler.m; sourceTree = "<group>"; };
+		B6457FED10B0A94E00A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				B6457FEB10B0A93D00A96714 /* SharedCode */,
 				B631391810AB4E5700E27635 /* DeviceCode */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -128,6 +130,15 @@
 			);
 			name = DeviceCode;
 			path = ../DeviceCode;
+			sourceTree = "<group>";
+		};
+		B6457FEB10B0A93D00A96714 /* SharedCode */ = {
+			isa = PBXGroup;
+			children = (
+				B6457FED10B0A94E00A96714 /* ZSyncShared.h */,
+			);
+			name = SharedCode;
+			path = ../SharedCode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -32,9 +32,14 @@
   NSNetServiceBrowser *netServiceBrowser;
   NSFileHandle *socketHandle;
   
+  NSNetService *receiveService;
+  NSNetService *sendService;
+  
   NSOutputStream *outputStream;
+  NSInputStream *inputStream;
   
   NSData *dataToPush;
+  NSMutableData *receivedData;
   NSUInteger byteOffset;
 }
 

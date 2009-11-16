@@ -72,7 +72,7 @@
 		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 		abort();
   }    
-	
+  
   return persistentStoreCoordinator;
 }
 

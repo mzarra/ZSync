@@ -33,7 +33,9 @@
 @interface ZSyncHandler : NSObject <NSPersistentStoreCoordinatorSyncing>
 {
   NSFileHandle *listeningHandle;
-  NSNetService *serverService;
+  NSFileHandle *sendingHandle;
+  NSNetService *listeningService;
+  NSNetService *sendingService;
 }
 
 @property (retain) NSFileHandle *listeningHandle;

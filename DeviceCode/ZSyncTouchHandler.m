@@ -27,9 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 
 #import "ZSyncTouchHandler.h"
-
-#define kDomainName @"local."
-#define kServiceName @"_zsync._tcp"
+#import "ZSyncShared.h"
 
 @implementation ZSyncTouchHandler
 
@@ -48,6 +46,14 @@ static ZSyncTouchHandler *sharedTouchHandler;
   return sharedTouchHandler;
 }
 
+/* 
+ * This is called once we have both the sending and the receiving socket configured.
+ */
+- (void)beginConversation
+{
+  
+}
+
 /*
  * We want to start looking for desktops to sync with here.  Once started
  * We want to maintain a list of computers found and also send out a notification
@@ -57,9 +63,14 @@ static ZSyncTouchHandler *sharedTouchHandler;
 {
   if (netServiceBrowser) return; //Already browsing
   DLog(@"%s starting browser", __PRETTY_FUNCTION__);
+  
+  NSString *testString = @"Test String";
+  dataToPush = [[testString dataUsingEncoding:NSUTF8StringEncoding] retain];
+  byteOffset = 0;
+  
   netServiceBrowser = [[NSNetServiceBrowser alloc] init];
   [netServiceBrowser setDelegate:self]; 
-  [netServiceBrowser searchForServicesOfType:kServiceName 
+  [netServiceBrowser searchForServicesOfType:kReceivingServiceName 
                                     inDomain:kDomainName];
 }
 
@@ -69,38 +80,59 @@ static ZSyncTouchHandler *sharedTouchHandler;
 {
   DLog(@"%s Service found", __PRETTY_FUNCTION__);
   
-  [service retain];
-  [service setDelegate:self];
-  [service resolveWithTimeout:5.0];
-  [service startMonitoring];
-  
-  [netServiceBrowser stop];
-  [netServiceBrowser release], netServiceBrowser = nil;
+  if (!receiveService) { /* Looking for a receive service first */
+    receiveService = [service retain];
+    [receiveService setDelegate:self];
+    //[receiveService resolveWithTimeout:5.0];
+    //[receiveService startMonitoring];
+    [service getInputStream:nil outputStream:&outputStream];
+    
+    [outputStream retain];
+    [outputStream setDelegate:self];
+    [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [outputStream open];
+    
+    [netServiceBrowser stop];
+    
+    [netServiceBrowser searchForServicesOfType:kReceivingServiceName 
+                                      inDomain:kDomainName];
+  } else { /* Finding send services now */
+    if (![[receiveService hostName] isEqualToString:[service hostName]]) {
+      DLog(@"%s Not the sender we were looking for", __PRETTY_FUNCTION__);
+      return;
+    }
+    sendService = [service retain];
+    [sendService setDelegate:self];
+    [service getInputStream:&inputStream outputStream:nil];
+    
+    [inputStream retain];
+    [inputStream setDelegate:self];
+    [inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [inputStream open];
+    
+    [netServiceBrowser stop];
+    [netServiceBrowser release], netServiceBrowser = nil;
+  }
+  if (receiveService && sendService) {
+    [self beginConversation];
+  }
 }
 
 - (void)netServiceDidResolveAddress:(NSNetService*)service
 {
-  DLog(@"%s service name %@", __PRETTY_FUNCTION__, [service hostName]);
-  outputStream = nil;
-  [service getInputStream:nil outputStream:&outputStream];
-  if (outputStream) {
-    DLog(@"%s outputStream obtained %@", __PRETTY_FUNCTION__, [outputStream class]);
-  } else {
-    DLog(@"%s outputStream is nil", __PRETTY_FUNCTION__);
-  }
+  DLog(@"%s service name %@ on %@", __PRETTY_FUNCTION__, [service name], [service hostName]);
   
-  [outputStream retain];
-  [outputStream setDelegate:self];
-  [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-  [outputStream open];
+//  NSAssert(inputStream != nil, @"input stream is nil");
   
-  NSString *testString = @"Test String";
-  dataToPush = [[testString dataUsingEncoding:NSUTF8StringEncoding] retain];
-  byteOffset = 0;
+  
+//  [inputStream retain];
+//  [inputStream setDelegate:self];
+//  [inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+//  [inputStream open];
+  
 }
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)event {
-  DLog(@"%s event received", __PRETTY_FUNCTION__);
   NSInteger bytesWritten = 0;
   NSUInteger bytesRemaining = [dataToPush length] - byteOffset;
   uint8_t buffer;
@@ -109,8 +141,28 @@ static ZSyncTouchHandler *sharedTouchHandler;
       DLog(@"%s open", __PRETTY_FUNCTION__);
       break;
     case NSStreamEventHasBytesAvailable:
+    {
       DLog(@"%s has bytes", __PRETTY_FUNCTION__);
+      
+      NSInteger bytesRead;
+      uint8_t buffer[32768];
+      
+      bytesRead = [inputStream read:buffer maxLength:sizeof(buffer)];
+      if (bytesRead == -1) {
+        DLog(@"%s error reading stream", __PRETTY_FUNCTION__);
+      } else if (bytesRead == 0) {
+        DLog(@"%s completed read", __PRETTY_FUNCTION__);
+        NSString *test = [[NSString alloc] initWithData:receivedData encoding:NSUTF8StringEncoding];
+        DLog(@"%s test is %@", __PRETTY_FUNCTION__, test);
+        [test release], test = nil;
+      } else {
+        if (!receivedData) receivedData = [[NSMutableData alloc] init];
+        [receivedData appendBytes:buffer length:bytesRead];
+        DLog(@"%s bytes read %i", __PRETTY_FUNCTION__, bytesRead);
+      }
+      
       break;
+    }
     case NSStreamEventHasSpaceAvailable:
       DLog(@"%s has space", __PRETTY_FUNCTION__);
       [dataToPush getBytes:&buffer range:NSMakeRange(byteOffset, bytesRemaining)];
@@ -125,6 +177,7 @@ static ZSyncTouchHandler *sharedTouchHandler;
         [outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [outputStream setDelegate:nil];
         [outputStream close];
+        [outputStream release];
         outputStream = nil;
         DLog(@"%s stream complete", __PRETTY_FUNCTION__);
       }
