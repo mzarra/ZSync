@@ -29,7 +29,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <SyncServices/SyncServices.h>
-#import "BLIP.h"
+#import "ZSyncShared.h"
 
 @interface ZSyncHandler : NSObject <TCPListenerDelegate, BLIPConnectionDelegate>
 {

@@ -14,8 +14,8 @@
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
+		B659962F10B658F800B2CC74 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B659962E10B658F800B2CC74 /* libMYNetwork-Desktop.a */; };
 		B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E14910A768840063E436 /* ZSyncHandler.m */; };
-		B6FF2C6010B50B03007AB6D4 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2C5E10B50B03007AB6D4 /* libMYNetwork-Desktop.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,11 +53,10 @@
 		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
 		B6457EA410B05DFC00A96714 /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6457FF010B0A96200A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
+		B659962E10B658F800B2CC74 /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Desktop.a"; sourceTree = "<group>"; };
 		B6C2E14810A768840063E436 /* ZSyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncHandler.h; sourceTree = "<group>"; };
 		B6C2E14910A768840063E436 /* ZSyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncHandler.m; sourceTree = "<group>"; };
 		B6C2E1A510A779830063E436 /* ZSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSync.h; sourceTree = "<group>"; };
-		B6FF2C5E10B50B03007AB6D4 /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libMYNetwork-Desktop.a"; path = "../Libraries/MyNetwork/libMYNetwork-Desktop.a"; sourceTree = SOURCE_ROOT; };
-		B6FF2D0510B5115B007AB6D4 /* BLIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BLIP.h; path = ../Libraries/MyNetwork/BLIP.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,7 +66,7 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */,
-				B6FF2C6010B50B03007AB6D4 /* libMYNetwork-Desktop.a in Frameworks */,
+				B659962F10B658F800B2CC74 /* libMYNetwork-Desktop.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,8 +173,7 @@
 		B6457FE710B0A92500A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
-				B6FF2D0510B5115B007AB6D4 /* BLIP.h */,
-				B6FF2C5E10B50B03007AB6D4 /* libMYNetwork-Desktop.a */,
+				B659962E10B658F800B2CC74 /* libMYNetwork-Desktop.a */,
 				B6457FF010B0A96200A96714 /* ZSyncShared.h */,
 			);
 			name = SharedCode;
@@ -320,6 +318,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../Libraries\"",
 					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+					"\"$(SRCROOT)/../SharedCode\"",
 				);
 				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = SampleDesktop;
@@ -341,6 +340,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../Libraries\"",
 					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+					"\"$(SRCROOT)/../SharedCode\"",
 				);
 				PRODUCT_NAME = SampleDesktop;
 				WRAPPER_EXTENSION = app;

@@ -39,13 +39,12 @@
 		B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouchHandler.h; sourceTree = "<group>"; };
 		B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncTouchHandler.m; sourceTree = "<group>"; };
 		B6457FED10B0A94E00A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
+		B659961910B658AE00B2CC74 /* libMYNetwork-Simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Simulator.a"; sourceTree = "<group>"; };
+		B659961A10B658AE00B2CC74 /* libMYNetwork-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-iPhone.a"; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
-		B6FF2C8F10B50CC4007AB6D4 /* libMYNetwork-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libMYNetwork-iPhone.a"; path = "../Libraries/MyNetwork/libMYNetwork-iPhone.a"; sourceTree = SOURCE_ROOT; };
-		B6FF2C9010B50CC4007AB6D4 /* libMYNetwork-Simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libMYNetwork-Simulator.a"; path = "../Libraries/MyNetwork/libMYNetwork-Simulator.a"; sourceTree = SOURCE_ROOT; };
 		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		B6FF2D1810B51447007AB6D4 /* MYNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MYNetwork.h; path = ../Libraries/MyNetwork/MYNetwork.h; sourceTree = SOURCE_ROOT; };
 		B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = MyBike.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -145,9 +144,8 @@
 		B6457FEB10B0A93D00A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
-				B6FF2D1810B51447007AB6D4 /* MYNetwork.h */,
-				B6FF2C8F10B50CC4007AB6D4 /* libMYNetwork-iPhone.a */,
-				B6FF2C9010B50CC4007AB6D4 /* libMYNetwork-Simulator.a */,
+				B659961910B658AE00B2CC74 /* libMYNetwork-Simulator.a */,
+				B659961A10B658AE00B2CC74 /* libMYNetwork-iPhone.a */,
 				B6457FED10B0A94E00A96714 /* ZSyncShared.h */,
 			);
 			name = SharedCode;
@@ -259,6 +257,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+					"\"$(SRCROOT)/../SharedCode\"",
 				);
 				OTHER_CFLAGS = "-DDEBUG";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "-lMYNetwork-iPhone";
@@ -278,6 +277,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+					"\"$(SRCROOT)/../SharedCode\"",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "-lMYNetwork-iPhone";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "-lMYNetwork-Simulator";
