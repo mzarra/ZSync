@@ -28,6 +28,22 @@
 
 #import "ZSyncShared.h"
 
+@class ZSyncTouchHandler;
+
+@protocol ZSyncDelegate
+
+- (void)zSyncNoServerFound:(NSArray*)availableServers;
+- (void)zSync:(ZSyncTouchHandler*)handler downloadFinished:(NSString*)tempPath;
+
+@optional
+
+- (void)zSyncStarted:(ZSyncTouchHandler*)handler;
+- (void)zSyncFileUploaded:(ZSyncTouchHandler*)handler;
+- (void)zSyncFileSyncPing;
+- (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
+
+@end
+
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
   MYBonjourBrowser *_serviceBrowser;
@@ -36,6 +52,8 @@
 
 + (id)shared;
 
-- (void)startBrowser;
+- (void)requestSync;
+- (void)requestPairing:(id)server;
+- (BOOL)authenticatePairing:(NSString*)code;
 
 @end

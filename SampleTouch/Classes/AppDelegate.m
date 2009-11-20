@@ -19,7 +19,7 @@
 	[window addSubview:[navigationController view]];
   [window makeKeyAndVisible];
   
-  [[ZSyncTouchHandler shared] startBrowser];
+  [[ZSyncTouchHandler shared] requestSync];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application 

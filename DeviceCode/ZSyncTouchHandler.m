@@ -41,12 +41,34 @@
   return sharedTouchHandler;
 }
 
+- (void)requestSync;
+{
+  //Need to find all of the available servers
+  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:kZSyncServiceName];
+  [_serviceBrowser start];
+  
+  [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
+}
+
+- (void)requestPairing:(id)server;
+{
+}
+
+- (BOOL)authenticatePairing:(NSString*)code;
+{
+  return YES;
+}
+
 - (void)services:(NSTimer*)timer
 {
   if (![[_serviceBrowser services] count]) return;
   [timer invalidate];
-  DLog(@"%s service found", __PRETTY_FUNCTION__);
-  _connection = [[BLIPConnection alloc] initToBonjourService:[[_serviceBrowser services] anyObject]];
+  
+  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+  
+  MYBonjourService *service = [[_serviceBrowser services] anyObject];
+  DLog(@"%s service found '%@'", __PRETTY_FUNCTION__, [service name]);
+  _connection = [[BLIPConnection alloc] initToBonjourService:service];
   [_connection setDelegate:self];
   [_connection open];
   [_serviceBrowser stop];

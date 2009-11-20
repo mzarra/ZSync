@@ -57,6 +57,15 @@
   [_listener setDelegate:self];
   [_listener setPickAvailablePort:YES];
   [_listener setBonjourServiceType:kZSyncServiceName];
+  
+  NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+  if (!uuid) {
+    uuid = [[NSProcessInfo processInfo] globallyUniqueString];
+    [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:kZSyncServerUUID];
+  }
+  
+  [_listener setBonjourServiceName:uuid];
+  DLog(@"%s service name: %@", __PRETTY_FUNCTION__, [_listener bonjourServiceName]);
   [_listener open];
   NSLog(@"%@ is listening...", self);
 }
