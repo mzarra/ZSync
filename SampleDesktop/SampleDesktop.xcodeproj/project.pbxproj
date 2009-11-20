@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,7 +15,7 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
 		B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E14910A768840063E436 /* ZSyncHandler.m */; };
-		B6C2E15810A76F950063E436 /* NSSocket+ZSExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E15710A76F950063E436 /* NSSocket+ZSExtensions.m */; };
+		B6FF2C6010B50B03007AB6D4 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2C5E10B50B03007AB6D4 /* libMYNetwork-Desktop.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,9 +55,9 @@
 		B6457FF010B0A96200A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B6C2E14810A768840063E436 /* ZSyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncHandler.h; sourceTree = "<group>"; };
 		B6C2E14910A768840063E436 /* ZSyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncHandler.m; sourceTree = "<group>"; };
-		B6C2E15610A76F950063E436 /* NSSocket+ZSExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSSocket+ZSExtensions.h"; sourceTree = "<group>"; };
-		B6C2E15710A76F950063E436 /* NSSocket+ZSExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSSocket+ZSExtensions.m"; sourceTree = "<group>"; };
 		B6C2E1A510A779830063E436 /* ZSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSync.h; sourceTree = "<group>"; };
+		B6FF2C5E10B50B03007AB6D4 /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libMYNetwork-Desktop.a"; path = "../Libraries/MyNetwork/libMYNetwork-Desktop.a"; sourceTree = SOURCE_ROOT; };
+		B6FF2D0510B5115B007AB6D4 /* BLIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BLIP.h; path = ../Libraries/MyNetwork/BLIP.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +67,7 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */,
+				B6FF2C6010B50B03007AB6D4 /* libMYNetwork-Desktop.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +174,8 @@
 		B6457FE710B0A92500A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
+				B6FF2D0510B5115B007AB6D4 /* BLIP.h */,
+				B6FF2C5E10B50B03007AB6D4 /* libMYNetwork-Desktop.a */,
 				B6457FF010B0A96200A96714 /* ZSyncShared.h */,
 			);
 			name = SharedCode;
@@ -184,8 +187,6 @@
 			children = (
 				B6C2E14810A768840063E436 /* ZSyncHandler.h */,
 				B6C2E14910A768840063E436 /* ZSyncHandler.m */,
-				B6C2E15610A76F950063E436 /* NSSocket+ZSExtensions.h */,
-				B6C2E15710A76F950063E436 /* NSSocket+ZSExtensions.m */,
 				B6C2E1A510A779830063E436 /* ZSync.h */,
 			);
 			name = DesktopCode;
@@ -220,7 +221,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 26FC0A880875C7B200E6366F /* Build configuration list for PBXProject "SampleDesktop" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SampleDesktop */;
 			projectDirPath = "";
@@ -268,7 +269,6 @@
 				77C8280E06725ACE000B614F /* AppDelegate.m in Sources */,
 				770B37ED0679A11B001EADE2 /* DataModel.xcdatamodel in Sources */,
 				B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */,
-				B6C2E15810A76F950063E436 /* NSSocket+ZSExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,6 +316,11 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Libraries\"",
+					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+				);
 				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = SampleDesktop;
 				WRAPPER_EXTENSION = app;
@@ -332,6 +337,11 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Libraries\"",
+					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+				);
 				PRODUCT_NAME = SampleDesktop;
 				WRAPPER_EXTENSION = app;
 			};
@@ -346,7 +356,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.5;
 			};
 			name = Debug;
 		};
@@ -358,7 +368,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.5;
 			};
 			name = Release;
 		};

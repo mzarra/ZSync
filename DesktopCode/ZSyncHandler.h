@@ -29,19 +29,20 @@
 
 #import <Cocoa/Cocoa.h>
 #import <SyncServices/SyncServices.h>
+#import "BLIP.h"
 
-@interface ZSyncHandler : NSObject <NSPersistentStoreCoordinatorSyncing>
+@interface ZSyncHandler : NSObject <TCPListenerDelegate, BLIPConnectionDelegate>
 {
-  NSFileHandle *listeningHandle;
-  NSFileHandle *sendingHandle;
-  NSNetService *listeningService;
-  NSNetService *sendingService;
+  BLIPListener *_listener;
+  
+  id delegate;
 }
 
-@property (retain) NSFileHandle *listeningHandle;
-@property (retain) NSNetService *serverService;
+@property (assign) id delegate;
 
 + (id)shared;
+
+
 
 - (void)startBroadcasting;
 - (void)stopBroadcasting;

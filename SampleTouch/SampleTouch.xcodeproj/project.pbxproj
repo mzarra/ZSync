@@ -18,6 +18,8 @@
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */; };
+		B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */; };
+		B6FF2DBB10B51D44007AB6D4 /* MyBike.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,11 @@
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
+		B6FF2C8F10B50CC4007AB6D4 /* libMYNetwork-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libMYNetwork-iPhone.a"; path = "../Libraries/MyNetwork/libMYNetwork-iPhone.a"; sourceTree = SOURCE_ROOT; };
+		B6FF2C9010B50CC4007AB6D4 /* libMYNetwork-Simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libMYNetwork-Simulator.a"; path = "../Libraries/MyNetwork/libMYNetwork-Simulator.a"; sourceTree = SOURCE_ROOT; };
+		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		B6FF2D1810B51447007AB6D4 /* MYNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MYNetwork.h; path = ../Libraries/MyNetwork/MYNetwork.h; sourceTree = SOURCE_ROOT; };
+		B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = MyBike.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +58,7 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */,
 				28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */,
+				B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +110,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */,
 				B6C2E13110A748B50063E436 /* MainWindow.xib */,
 				B6C2E13310A748B50063E436 /* RootViewController.xib */,
 				B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */,
@@ -117,6 +126,7 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
 				28860BE40F44EE6400985440 /* CoreData.framework */,
+				B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -135,6 +145,9 @@
 		B6457FEB10B0A93D00A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
+				B6FF2D1810B51447007AB6D4 /* MYNetwork.h */,
+				B6FF2C8F10B50CC4007AB6D4 /* libMYNetwork-iPhone.a */,
+				B6FF2C9010B50CC4007AB6D4 /* libMYNetwork-Simulator.a */,
 				B6457FED10B0A94E00A96714 /* ZSyncShared.h */,
 			);
 			name = SharedCode;
@@ -192,6 +205,7 @@
 			files = (
 				B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */,
 				B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */,
+				B6FF2DBB10B51D44007AB6D4 /* MyBike.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,7 +256,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+				);
 				OTHER_CFLAGS = "-DDEBUG";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "-lMYNetwork-iPhone";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "-lMYNetwork-Simulator";
 				PRODUCT_NAME = SampleTouch;
 			};
 			name = Debug;
@@ -255,6 +275,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "-lMYNetwork-iPhone";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "-lMYNetwork-Simulator";
 				PRODUCT_NAME = SampleTouch;
 			};
 			name = Release;

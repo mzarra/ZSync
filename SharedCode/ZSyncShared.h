@@ -1,5 +1,2 @@
-#define kReceivingServerName @"ZSyncServerReceive" 
-#define kSendingServerName @"ZSyncServerSend" 
 #define kDomainName @"local."
-#define kReceivingServiceName @"_zsync_receive._tcp"
-#define kSendingServiceName @"_zsync_send._tcp"
+#define kZSyncServiceName @"_zsync._tcp"

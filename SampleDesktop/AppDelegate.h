@@ -6,8 +6,11 @@
   NSPersistentStoreCoordinator *persistentStoreCoordinator;
   NSManagedObjectModel *managedObjectModel;
   NSManagedObjectContext *managedObjectContext;
+  
+  NSImageView *imageView;
 }
 
+@property (nonatomic, retain) IBOutlet NSImageView *imageView;
 @property (nonatomic, retain) IBOutlet NSWindow *window;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;

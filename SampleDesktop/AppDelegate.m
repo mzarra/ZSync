@@ -3,10 +3,11 @@
 
 @implementation AppDelegate
 
-@synthesize window;
+@synthesize window, imageView;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+  [[ZSyncHandler shared] setDelegate:self];
   [[ZSyncHandler shared] startBroadcasting];
 }
 
@@ -139,6 +140,11 @@
   }
   
   return NSTerminateNow;
+}
+
+- (void)showImage:(NSImage*)image
+{
+  [[self imageView] setImage:image];
 }
 
 @end

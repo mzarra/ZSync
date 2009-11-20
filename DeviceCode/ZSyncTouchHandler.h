@@ -26,26 +26,13 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
+#import "MYNetwork.h"
 
-@interface ZSyncTouchHandler : NSObject
+@interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
-  NSNetServiceBrowser *netServiceBrowser;
-  NSFileHandle *socketHandle;
-  
-  NSNetService *receiveService;
-  NSNetService *sendService;
-  
-  NSOutputStream *outputStream;
-  NSInputStream *inputStream;
-  
-  NSData *dataToPush;
-  NSMutableData *receivedData;
-  NSUInteger byteOffset;
+  MYBonjourBrowser *_serviceBrowser;
+  BLIPConnection *_connection;
 }
-
-@property (nonatomic, retain) NSFileHandle *socketHandle;
-@property (nonatomic, retain) NSOutputStream *outputStream;
-@property (nonatomic, retain) NSData *dataToPush;
 
 + (id)shared;
 
