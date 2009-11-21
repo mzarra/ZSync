@@ -58,13 +58,18 @@
   [_listener setPickAvailablePort:YES];
   [_listener setBonjourServiceType:kZSyncServiceName];
   
-  DLog(@"%s %@", __PRETTY_FUNCTION__, [[NSHost currentHost] name]);
+  NSString *serverName = [[NSProcessInfo processInfo] hostName];
   
   NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
   if (!uuid) {
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];
     [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:kZSyncServerUUID];
   }
+  
+  DLog(@"%s uuid length %i", __PRETTY_FUNCTION__, [uuid length]);
+  serverName = [serverName stringByAppendingString:uuid];
+  
+  [_listener setBonjourServiceName:serverName];
   
   [_listener setBonjourServiceName:uuid];
   DLog(@"%s service name: %@", __PRETTY_FUNCTION__, [_listener bonjourServiceName]);
