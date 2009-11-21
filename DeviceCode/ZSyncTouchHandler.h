@@ -30,6 +30,19 @@
 
 @class ZSyncTouchHandler;
 
+@interface ZSyncService
+{
+  NSString *name;
+  NSString *uuid;
+  MYBonjourService *service;
+}
+
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *uuid;
+@property (nonatomic, retain) MYBonjourService *service;
+
+@end
+
 @protocol ZSyncDelegate
 
 - (void)zSyncNoServerFound:(NSArray*)availableServers;
@@ -41,6 +54,7 @@
 - (void)zSyncFileUploaded:(ZSyncTouchHandler*)handler;
 - (void)zSyncFileSyncPing;
 - (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
+- (void)zSyncServerUnavailable;
 
 @end
 
@@ -48,12 +62,16 @@
 {
   MYBonjourBrowser *_serviceBrowser;
   BLIPConnection *_connection;
+  
+  id delegate;
 }
+
+@property (nonatomic, retain) id<ZSyncDelegate> delegate;
 
 + (id)shared;
 
 - (void)requestSync;
-- (void)requestPairing:(id)server;
+- (void)requestPairing:(ZSyncService*)server;
 - (BOOL)authenticatePairing:(NSString*)code;
 
 @end

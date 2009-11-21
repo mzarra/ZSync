@@ -31,6 +31,8 @@
 
 @implementation ZSyncTouchHandler
 
+@synthesize delegate;
+
 + (id)shared;
 {
   static ZSyncTouchHandler *sharedTouchHandler;
@@ -54,8 +56,12 @@
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
 
-- (void)requestPairing:(id)server;
+- (void)requestPairing:(ZSyncService*)server;
 {
+  MYBonjourService *service = [server service];
+  _connection = [[BLIPConnection alloc] initToBonjourService:service];
+  [_connection setDelegate:self];
+  [_connection open];
 }
 
 - (BOOL)authenticatePairing:(NSString*)code;
@@ -68,20 +74,38 @@
   if (![[_serviceBrowser services] count]) return;
   [timer invalidate];
   
-//  NSMutableArray *array = [NSMutableArray array];
-//  for (MYBonjourService *service in [_serviceBrowser services]) {
-//    
-//  }
+  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+  if (serverUUID) { //See if the server is in this list
+    for (MYBonjourService *service in [_serviceBrowser services]) {
+      NSString *serverName = [service name];
+      NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - 58, 58)];
+      if (![serverUUID isEqualToString:serverUUID]) continue;
+      
+      //Found our server, start the sync
+      [self beginSyncWithService:service];
+      [_serviceBrowser stop];
+      [_serviceBrowser release], _serviceBrowser = nil;
+      return;
+    }
+  }
   
-  //NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+  NSMutableArray *array = [NSMutableArray array];
+  for (MYBonjourService *bonjourService in [_serviceBrowser services]) {
+    NSString *serverName = [bonjourService name];
+    NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - 58, 58)];
+    serverName = [serverName substringToIndex:([serverName length] - 58)];
+    
+    ZSyncService *zSyncService = [[ZSyncService alloc] init];
+    [zSyncService setService:bonjourService];
+    [zSyncService setName:serverName];
+    [zSyncService setUuid:serverUUID];
+    [array addObject:zSyncService];
+  }
   
-  MYBonjourService *service = [[_serviceBrowser services] anyObject];
-  DLog(@"%s service found '%@'\t%@", __PRETTY_FUNCTION__, [service name], [service valueForKey:@"_hostname"]);
-  _connection = [[BLIPConnection alloc] initToBonjourService:service];
-  [_connection setDelegate:self];
-  [_connection open];
   [_serviceBrowser stop];
   [_serviceBrowser release], _serviceBrowser = nil;
+  
+  [[self delegate] zSyncNoServerFound:array];
 }
 
 /*
@@ -132,5 +156,13 @@
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
+
+@end
+
+@implementation ZSyncService
+
+@synthesize name;
+@synthesize uuid;
+@synthesize service;
 
 @end
