@@ -58,6 +58,8 @@
   [_listener setPickAvailablePort:YES];
   [_listener setBonjourServiceType:kZSyncServiceName];
   
+  DLog(@"%s %@", __PRETTY_FUNCTION__, [[NSHost currentHost] name]);
+  
   NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
   if (!uuid) {
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];

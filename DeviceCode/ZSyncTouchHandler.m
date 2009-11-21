@@ -43,10 +43,14 @@
 
 - (void)requestSync;
 {
+  if (_serviceBrowser) return; //Already in the middle of something
+  
   //Need to find all of the available servers
   _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:kZSyncServiceName];
   [_serviceBrowser start];
   
+  // TODO: This sucks.  Has to be a better way
+  // No call back from BLIP when it finds servers so we need to poll for now
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
 
@@ -64,10 +68,15 @@
   if (![[_serviceBrowser services] count]) return;
   [timer invalidate];
   
-  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+//  NSMutableArray *array = [NSMutableArray array];
+//  for (MYBonjourService *service in [_serviceBrowser services]) {
+//    
+//  }
+  
+  //NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
   
   MYBonjourService *service = [[_serviceBrowser services] anyObject];
-  DLog(@"%s service found '%@'", __PRETTY_FUNCTION__, [service name]);
+  DLog(@"%s service found '%@'\t%@", __PRETTY_FUNCTION__, [service name], [service valueForKey:@"_hostname"]);
   _connection = [[BLIPConnection alloc] initToBonjourService:service];
   [_connection setDelegate:self];
   [_connection open];
