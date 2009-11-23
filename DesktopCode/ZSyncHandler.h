@@ -31,13 +31,16 @@
 #import <SyncServices/SyncServices.h>
 #import "ZSyncShared.h"
 
-@interface ZSyncHandler : NSObject <TCPListenerDelegate, BLIPConnectionDelegate>
+@interface ZSyncHandler : NSObject <TCPListenerDelegate>
 {
+  NSMutableArray *_connections;
+  
   BLIPListener *_listener;
   
-  id delegate;
+  id _delegate;
 }
 
+@property (readonly) NSMutableArray *connections;
 @property (assign) id delegate;
 
 + (id)shared;
@@ -46,5 +49,14 @@
 
 - (void)startBroadcasting;
 - (void)stopBroadcasting;
+
+@end
+
+@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate>
+{
+  BLIPConnection *_connection;
+}
+
+@property (retain) BLIPConnection *connection;
 
 @end

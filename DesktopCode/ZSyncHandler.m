@@ -33,12 +33,14 @@
 @interface ZSyncHandler ()
 
 - (void)startBroadcasting;
+- (void)connectionClosed:(ZSyncConnectionDelegate*)connection;
 
 @end
 
 @implementation ZSyncHandler
 
-@synthesize delegate;
+@synthesize delegate = _delegate;
+@synthesize connections = _connections;
 
 + (id)shared;
 {
@@ -51,19 +53,26 @@
   }
 }
 
+- (NSMutableArray*)connections
+{
+  if (_connections) return _connections;
+  _connections = [[NSMutableArray alloc] init];
+  return _connections;
+}
+
 - (void)startBroadcasting;
 {
   _listener = [[BLIPListener alloc] initWithPort: 1123];
   [_listener setDelegate:self];
   [_listener setPickAvailablePort:YES];
-  [_listener setBonjourServiceType:kZSyncServiceName];
+  [_listener setBonjourServiceType:zsServiceName];
   
   NSString *serverName = [[NSProcessInfo processInfo] hostName];
   
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+  NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   if (!uuid) {
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];
-    [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:kZSyncServerUUID];
+    [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
   }
   
   DLog(@"%s uuid length %i", __PRETTY_FUNCTION__, [uuid length]);
@@ -83,10 +92,14 @@
   [_listener release], _listener = nil;
 }
 
-- (void)listener:(TCPListener*)listener didAcceptConnection:(TCPConnection*)connection
+- (void)listener:(TCPListener*)listener didAcceptConnection:(BLIPConnection*)connection
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
-  [connection setDelegate:self];
+  DLog(@"%s entered %x", __PRETTY_FUNCTION__, connection);
+  ZSyncConnectionDelegate *delegate = [[ZSyncConnectionDelegate alloc] init];
+  [delegate setConnection:connection];
+  [connection setDelegate:delegate];
+  [[self connections] addObject:delegate];
+  [delegate release], delegate = nil;
 }
 
 - (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
@@ -94,17 +107,56 @@
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
+- (void)connectionClosed:(ZSyncConnectionDelegate*)delegate;
+{
+  [[self connections] removeObject:delegate];
+}
+
+@end
+
+@implementation ZSyncConnectionDelegate
+
+@synthesize connection = _connection;
+
+- (void)dealloc
+{
+  DLog(@"%s delegate releasing", __PRETTY_FUNCTION__);
+  [_connection release], _connection = nil;
+  [super dealloc];
+}
+
+- (BOOL)connectionReceivedCloseRequest:(BLIPConnection*)connection;
+{
+  DLog(@"%s closing", __PRETTY_FUNCTION__);
+  [connection setDelegate:nil];
+  [[ZSyncHandler shared] connectionClosed:self];
+  return YES;
+}
+
+- (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)connection:(BLIPConnection*)connection closeRequestFailedWithError:(NSError*)error;
+{
+  DLog(@"%s error %@", __PRETTY_FUNCTION__, error);
+}
+
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
-  NSData *data = [request body];
-  DLog(@"%s length %i", __PRETTY_FUNCTION__, [data length]);
-  NSImage *image = [[NSImage alloc] initWithData:data];
-  NSAssert(image != nil, @"Image is nil");
-  [delegate performSelector:@selector(showImage:) withObject:image];
-  [image release], image = nil;
-  [request respondWithString:@"ok"];
-  return YES;
+  NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
+  BLIPResponse *response = [request response];
+  switch (action) {
+    case zsActionRequestPairing:
+      [response setValue:[NSString stringWithFormat:@"%i", zsActionRequestPairing] ofProperty:zsAction];
+      [response send];
+      return YES;
+    default:
+      NSAssert1(NO, @"Unknown action received: %i", action);
+      return NO;
+  }
 }
 
 @end

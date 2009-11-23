@@ -31,7 +31,11 @@
 
 @implementation ZSyncTouchHandler
 
-@synthesize delegate;
+@synthesize delegate, currentAction;
+
+@synthesize serviceBrowser = _serviceBrowser;
+@synthesize connection = _connection;
+
 
 + (id)shared;
 {
@@ -39,8 +43,24 @@
   if (sharedTouchHandler) return sharedTouchHandler;
   @synchronized(sharedTouchHandler) {
     sharedTouchHandler = [[ZSyncTouchHandler alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:sharedTouchHandler 
+                                             selector:@selector(applicationWillTerminate:) 
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
   }
   return sharedTouchHandler;
+}
+
+- (void)applicationWillTerminate:(NSNotification*)notification
+{
+  DLog(@"%s closing connection", __PRETTY_FUNCTION__);
+  if ([self connection]) {
+    [[self connection] close];
+  }
+  if ([self serviceBrowser]) {
+    [[self serviceBrowser] stop];
+    [_serviceBrowser release], _serviceBrowser = nil;
+  }
 }
 
 - (void)requestSync;
@@ -48,7 +68,7 @@
   if (_serviceBrowser) return; //Already in the middle of something
   
   //Need to find all of the available servers
-  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:kZSyncServiceName];
+  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
   [_serviceBrowser start];
   
   // TODO: This sucks.  Has to be a better way
@@ -58,6 +78,7 @@
 
 - (void)requestPairing:(ZSyncService*)server;
 {
+  [self setCurrentAction:zsActionRequestPairing];
   MYBonjourService *service = [server service];
   _connection = [[BLIPConnection alloc] initToBonjourService:service];
   [_connection setDelegate:self];
@@ -69,16 +90,35 @@
   return YES;
 }
 
+- (void)beginSyncWithService:(MYBonjourService*)service
+{
+  _connection = [[BLIPConnection alloc] initToBonjourService:service];
+  [_connection setDelegate:self];
+  [_connection open];
+}
+
 - (void)services:(NSTimer*)timer
 {
-  if (![[_serviceBrowser services] count]) return;
+  if (![[_serviceBrowser services] count]) {
+    DLog(@"%s no services found", __PRETTY_FUNCTION__);
+    return;
+  }
   [timer invalidate];
   
-  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:kZSyncServerUUID];
+  // TODO: Testing code, remove this later
+  MYBonjourService *service = [[_serviceBrowser services] anyObject];
+  _connection = [[BLIPConnection alloc] initToBonjourService:service];
+  [_connection setDelegate:self];
+  [_connection open];
+  
+  if (YES) return;
+  
+  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   if (serverUUID) { //See if the server is in this list
     for (MYBonjourService *service in [_serviceBrowser services]) {
       NSString *serverName = [service name];
       NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - 58, 58)];
+      DLog(@"%s serverName: %@\nserverUUID: %@", __PRETTY_FUNCTION__, serverName, serverUUID);
       if (![serverUUID isEqualToString:serverUUID]) continue;
       
       //Found our server, start the sync
@@ -87,8 +127,31 @@
       [_serviceBrowser release], _serviceBrowser = nil;
       return;
     }
+    //Did not find our registered server.  Fail
+    [[self delegate] zSyncServerUnavailable:self];
+    return;
   }
   
+  [[self delegate] zSyncNoServerFound:[self availableServers]];
+}
+
+/*
+ * We want to start looking for desktops to sync with here.  Once started
+ * We want to maintain a list of computers found and also send out a notification
+ * for every server that we discover
+ */
+- (void)startBrowser;
+{
+  DLog(@"%s starting request", __PRETTY_FUNCTION__);
+  if (_serviceBrowser) return;
+  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
+  [_serviceBrowser start];
+  
+  [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
+}
+
+- (NSArray*)availableServers;
+{
   NSMutableArray *array = [NSMutableArray array];
   for (MYBonjourService *bonjourService in [_serviceBrowser services]) {
     NSString *serverName = [bonjourService name];
@@ -101,49 +164,64 @@
     [zSyncService setUuid:serverUUID];
     [array addObject:zSyncService];
   }
-  
-  [_serviceBrowser stop];
-  [_serviceBrowser release], _serviceBrowser = nil;
-  
-  [[self delegate] zSyncNoServerFound:array];
-}
-
-/*
- * We want to start looking for desktops to sync with here.  Once started
- * We want to maintain a list of computers found and also send out a notification
- * for every server that we discover
- */
-- (void)startBrowser;
-{
-  DLog(@"%s starting request", __PRETTY_FUNCTION__);
-  if (_serviceBrowser) return;
-  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:kZSyncServiceName];
-  [_serviceBrowser start];
-  
-  [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
+  return array;
 }
 
 #pragma mark -
 #pragma mark BLIP Delegate
 
+/* Two possible states at this point. If we have a server UUID
+ * then we are ready to start a sync.  If we do not have a server UUID
+ * then we need to start a pairing.
+ */
 - (void)connectionDidOpen:(TCPConnection*)connection 
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
-  
-  NSData *imageData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"MyBike" ofType:@"jpg"]];
-  DLog(@"%s length %i", __PRETTY_FUNCTION__, [imageData length]);
-  BLIPRequest *request = [BLIPRequest requestWithBody:imageData];
-  [_connection sendRequest:request];
+  if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
+    //Start a sync by pushing the data file to the server
+  } else {
+    //Start a pairing request
+    DLog(@"%s sending a pairing request", __PRETTY_FUNCTION__);
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    [dictionary setValue:[NSString stringWithFormat:@"%i", zsActionRequestPairing] forKey:zsAction];
+    
+    NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
+    if (!deviceUUID) {
+      deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+      [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
+    }
+    
+    [dictionary setValue:deviceUUID forKey:zsDeviceID];
+    
+    BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+    [_connection sendRequest:request];
+  }
+}
+
+/* We had an error talking to the server.  Push this error on to our delegate
+ * and close the connection
+ */
+- (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  [_connection close];
+  _connection = nil;
+  [[self delegate] zSync:self errorOccurred:error];
 }
 
 - (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
 {
-  DLog(@"%s response %@", __PRETTY_FUNCTION__, [response bodyString]);
-}
-
-- (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
-{
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
+  switch (action) {
+    case zsActionRequestPairing:
+      //Server has accepted the pairing request
+      //Notify the delegate to present a pairing dialog
+      [[self delegate] zSyncPairingRequestAccepted:self];
+      return;
+    default:
+      DLog(@"%s unknown action received %i", __PRETTY_FUNCTION__, action);
+      //NSAssert1(NO, @"Unknown action received: %i", action);
+  }
 }
 
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
