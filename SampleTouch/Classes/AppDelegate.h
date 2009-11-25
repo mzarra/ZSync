@@ -1,12 +1,14 @@
-@interface AppDelegate : NSObject <UIApplicationDelegate> 
-{
-    
-    NSManagedObjectModel *managedObjectModel;
-    NSManagedObjectContext *managedObjectContext;	    
-    NSPersistentStoreCoordinator *persistentStoreCoordinator;
+#import "ZSyncTouch.h"
 
-    UIWindow *window;
-    UINavigationController *navigationController;
+@interface AppDelegate : NSObject <UIApplicationDelegate, ZSyncDelegate> 
+{
+  NSManagedObjectModel *managedObjectModel;
+  NSManagedObjectContext *managedObjectContext;	    
+  NSPersistentStoreCoordinator *persistentStoreCoordinator;
+  
+  UIWindow *window;
+  UINavigationController *navigationController;
+  UINavigationController *pairingNavController;
 }
 
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
@@ -16,7 +18,7 @@
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, assign) IBOutlet UINavigationController *navigationController;
 
-- (NSString *)applicationDocumentsDirectory;
+- (NSString*)applicationDocumentsDirectory;
 
 @end
 

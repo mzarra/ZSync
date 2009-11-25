@@ -45,7 +45,7 @@
 
 @protocol ZSyncDelegate 
 
-- (void)zSyncNoServerFound:(NSArray*)availableServers;
+- (void)zSyncNoServerPaired:(NSArray*)availableServers;
 - (void)zSync:(ZSyncTouchHandler*)handler downloadFinished:(NSString*)tempPath;
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
 
@@ -77,7 +77,8 @@
 
 - (void)requestSync;
 - (void)requestPairing:(ZSyncService*)server;
-- (BOOL)authenticatePairing:(NSString*)code;
+- (void)authenticatePairing:(NSString*)code;
+- (void)cancelPairing;
 
 - (NSArray*)availableServers;
 

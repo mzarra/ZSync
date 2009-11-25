@@ -29,6 +29,8 @@
 #import "ZSyncTouchHandler.h"
 #import "ZSyncShared.h"
 
+#define zsUUIDStringLength 53
+
 @implementation ZSyncTouchHandler
 
 @synthesize delegate, currentAction;
@@ -76,6 +78,27 @@
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
 
+- (void)cancelPairing;
+{
+  if (!_connection) return;
+  
+  //Start a pairing request
+  DLog(@"%s sending a pairing cancel", __PRETTY_FUNCTION__);
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSString stringWithFormat:@"%i", zsActionCancelPairing] forKey:zsAction];
+  
+  NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
+  if (!deviceUUID) {
+    deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+    [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
+  }
+  
+  [dictionary setValue:deviceUUID forKey:zsDeviceID];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [_connection sendRequest:request];
+}
+
 - (void)requestPairing:(ZSyncService*)server;
 {
   [self setCurrentAction:zsActionRequestPairing];
@@ -85,9 +108,26 @@
   [_connection open];
 }
 
-- (BOOL)authenticatePairing:(NSString*)code;
+- (void)authenticatePairing:(NSString*)code;
 {
-  return YES;
+  if (!_connection) return;
+  
+  //Start a pairing request
+  DLog(@"%s sending a pairing code", __PRETTY_FUNCTION__);
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticatePairing] forKey:zsAction];
+  
+  NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
+  if (!deviceUUID) {
+    deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+    [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
+  }
+  [dictionary setValue:code forKey:zsAuthenticationCode];
+  
+  [dictionary setValue:deviceUUID forKey:zsDeviceID];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [_connection sendRequest:request];
 }
 
 - (void)beginSyncWithService:(MYBonjourService*)service
@@ -100,24 +140,17 @@
 - (void)services:(NSTimer*)timer
 {
   if (![[_serviceBrowser services] count]) {
-    DLog(@"%s no services found", __PRETTY_FUNCTION__);
+    // TODO: This should time out at some point
     return;
   }
   [timer invalidate];
   
-  // TODO: Testing code, remove this later
-  MYBonjourService *service = [[_serviceBrowser services] anyObject];
-  _connection = [[BLIPConnection alloc] initToBonjourService:service];
-  [_connection setDelegate:self];
-  [_connection open];
-  
-  if (YES) return;
-  
   NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+  
   if (serverUUID) { //See if the server is in this list
     for (MYBonjourService *service in [_serviceBrowser services]) {
       NSString *serverName = [service name];
-      NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - 58, 58)];
+      NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - zsUUIDStringLength, zsUUIDStringLength)];
       DLog(@"%s serverName: %@\nserverUUID: %@", __PRETTY_FUNCTION__, serverName, serverUUID);
       if (![serverUUID isEqualToString:serverUUID]) continue;
       
@@ -132,7 +165,7 @@
     return;
   }
   
-  [[self delegate] zSyncNoServerFound:[self availableServers]];
+  [[self delegate] zSyncNoServerPaired:[self availableServers]];
 }
 
 /*
@@ -152,19 +185,27 @@
 
 - (NSArray*)availableServers;
 {
-  NSMutableArray *array = [NSMutableArray array];
+  NSMutableSet *set = [NSMutableSet set];
   for (MYBonjourService *bonjourService in [_serviceBrowser services]) {
     NSString *serverName = [bonjourService name];
-    NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - 58, 58)];
-    serverName = [serverName substringToIndex:([serverName length] - 58)];
+    NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - zsUUIDStringLength, zsUUIDStringLength)];
+    serverName = [serverName substringToIndex:([serverName length] - zsUUIDStringLength)];
     
     ZSyncService *zSyncService = [[ZSyncService alloc] init];
     [zSyncService setService:bonjourService];
     [zSyncService setName:serverName];
     [zSyncService setUuid:serverUUID];
-    [array addObject:zSyncService];
+    [set addObject:zSyncService];
   }
-  return array;
+  
+  DLog(@"%s servers %@", __PRETTY_FUNCTION__, set);
+  
+  NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+  NSArray *result = [set allObjects];
+  result = [result sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+  [sort release], sort = nil;
+  
+  return result;
 }
 
 #pragma mark -
@@ -211,6 +252,7 @@
 
 - (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
 {
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
   NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
     case zsActionRequestPairing:
@@ -242,5 +284,25 @@
 @synthesize name;
 @synthesize uuid;
 @synthesize service;
+
+- (NSString*)description
+{
+  return [NSString stringWithFormat:@"[%@:%@]", [self name], [self uuid]];
+}
+
+- (NSUInteger)hash
+{
+  return [[self description] hash];
+}
+
+- (BOOL)isEqual:(id)object
+{
+  if (!object || ![object isKindOfClass:[ZSyncService class]]) return NO;
+  
+  if (![[object name] isEqualToString:[self name]]) return NO;
+  if (![[object uuid] isEqualToString:[self uuid]]) return NO;
+  
+  return YES;
+}
 
 @end

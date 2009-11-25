@@ -79,8 +79,6 @@
   serverName = [serverName stringByAppendingString:uuid];
   
   [_listener setBonjourServiceName:serverName];
-  
-  [_listener setBonjourServiceName:uuid];
   DLog(@"%s service name: %@", __PRETTY_FUNCTION__, [_listener bonjourServiceName]);
   [_listener open];
   NSLog(@"%@ is listening...", self);
@@ -117,12 +115,23 @@
 @implementation ZSyncConnectionDelegate
 
 @synthesize connection = _connection;
+@synthesize pairingCode;
 
 - (void)dealloc
 {
   DLog(@"%s delegate releasing", __PRETTY_FUNCTION__);
   [_connection release], _connection = nil;
   [super dealloc];
+}
+
+- (NSString*)generatePairingCode
+{
+  NSMutableString *string = [NSMutableString string];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  return string;
 }
 
 - (BOOL)connectionReceivedCloseRequest:(BLIPConnection*)connection;
@@ -150,9 +159,17 @@
   BLIPResponse *response = [request response];
   switch (action) {
     case zsActionRequestPairing:
+      [self setPairingCode:[self generatePairingCode]];
       [response setValue:[NSString stringWithFormat:@"%i", zsActionRequestPairing] ofProperty:zsAction];
       [response send];
+      
       return YES;
+    case zsActionAuthenticatePairing:
+      if ([[self pairingCode] isEqualToString:[request bodyString]]) {
+      } else {
+        [response setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticateFailed] ofProperty:zsAction];
+        [response send];
+      }
     default:
       NSAssert1(NO, @"Unknown action received: %i", action);
       return NO;

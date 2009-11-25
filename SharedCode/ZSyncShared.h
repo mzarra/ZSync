@@ -4,9 +4,13 @@
 
 #define zsAction @"kZSyncAction"
 #define zsDeviceID @"kZSyncDeviceID"
+#define zsAuthenticationCode @"zsAuthenticationCode"
 
 enum {
-  zsActionRequestPairing = 1123
+  zsActionRequestPairing = 1123,
+  zsActionCancelPairing,
+  zsActionAuthenticatePairing,
+  zsActionAuthenticateFailed
 };
 
 #import "MYNetwork.h"

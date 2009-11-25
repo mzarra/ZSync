@@ -14,6 +14,10 @@
 		28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28860BE40F44EE6400985440 /* CoreData.framework */; };
 		2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
+		B61383EC10BA7FFA006E7227 /* PairingEntryController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61383EB10BA7FFA006E7227 /* PairingEntryController.m */; };
+		B61383EF10BA8049006E7227 /* PairingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61383ED10BA8049006E7227 /* PairingView.xib */; };
+		B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */; };
+		B61384FB10BCD82C006E7227 /* app.png in Resources */ = {isa = PBXBuildFile; fileRef = B61384FA10BCD82C006E7227 /* app.png */; };
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
@@ -35,6 +39,12 @@
 		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		B61383EA10BA7FFA006E7227 /* PairingEntryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingEntryController.h; sourceTree = "<group>"; };
+		B61383EB10BA7FFA006E7227 /* PairingEntryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingEntryController.m; sourceTree = "<group>"; };
+		B61383EE10BA8049006E7227 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PairingView.xib; sourceTree = "<group>"; };
+		B61384CF10BCD3D9006E7227 /* PairingServerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingServerTableViewController.h; sourceTree = "<group>"; };
+		B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingServerTableViewController.m; sourceTree = "<group>"; };
+		B61384FA10BCD82C006E7227 /* app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = app.png; path = ../Images/app.png; sourceTree = SOURCE_ROOT; };
 		B631391910AB4E7F00E27635 /* ZSyncTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouch.h; sourceTree = "<group>"; };
 		B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouchHandler.h; sourceTree = "<group>"; };
 		B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncTouchHandler.m; sourceTree = "<group>"; };
@@ -71,6 +81,10 @@
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
 				1D3623240D0F684500981E51 /* AppDelegate.h */,
 				1D3623250D0F684500981E51 /* AppDelegate.m */,
+				B61383EA10BA7FFA006E7227 /* PairingEntryController.h */,
+				B61383EB10BA7FFA006E7227 /* PairingEntryController.m */,
+				B61384CF10BCD3D9006E7227 /* PairingServerTableViewController.h */,
+				B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -109,11 +123,13 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B61384FA10BCD82C006E7227 /* app.png */,
 				B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */,
 				B6C2E13110A748B50063E436 /* MainWindow.xib */,
 				B6C2E13310A748B50063E436 /* RootViewController.xib */,
 				B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */,
 				8D1107310486CEB800E47090 /* Info.plist */,
+				B61383ED10BA8049006E7227 /* PairingView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -204,6 +220,8 @@
 				B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */,
 				B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */,
 				B6FF2DBB10B51D44007AB6D4 /* MyBike.jpg in Resources */,
+				B61383EF10BA8049006E7227 /* PairingView.xib in Resources */,
+				B61384FB10BCD82C006E7227 /* app.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,12 +237,22 @@
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
 				B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */,
 				B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */,
+				B61383EC10BA7FFA006E7227 /* PairingEntryController.m in Sources */,
+				B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		B61383ED10BA8049006E7227 /* PairingView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B61383EE10BA8049006E7227 /* en */,
+			);
+			name = PairingView.xib;
+			sourceTree = "<group>";
+		};
 		B6C2E13110A748B50063E436 /* MainWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (

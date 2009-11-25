@@ -55,8 +55,10 @@
 @interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate>
 {
   BLIPConnection *_connection;
+  NSString *pairingCode;
 }
 
 @property (retain) BLIPConnection *connection;
+@property (retain) NSString *pairingCode;
 
 @end

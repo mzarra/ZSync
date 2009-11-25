@@ -22,3 +22,5 @@
     #import <UIKit/UIKit.h>
     #import <CoreData/CoreData.h>
 #endif
+
+#define kCellIdentifier @"kCellIdentifier"

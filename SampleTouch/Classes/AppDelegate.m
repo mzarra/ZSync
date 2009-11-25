@@ -1,7 +1,7 @@
 #import "AppDelegate.h"
 #import "RootViewController.h"
-
-#import "ZSyncTouch.h"
+#import "PairingEntryController.h"
+#import "PairingServerTableViewController.h"
 
 @implementation AppDelegate
 
@@ -11,7 +11,7 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application 
+- (void)applicationDidFinishLaunching:(UIApplication*)application 
 {
 	id rootViewController = [navigationController topViewController];
 	[rootViewController setManagedObjectContext:[self managedObjectContext]];
@@ -19,10 +19,10 @@
 	[window addSubview:[navigationController view]];
   [window makeKeyAndVisible];
   
-  [[ZSyncTouchHandler shared] requestSync];
+  [[ZSyncTouchHandler shared] setDelegate:self];
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application 
+- (void)applicationWillTerminate:(UIApplication*)application 
 {
   NSError *error = nil;
   if (!managedObjectContext) return;
@@ -35,7 +35,7 @@
 #pragma mark -
 #pragma mark Core Data stack
 
-- (NSManagedObjectContext *) managedObjectContext 
+- (NSManagedObjectContext*) managedObjectContext 
 {
   if (managedObjectContext) return managedObjectContext;
 	
@@ -51,7 +51,7 @@
   return managedObjectContext;
 }
 
-- (NSManagedObjectModel *)managedObjectModel 
+- (NSManagedObjectModel*)managedObjectModel 
 {
   if (managedObjectModel) return managedObjectModel;
 
@@ -60,7 +60,7 @@
   return managedObjectModel;
 }
 
-- (NSPersistentStoreCoordinator *)persistentStoreCoordinator 
+- (NSPersistentStoreCoordinator*)persistentStoreCoordinator 
 {
   if (persistentStoreCoordinator) return persistentStoreCoordinator;
 	
@@ -79,9 +79,73 @@
 #pragma mark -
 #pragma mark Application's Documents directory
 
-- (NSString *)applicationDocumentsDirectory 
+- (NSString*)applicationDocumentsDirectory 
 {
 	return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+}
+
+#pragma mark -
+#pragma mark ZSyncDelegate
+
+- (void)zSyncNoServerPaired:(NSArray*)availableServers;
+{
+  //If there is only one server prompt the passkey
+  if ([availableServers count] == 0) {
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Pairing Error" message:@"No servers were located to pair with" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+    [alertView show];
+    [alertView release], alertView = nil;
+    return;
+//  } else if ([availableServers count] == 1) {
+//    [[ZSyncTouchHandler shared] requestPairing:[availableServers lastObject]];
+//    return;
+  }
+  id controller = [[PairingServerTableViewController alloc] initWithServers:availableServers];
+  pairingNavController = [[UINavigationController alloc] initWithRootViewController:controller];
+  [[self navigationController] presentModalViewController:pairingNavController animated:YES];
+  [controller release], controller = nil;
+}
+
+- (void)zSync:(ZSyncTouchHandler*)handler downloadFinished:(NSString*)tempPath;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+
+- (void)zSyncStarted:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)zSyncFileUploaded:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
+{
+  PairingEntryController *controller = [[PairingEntryController alloc] init];
+  [[self navigationController] presentModalViewController:controller animated:YES];
+  [controller release], controller = nil;
+}
+
+- (void)zSyncFileSyncPing:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
 @end
