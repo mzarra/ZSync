@@ -30,10 +30,15 @@
 #import "ZSyncHandler.h"
 #import "ZSyncShared.h"
 
+#import "PairingCodeWindowController.h"
+
+#define kRegisteredDeviceArray @"kRegisteredDeviceArray"
+
 @interface ZSyncHandler ()
 
 - (void)startBroadcasting;
 - (void)connectionClosed:(ZSyncConnectionDelegate*)connection;
+- (void)registerDeviceForPairing:(NSString*)deviceID;
 
 @end
 
@@ -75,13 +80,10 @@
     [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
   }
   
-  DLog(@"%s uuid length %i", __PRETTY_FUNCTION__, [uuid length]);
   serverName = [serverName stringByAppendingString:uuid];
   
   [_listener setBonjourServiceName:serverName];
-  DLog(@"%s service name: %@", __PRETTY_FUNCTION__, [_listener bonjourServiceName]);
   [_listener open];
-  NSLog(@"%@ is listening...", self);
 }
 
 - (void)stopBroadcasting;
@@ -92,7 +94,6 @@
 
 - (void)listener:(TCPListener*)listener didAcceptConnection:(BLIPConnection*)connection
 {
-  DLog(@"%s entered %x", __PRETTY_FUNCTION__, connection);
   ZSyncConnectionDelegate *delegate = [[ZSyncConnectionDelegate alloc] init];
   [delegate setConnection:connection];
   [connection setDelegate:delegate];
@@ -110,6 +111,22 @@
   [[self connections] removeObject:delegate];
 }
 
+/* This is a place holder for now.  We will be moving this into a Core
+ * Data database so that we can track information such as last sync, etc.
+ */
+- (void)registerDeviceForPairing:(NSString*)deviceID;
+{
+  @synchronized (self) {
+    NSMutableArray *array = [[[NSUserDefaults standardUserDefaults] valueForKey:kRegisteredDeviceArray] mutableCopy];
+    if (!array) {
+      array = [[NSMutableArray alloc] init];
+    }
+    [array addObject:deviceID];
+    [[NSUserDefaults standardUserDefaults] setObject:array forKey:kRegisteredDeviceArray];
+    [array release], array = nil;
+  }
+}
+
 @end
 
 @implementation ZSyncConnectionDelegate
@@ -117,12 +134,15 @@
 @synthesize connection = _connection;
 @synthesize pairingCode;
 
+// TODO: Need to move this out of here
+@synthesize codeController;
+
 - (void)dealloc
 {
-  DLog(@"%s delegate releasing", __PRETTY_FUNCTION__);
   [_connection release], _connection = nil;
   [super dealloc];
 }
+
 
 - (NSString*)generatePairingCode
 {
@@ -134,9 +154,15 @@
   return string;
 }
 
+- (void)showCodeWindow
+{
+  codeController = [[PairingCodeWindowController alloc] initWithCodeString:[self pairingCode]];
+  [[codeController window] center];
+  [codeController showWindow:self];
+}
+
 - (BOOL)connectionReceivedCloseRequest:(BLIPConnection*)connection;
 {
-  DLog(@"%s closing", __PRETTY_FUNCTION__);
   [connection setDelegate:nil];
   [[ZSyncHandler shared] connectionClosed:self];
   return YES;
@@ -154,22 +180,27 @@
 
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   BLIPResponse *response = [request response];
   switch (action) {
     case zsActionRequestPairing:
       [self setPairingCode:[self generatePairingCode]];
+      [self showCodeWindow];
       [response setValue:[NSString stringWithFormat:@"%i", zsActionRequestPairing] ofProperty:zsAction];
       [response send];
       
       return YES;
     case zsActionAuthenticatePairing:
       if ([[self pairingCode] isEqualToString:[request bodyString]]) {
+        // TODO: Register the unique ID of this service
+        [[ZSyncHandler shared] registerDeviceForPairing:[request valueOfProperty:zsDeviceID]];
+        [response setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticatePassed] ofProperty:zsAction];
+        [response send];
       } else {
         [response setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticateFailed] ofProperty:zsAction];
         [response send];
       }
+      return YES;
     default:
       NSAssert1(NO, @"Unknown action received: %i", action);
       return NO;

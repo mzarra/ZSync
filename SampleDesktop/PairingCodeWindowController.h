@@ -1,8 +1,8 @@
 //
-//  PairingEntryController.h
-//  SampleTouch
+//  PairingCodeWindowController.h
+//  SampleDesktop
 //
-//  Created by Marcus S. Zarra on 11/23/09.
+//  Created by Marcus S. Zarra on 11/25/09.
 //  Copyright 2009 Zarra Studios, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -26,20 +26,13 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
-#import "ZSyncTouch.h"
-
-@interface PairingEntryController : UIViewController <UITextFieldDelegate>
+@interface PairingCodeWindowController : NSWindowController
 {
-  UITextField *field1;
-  UITextField *field2;
-  UITextField *field3;
-  UITextField *field4;
-  
+  NSString *codeString;
 }
 
-@property (nonatomic, assign) IBOutlet UITextField *field1;
-@property (nonatomic, assign) IBOutlet UITextField *field2;
-@property (nonatomic, assign) IBOutlet UITextField *field3;
-@property (nonatomic, assign) IBOutlet UITextField *field4;
+@property (copy, readonly) NSString *codeString;
+
+- (id)initWithCodeString:(NSString*)string;
 
 @end

@@ -10,7 +10,8 @@ enum {
   zsActionRequestPairing = 1123,
   zsActionCancelPairing,
   zsActionAuthenticatePairing,
-  zsActionAuthenticateFailed
+  zsActionAuthenticateFailed,
+  zsActionAuthenticatePassed
 };
 
 #import "MYNetwork.h"

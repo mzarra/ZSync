@@ -19,6 +19,7 @@
 		B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */; };
 		B61384FB10BCD82C006E7227 /* app.png in Resources */ = {isa = PBXBuildFile; fileRef = B61384FA10BCD82C006E7227 /* app.png */; };
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
+		B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B642863F10BEA11700470E43 /* QuartzCore.framework */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */; };
@@ -48,6 +49,7 @@
 		B631391910AB4E7F00E27635 /* ZSyncTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouch.h; sourceTree = "<group>"; };
 		B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncTouchHandler.h; sourceTree = "<group>"; };
 		B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncTouchHandler.m; sourceTree = "<group>"; };
+		B642863F10BEA11700470E43 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B6457FED10B0A94E00A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B659961910B658AE00B2CC74 /* libMYNetwork-Simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Simulator.a"; sourceTree = "<group>"; };
 		B659961A10B658AE00B2CC74 /* libMYNetwork-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-iPhone.a"; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */,
 				28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */,
 				B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */,
+				B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +110,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				B642863F10BEA11700470E43 /* QuartzCore.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";

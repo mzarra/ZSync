@@ -13,6 +13,8 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B613854110BCEDD8006E7227 /* PairingCodeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B613854010BCEDD8006E7227 /* PairingCodeWindowController.m */; };
+		B613854510BCEEBD006E7227 /* PairingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B613854310BCEEBD006E7227 /* PairingWindow.xib */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
 		B659962F10B658F800B2CC74 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B659962E10B658F800B2CC74 /* libMYNetwork-Desktop.a */; };
 		B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E14910A768840063E436 /* ZSyncHandler.m */; };
@@ -49,6 +51,9 @@
 		77C8280C06725ACE000B614F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SampleDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B613853F10BCEDD8006E7227 /* PairingCodeWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingCodeWindowController.h; sourceTree = "<group>"; };
+		B613854010BCEDD8006E7227 /* PairingCodeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingCodeWindowController.m; sourceTree = "<group>"; };
+		B613854410BCEEBD006E7227 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PairingWindow.xib; sourceTree = "<group>"; };
 		B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncSchema.xcodeproj; path = SyncSchema/SyncSchema.xcodeproj; sourceTree = "<group>"; };
 		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
 		B6457EA410B05DFC00A96714 /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +83,8 @@
 			children = (
 				77C8280B06725ACE000B614F /* AppDelegate.h */,
 				77C8280C06725ACE000B614F /* AppDelegate.m */,
+				B613853F10BCEDD8006E7227 /* PairingCodeWindowController.h */,
+				B613854010BCEDD8006E7227 /* PairingCodeWindowController.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -140,6 +147,7 @@
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				2F7446970DB6B7EA00F9684A /* MainMenu.xib */,
+				B613854310BCEEBD006E7227 /* PairingWindow.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -253,6 +261,7 @@
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */,
+				B613854510BCEEBD006E7227 /* PairingWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +276,7 @@
 				77C8280E06725ACE000B614F /* AppDelegate.m in Sources */,
 				770B37ED0679A11B001EADE2 /* DataModel.xcdatamodel in Sources */,
 				B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */,
+				B613854110BCEDD8006E7227 /* PairingCodeWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +305,14 @@
 				2F7446980DB6B7EA00F9684A /* English */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		B613854310BCEEBD006E7227 /* PairingWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B613854410BCEEBD006E7227 /* English */,
+			);
+			name = PairingWindow.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

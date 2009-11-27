@@ -1,9 +1,10 @@
 #import "AppDelegate.h"
+
 #import "ZSync.h"
 
 @implementation AppDelegate
 
-@synthesize window, imageView;
+@synthesize imageView;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {

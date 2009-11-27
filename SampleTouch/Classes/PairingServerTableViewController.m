@@ -27,6 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 
 #import "PairingServerTableViewController.h"
+#import "ZSyncTouch.h"
 
 @implementation PairingServerTableViewController
 
@@ -81,8 +82,9 @@
     [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
   }
   
-  [[cell textLabel] setText:[[[self servers] objectAtIndex:[indexPath row]] valueForKey:@"name"]];
-  [[cell detailTextLabel] setText:[[[self servers] objectAtIndex:[indexPath row]] valueForKey:@"uuid"]];
+  ZSyncService *service = [[self servers] objectAtIndex:[indexPath row]];
+  [[cell textLabel] setText:[service valueForKey:@"name"]];
+  [[cell detailTextLabel] setText:[service valueForKey:@"uuid"]];
 	
   return cell;
 }
@@ -90,6 +92,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
+  ZSyncService *service = [[self servers] objectAtIndex:[indexPath row]];
+  [[ZSyncTouchHandler shared] requestPairing:service];
 }
 
 - (void)dealloc 
@@ -100,4 +104,3 @@
 
 
 @end
-

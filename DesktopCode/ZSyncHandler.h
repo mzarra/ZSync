@@ -54,11 +54,14 @@
 
 @interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate>
 {
+  id codeController;
   BLIPConnection *_connection;
   NSString *pairingCode;
 }
 
 @property (retain) BLIPConnection *connection;
 @property (retain) NSString *pairingCode;
+
+@property (retain) id codeController;
 
 @end

@@ -208,6 +208,11 @@
   return result;
 }
 
+- (void)uploadRepositoryToServer
+{
+  
+}
+
 #pragma mark -
 #pragma mark BLIP Delegate
 
@@ -220,6 +225,8 @@
   DLog(@"%s entered", __PRETTY_FUNCTION__);
   if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
     //Start a sync by pushing the data file to the server
+    
+    [self uploadRepositoryToServer];
   } else {
     //Start a pairing request
     DLog(@"%s sending a pairing request", __PRETTY_FUNCTION__);
@@ -259,6 +266,13 @@
       //Server has accepted the pairing request
       //Notify the delegate to present a pairing dialog
       [[self delegate] zSyncPairingRequestAccepted:self];
+      return;
+    case zsActionAuthenticatePassed:
+      [[self delegate] zSyncPairingCodeApproved:self];
+      // TODO: Start the sync
+      return;
+    case zsActionAuthenticateFailed:
+      [[self delegate] zSyncPairingCodeRejected:self];
       return;
     default:
       DLog(@"%s unknown action received %i", __PRETTY_FUNCTION__, action);

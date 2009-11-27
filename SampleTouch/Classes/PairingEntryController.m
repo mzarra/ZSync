@@ -35,17 +35,71 @@
 @synthesize field3;
 @synthesize field4;
 
-- (id)init
+- (id)init;
 {
   if (!(self = [super initWithNibName:@"PairingView" bundle:nil])) return nil;
   
   return self;
 }
 
+- (void)cancel
+{
+  [self dismissModalViewControllerAnimated:YES];
+}
+
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  [self setTitle:@"Authenticate"];
+  
   [[self view] setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
+  
+  if ([[[self navigationController] viewControllers] count] == 1) {
+    UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
+    [[self navigationItem] setLeftBarButtonItem:button];
+    [button release], button = nil;
+  }
+  
+  [[self field1] becomeFirstResponder];
+}
+
+- (void)authenticate
+{
+  NSMutableString *string = [NSMutableString string];
+  [string appendString:[[self field1] text]];
+  [string appendString:[[self field2] text]];
+  [string appendString:[[self field3] text]];
+  [string appendString:[[self field4] text]];
+  [[ZSyncTouchHandler shared] authenticatePairing:string];
+  [self dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark -
+#pragma mark UITextFieldDelegate
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+  [textField setText:@""];
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  NSMutableString *tempString = [NSMutableString stringWithString:[textField text]];
+  [tempString replaceCharactersInRange:range withString:string];
+  if ([tempString length] <= 0) return YES;
+  if ([tempString length] > 1) return NO;
+  
+  if (textField == [self field1]) {
+    [[self field2] performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.01];
+  } else if (textField == [self field2]) {
+    [[self field3] performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.01];
+  } else if (textField == [self field3]) {
+    [[self field4] performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.01];
+  } else if (textField == [self field4]) {
+    [self performSelector:@selector(authenticate) withObject:nil afterDelay:0.1];
+  }
+  return YES;
 }
 
 @end

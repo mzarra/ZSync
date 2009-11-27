@@ -7,6 +7,8 @@
 
 @synthesize window;
 @synthesize navigationController;
+@synthesize pairingNavController;
+@synthesize hoverView, hoverLabel;
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -20,6 +22,12 @@
   [window makeKeyAndVisible];
   
   [[ZSyncTouchHandler shared] setDelegate:self];
+  
+  [[[self hoverView] layer] setCornerRadius:10.0f];
+  [[[self hoverView] layer] setBorderColor:[[UIColor whiteColor] CGColor]];
+  [[[self hoverView] layer] setBorderWidth:2.0f];
+  [[self hoverView] setCenter:CGPointMake(160, 240)];
+  [[[self hoverView] layer] setZPosition:100.0f];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application 
@@ -30,6 +38,19 @@
     NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
     abort();
   } 
+}
+
+- (void)hideHoverView
+{
+  if (![[self hoverView] superview]) return;
+  [[self hoverView] removeFromSuperview];
+}
+
+- (void)showHoverViewWithMessage:(NSString*)message
+{
+  [[self hoverLabel] setText:message];
+  if ([[self hoverView] superview]) return;
+  [[self window] addSubview:[self hoverView]];
 }
 
 #pragma mark -
@@ -115,7 +136,6 @@
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
@@ -129,18 +149,33 @@
 - (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
 {
   PairingEntryController *controller = [[PairingEntryController alloc] init];
+  if (![self pairingNavController]) {
+    [[self navigationController] presentModalViewController:controller animated:YES];
+  } else {
+    [[self pairingNavController] pushViewController:controller animated:YES];
+  }
+  [controller release], controller = nil;
+}
+
+- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  PairingEntryController *controller = [[PairingEntryController alloc] init];
   [[self navigationController] presentModalViewController:controller animated:YES];
   [controller release], controller = nil;
 }
 
-- (void)zSyncFileSyncPing:(ZSyncTouchHandler*)handler;
+- (void)zSyncPairingCodeApproved:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
+  [self showHoverViewWithMessage:@"Download Started"];
+  [self performSelector:@selector(hideHoverView) withObject:nil afterDelay:5.0];
 }
 
 - (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
+  [self showHoverViewWithMessage:@"Download Started"];
 }
 
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
