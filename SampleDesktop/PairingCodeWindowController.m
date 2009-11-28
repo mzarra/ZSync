@@ -31,6 +31,7 @@
 @implementation PairingCodeWindowController
 
 @synthesize codeString;
+@synthesize textField;
 
 - (id)initWithCodeString:(NSString*)string;
 {
@@ -39,6 +40,11 @@
   codeString = [string copy];
   
   return self;
+}
+
+- (void)windowDidLoad
+{
+  [[self textField] setStringValue:[self codeString]];
 }
 
 - (void) dealloc

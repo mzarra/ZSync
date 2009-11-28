@@ -29,9 +29,12 @@
 @interface PairingCodeWindowController : NSWindowController
 {
   NSString *codeString;
+  
+  NSTextField *textField;
 }
 
 @property (copy, readonly) NSString *codeString;
+@property (assign) IBOutlet NSTextField *textField;
 
 - (id)initWithCodeString:(NSString*)string;
 
