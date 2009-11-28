@@ -24,7 +24,6 @@
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */; };
 		B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */; };
-		B6FF2DBB10B51D44007AB6D4 /* MyBike.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,7 +56,6 @@
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = MyBike.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,13 +125,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B61384FA10BCD82C006E7227 /* app.png */,
-				B6FF2DBA10B51D44007AB6D4 /* MyBike.jpg */,
-				B6C2E13110A748B50063E436 /* MainWindow.xib */,
+				B61383ED10BA8049006E7227 /* PairingView.xib */,
 				B6C2E13310A748B50063E436 /* RootViewController.xib */,
+				B6C2E13110A748B50063E436 /* MainWindow.xib */,
+				B61384FA10BCD82C006E7227 /* app.png */,
 				B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */,
 				8D1107310486CEB800E47090 /* Info.plist */,
-				B61383ED10BA8049006E7227 /* PairingView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -223,7 +220,6 @@
 			files = (
 				B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */,
 				B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */,
-				B6FF2DBB10B51D44007AB6D4 /* MyBike.jpg in Resources */,
 				B61383EF10BA8049006E7227 /* PairingView.xib in Resources */,
 				B61384FB10BCD82C006E7227 /* app.png in Resources */,
 			);

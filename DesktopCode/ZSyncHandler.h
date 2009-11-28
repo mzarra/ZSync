@@ -52,11 +52,15 @@
 
 @end
 
-@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate>
+@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate, NSPersistentStoreCoordinatorSyncing>
 {
   id codeController;
   BLIPConnection *_connection;
   NSString *pairingCode;
+  
+  NSManagedObjectModel *managedObjectModel;
+  NSPersistentStoreCoordinator *persistentStoreCoordinator;
+  NSManagedObjectContext *managedObjectContext;
 }
 
 @property (retain) BLIPConnection *connection;

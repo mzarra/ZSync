@@ -21,7 +21,7 @@
 	[window addSubview:[navigationController view]];
   [window makeKeyAndVisible];
   
-  [[ZSyncTouchHandler shared] setDelegate:self];
+  [[ZSyncTouchHandler shared] registerDelegate:self withPersistentStoreCoordinator:[self persistentStoreCoordinator]];
   
   [[[self hoverView] layer] setCornerRadius:10.0f];
   [[[self hoverView] layer] setBorderColor:[[UIColor whiteColor] CGColor]];

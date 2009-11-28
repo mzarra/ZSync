@@ -106,23 +106,25 @@
   MYBonjourBrowser *_serviceBrowser;
   BLIPConnection *_connection;
   
-  id delegate;
-  
-  NSInteger currentAction;
+  id _delegate;
   
   /* We are going to start off by trying to swap out the persistent stores
    * internally.  If this goes badly then we can had it back out to the 
    * application instead.
    */
-  NSPersistentStoreCoordinator *persistentStoreCoordinator;
+  NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
 @property (nonatomic, retain) MYBonjourBrowser *serviceBrowser;
 @property (nonatomic, assign) BLIPConnection *connection;
-@property (nonatomic, assign) NSInteger currentAction;
-@property (nonatomic, assign) id<ZSyncDelegate> delegate;
 
+/* This shared singleton design should probably go away.  We cannot assume
+ * that the parent app will want to keep us around all of the time and may
+ * want to drop us to conserve memory and resources.
+ */
 + (id)shared;
+
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 
 - (void)requestSync;
 - (void)requestPairing:(ZSyncService*)server;

@@ -31,13 +31,20 @@
 
 #define zsUUIDStringLength 53
 
+@interface ZSyncTouchHandler()
+
+@property (nonatomic, assign) id<ZSyncDelegate> delegate;
+@property (nonatomic, retain) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
+@end
+
 @implementation ZSyncTouchHandler
 
-@synthesize delegate, currentAction;
+@synthesize delegate = _delegate;
 
 @synthesize serviceBrowser = _serviceBrowser;
 @synthesize connection = _connection;
-
+@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
 + (id)shared;
 {
@@ -80,12 +87,12 @@
 
 - (void)cancelPairing;
 {
-  if (!_connection) return;
+  if (![self connection]) return;
   
   //Start a pairing request
   DLog(@"%s sending a pairing cancel", __PRETTY_FUNCTION__);
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-  [dictionary setValue:[NSString stringWithFormat:@"%i", zsActionCancelPairing] forKey:zsAction];
+  [dictionary setValue:zsActID(zsActionCancelPairing) forKey:zsAction];
   
   NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
   if (!deviceUUID) {
@@ -96,26 +103,27 @@
   [dictionary setValue:deviceUUID forKey:zsDeviceID];
   
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
-  [_connection sendRequest:request];
+  [[self connection] sendRequest:request];
 }
 
 - (void)requestPairing:(ZSyncService*)server;
 {
-  [self setCurrentAction:zsActionRequestPairing];
   MYBonjourService *service = [server service];
-  _connection = [[BLIPConnection alloc] initToBonjourService:service];
-  [_connection setDelegate:self];
-  [_connection open];
+  BLIPConnection *conn = [[BLIPConnection alloc] initToBonjourService:service];
+  [self setConnection:conn];
+  [conn setDelegate:self];
+  [conn open];
+  [conn release], conn = nil;
 }
 
 - (void)authenticatePairing:(NSString*)code;
 {
-  if (!_connection) return;
+  if (![self connection]) return;
   
   //Start a pairing request
   DLog(@"%s sending a pairing code", __PRETTY_FUNCTION__);
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-  [dictionary setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticatePairing] forKey:zsAction];
+  [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
   
   NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
   if (!deviceUUID) {
@@ -126,14 +134,16 @@
 
   NSData *codeData = [code dataUsingEncoding:NSUTF8StringEncoding];
   BLIPRequest *request = [BLIPRequest requestWithBody:codeData properties:dictionary];
-  [_connection sendRequest:request];
+  [[self connection] sendRequest:request];
 }
 
 - (void)beginSyncWithService:(MYBonjourService*)service
 {
-  _connection = [[BLIPConnection alloc] initToBonjourService:service];
-  [_connection setDelegate:self];
-  [_connection open];
+  BLIPConnection *conn = [[BLIPConnection alloc] initToBonjourService:service];
+  [self setConnection:conn];
+  [conn setDelegate:self];
+  [conn open];
+  [conn release], conn = nil;
 }
 
 - (void)services:(NSTimer*)timer
@@ -167,6 +177,12 @@
   [[self delegate] zSyncNoServerPaired:[self availableServers]];
 }
 
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+{
+  [self setDelegate:delegate];
+  [self setPersistentStoreCoordinator:coordinator];
+}
+
 /*
  * We want to start looking for desktops to sync with here.  Once started
  * We want to maintain a list of computers found and also send out a notification
@@ -174,7 +190,6 @@
  */
 - (void)startBrowser;
 {
-  DLog(@"%s starting request", __PRETTY_FUNCTION__);
   if (_serviceBrowser) return;
   _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
   [_serviceBrowser start];
@@ -197,8 +212,6 @@
     [set addObject:zSyncService];
   }
   
-  DLog(@"%s servers %@", __PRETTY_FUNCTION__, set);
-  
   NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
   NSArray *result = [set allObjects];
   result = [result sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
@@ -207,9 +220,36 @@
   return result;
 }
 
-- (void)uploadRepositoryToServer
+- (void)uploadDataToServer
 {
+  [[self delegate] zSyncStarted:self];
   
+  NSAssert([self persistentStoreCoordinator] != nil, @"PSD is nil.  Unable to upload");
+  
+  for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
+    DLog(@"%s url %@\nIdentifier: %@", __PRETTY_FUNCTION__, [store URL], [store identifier]);
+    NSData *data = [[NSData alloc] initWithContentsOfMappedFile:[[store URL] path]];
+    
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    [dictionary setValue:[store identifier] forKey:zsStoreIdentifier];
+    [dictionary setValue:[store configurationName] forKey:zsStoreConfiguration];
+    [dictionary setValue:[store type] forKey:zsStoreType];
+    [dictionary setValue:zsActID(zsActionStoreUpload) forKey:zsAction];
+    
+    BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
+    // TODO: Compression is not working.  Need to find out why
+    //[request setCompressed:YES];
+    [[self connection] sendRequest:request];
+    [data release], data = nil;
+    [dictionary release], dictionary = nil;
+    DLog(@"%s file uploaded", __PRETTY_FUNCTION__);
+  }
+  
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [[self connection] sendRequest:request];
+  [dictionary release], dictionary = nil;
 }
 
 #pragma mark -
@@ -225,12 +265,12 @@
   if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
     //Start a sync by pushing the data file to the server
     
-    [self uploadRepositoryToServer];
+    [self uploadDataToServer];
   } else {
     //Start a pairing request
     DLog(@"%s sending a pairing request", __PRETTY_FUNCTION__);
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    [dictionary setValue:[NSString stringWithFormat:@"%i", zsActionRequestPairing] forKey:zsAction];
+    [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
     
     NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
     if (!deviceUUID) {
@@ -241,7 +281,7 @@
     [dictionary setValue:deviceUUID forKey:zsDeviceID];
     
     BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
-    [_connection sendRequest:request];
+    [[self connection] sendRequest:request];
   }
 }
 
@@ -251,8 +291,7 @@
 - (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
-  [_connection close];
-  _connection = nil;
+  [_connection close], [_connection release], _connection = nil;
   [[self delegate] zSync:self errorOccurred:error];
 }
 
@@ -268,7 +307,7 @@
       return;
     case zsActionAuthenticatePassed:
       [[self delegate] zSyncPairingCodeApproved:self];
-      // TODO: Start the sync
+      [self uploadDataToServer];
       return;
     case zsActionAuthenticateFailed:
       [[self delegate] zSyncPairingCodeRejected:self];
@@ -282,7 +321,18 @@
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
 {
   DLog(@"%s entered: %@", __PRETTY_FUNCTION__, [request bodyString]);
-  return YES;
+  NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
+  switch (action) {
+    case zsActionStoreUpload:
+      // TODO: Store the file in a temp location until all files are received
+      return YES;
+    case zsActionCompleteSync:
+      // TODO: Remove all of the stores from coordinator and replace them
+      return YES;
+    default:
+      NSAssert1(NO, @"Unknown action received: %i", action);
+      return NO;
+  }
 }
 
 - (void)connectionDidClose:(TCPConnection*)connection;
