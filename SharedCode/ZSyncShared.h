@@ -4,7 +4,6 @@
 
 #define zsAction @"kZSyncAction"
 #define zsDeviceID @"kZSyncDeviceID"
-#define zsAuthenticationCode @"zsAuthenticationCode"
 
 enum {
   zsActionRequestPairing = 1123,

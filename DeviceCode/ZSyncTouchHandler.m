@@ -122,11 +122,10 @@
     deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
     [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
   }
-  [dictionary setValue:code forKey:zsAuthenticationCode];
-  
   [dictionary setValue:deviceUUID forKey:zsDeviceID];
-  
-  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+
+  NSData *codeData = [code dataUsingEncoding:NSUTF8StringEncoding];
+  BLIPRequest *request = [BLIPRequest requestWithBody:codeData properties:dictionary];
   [_connection sendRequest:request];
 }
 

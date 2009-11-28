@@ -139,6 +139,7 @@
 
 - (void)dealloc
 {
+  DLog(@"%s Releasing", __PRETTY_FUNCTION__);
   [_connection release], _connection = nil;
   [super dealloc];
 }
@@ -192,11 +193,15 @@
       return YES;
     case zsActionAuthenticatePairing:
       if ([[self pairingCode] isEqualToString:[request bodyString]]) {
+        DLog(@"%s passed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
         // TODO: Register the unique ID of this service
         [[ZSyncHandler shared] registerDeviceForPairing:[request valueOfProperty:zsDeviceID]];
         [response setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticatePassed] ofProperty:zsAction];
         [response send];
+        [codeController close];
+        [codeController release], codeController = nil;
       } else {
+        DLog(@"%s failed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
         [response setValue:[NSString stringWithFormat:@"%i", zsActionAuthenticateFailed] ofProperty:zsAction];
         [response send];
       }
