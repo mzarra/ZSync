@@ -103,8 +103,13 @@
 
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
+  NSMutableArray *availableServers;
   MYBonjourBrowser *_serviceBrowser;
   BLIPConnection *_connection;
+  
+  NSString *schemaName;
+  NSInteger majorVersionNumber;
+  NSInteger minorVersionNumber;
   
   id _delegate;
   
@@ -115,8 +120,11 @@
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
+@property (nonatomic, copy) NSString *schemaName;
 @property (nonatomic, retain) MYBonjourBrowser *serviceBrowser;
 @property (nonatomic, assign) BLIPConnection *connection;
+@property (nonatomic, assign) NSInteger majorVersionNumber;
+@property (nonatomic, assign) NSInteger minorVersionNumber;
 
 /* This shared singleton design should probably go away.  We cannot assume
  * that the parent app will want to keep us around all of the time and may

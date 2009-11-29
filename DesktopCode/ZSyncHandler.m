@@ -266,6 +266,13 @@
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   BLIPResponse *response = [request response];
   switch (action) {
+    case zsActionVerifySchema:
+      // TODO: Compare schema string and version numbers
+      
+      [response setValue:zsActID(zsActionSchemaSupported) ofProperty:zsAction];
+      [response send];
+      
+      return YES;
     case zsActionRequestPairing:
       [self setPairingCode:[self generatePairingCode]];
       [self showCodeWindow];

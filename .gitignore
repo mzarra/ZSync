@@ -6,6 +6,9 @@ build
 **/*xcodeproj/*mode*
 **/*xcodeproj/*pbxuser
 **/*xcodeproj/*perspective*
+**/**/*xcodeproj/*mode*
+**/**/*xcodeproj/*pbxuser
+**/**/*xcodeproj/*perspective*
 *tmproj
 **/~*
 .DS_Store

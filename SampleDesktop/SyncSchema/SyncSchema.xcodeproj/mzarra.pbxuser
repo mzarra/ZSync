@@ -3,6 +3,9 @@
 	089C1669FE841209C02AAC07 /* Project object */ = {
 		activeBuildConfigurationName = Debug;
 		activeTarget = 8D5B49AC048680CD000E48DA /* SyncSchema */;
+		addToTargets = (
+			8D5B49AC048680CD000E48DA /* SyncSchema */,
+		);
 		codeSenseManager = B6457E2B10B058B000A96714 /* Code sense */;
 		perUserDictionary = {
 			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
@@ -33,11 +36,45 @@
 					PBXTargetDataSource_PrimaryAttribute,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 279992471;
-			PBXWorkspaceStateSaveDate = 279992471;
+			PBXPerProjectTemplateStateSaveDate = 281159768;
+			PBXWorkspaceStateSaveDate = 281159768;
 		};
 		sourceControlManager = B6457E2A10B058B000A96714 /* Source Control */;
 		userBuildSettings = {
+		};
+	};
+	5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */ = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{15, 0}, {697, 778}}";
+		};
+	};
+	5A08A9680729C82200F70D60 /* English */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {966, 721}}";
+			sepNavSelRange = "{328, 0}";
+			sepNavVisRange = "{0, 345}";
+			sepNavWindowFrame = "{{15, 0}, {1013, 778}}";
+		};
+	};
+	5A5A71900674E7A100E5A5E1 /* Info.plist */ = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{13, 90}, {551, 446}}";
+		};
+	};
+	5A731589072D787F00F51B4F /* Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {650, 721}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 158}";
+			sepNavWindowFrame = "{{15, 0}, {697, 778}}";
+		};
+	};
+	5AA81A60067145AD002E4978 /* Schema.plist */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {650, 721}}";
+			sepNavSelRange = "{361, 0}";
+			sepNavVisRange = "{0, 542}";
+			sepNavWindowFrame = "{{491, 0}, {697, 778}}";
 		};
 	};
 	8D5B49AC048680CD000E48DA /* SyncSchema */ = {

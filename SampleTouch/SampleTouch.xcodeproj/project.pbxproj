@@ -20,6 +20,7 @@
 		B61384FB10BCD82C006E7227 /* app.png in Resources */ = {isa = PBXBuildFile; fileRef = B61384FA10BCD82C006E7227 /* app.png */; };
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
 		B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B642863F10BEA11700470E43 /* QuartzCore.framework */; };
+		B68F1A3010C223C5008CCD93 /* libMYNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */; };
@@ -50,8 +51,7 @@
 		B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncTouchHandler.m; sourceTree = "<group>"; };
 		B642863F10BEA11700470E43 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B6457FED10B0A94E00A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
-		B659961910B658AE00B2CC74 /* libMYNetwork-Simulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Simulator.a"; sourceTree = "<group>"; };
-		B659961A10B658AE00B2CC74 /* libMYNetwork-iPhone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-iPhone.a"; sourceTree = "<group>"; };
+		B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMYNetwork.a; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -69,6 +69,7 @@
 				28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */,
 				B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */,
 				B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */,
+				B68F1A3010C223C5008CCD93 /* libMYNetwork.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,7 +109,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				B642863F10BEA11700470E43 /* QuartzCore.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -138,6 +138,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B642863F10BEA11700470E43 /* QuartzCore.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
@@ -161,8 +162,7 @@
 		B6457FEB10B0A93D00A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
-				B659961910B658AE00B2CC74 /* libMYNetwork-Simulator.a */,
-				B659961A10B658AE00B2CC74 /* libMYNetwork-iPhone.a */,
+				B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */,
 				B6457FED10B0A94E00A96714 /* ZSyncShared.h */,
 			);
 			name = SharedCode;
@@ -288,8 +288,6 @@
 					"\"$(SRCROOT)/../SharedCode\"",
 				);
 				OTHER_CFLAGS = "-DDEBUG";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "-lMYNetwork-iPhone";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "-lMYNetwork-Simulator";
 				PRODUCT_NAME = SampleTouch;
 			};
 			name = Debug;

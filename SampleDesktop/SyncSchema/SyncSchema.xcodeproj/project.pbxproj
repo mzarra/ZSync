@@ -8,22 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		5A08A9540729C81600F70D60 /* SyncDataClass.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */; };
-		5A08A9660729C81D00F70D60 /* Schema-strings.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A08A95D0729C81D00F70D60 /* Schema-strings.m */; };
 		5A08A9770729C83A00F70D60 /* Schema.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A9740729C83A00F70D60 /* Schema.strings */; };
 		5AA81A61067145AD002E4978 /* Schema.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA81A60067145AD002E4978 /* Schema.plist */; };
 		5AEAB1D9072D8CEB000A3587 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A73157F072D6ED900F51B4F /* Foundation.framework */; };
+		B68F1A3E10C229A3008CCD93 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B68F1A3D10C229A3008CCD93 /* DataModel.xcdatamodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SyncDataClass.tiff; sourceTree = SOURCE_ROOT; };
-		5A08A9580729C81D00F70D60 /* Schema-strings.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "Schema-strings.h"; sourceTree = SOURCE_ROOT; };
-		5A08A95D0729C81D00F70D60 /* Schema-strings.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = "Schema-strings.m"; sourceTree = SOURCE_ROOT; };
 		5A08A9680729C82200F70D60 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Schema.strings; sourceTree = SOURCE_ROOT; };
 		5A5A71900674E7A100E5A5E1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A73157F072D6ED900F51B4F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5A731589072D787F00F51B4F /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		5AA81A60067145AD002E4978 /* Schema.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = Schema.plist; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
+		B68F1A3D10C229A3008CCD93 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = ../../SampleTouch/Models/DataModel.xcdatamodel; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +60,7 @@
 		5A5A718B0674E78700E5A5E1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B68F1A3D10C229A3008CCD93 /* DataModel.xcdatamodel */,
 				5AA81A60067145AD002E4978 /* Schema.plist */,
 				5A08A9740729C83A00F70D60 /* Schema.strings */,
 				5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */,
@@ -80,8 +80,6 @@
 			isa = PBXGroup;
 			children = (
 				5A731589072D787F00F51B4F /* Prefix.pch */,
-				5A08A9580729C81D00F70D60 /* Schema-strings.h */,
-				5A08A95D0729C81D00F70D60 /* Schema-strings.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -150,7 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A08A9660729C81D00F70D60 /* Schema-strings.m in Sources */,
+				B68F1A3E10C229A3008CCD93 /* DataModel.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

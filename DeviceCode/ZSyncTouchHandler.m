@@ -46,6 +46,10 @@
 @synthesize connection = _connection;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
+@synthesize schemaName;
+@synthesize majorVersionNumber;
+@synthesize minorVersionNumber;
+
 + (id)shared;
 {
   static ZSyncTouchHandler *sharedTouchHandler;
@@ -262,27 +266,17 @@
 - (void)connectionDidOpen:(TCPConnection*)connection 
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
-  if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
-    //Start a sync by pushing the data file to the server
-    
-    [self uploadDataToServer];
-  } else {
-    //Start a pairing request
-    DLog(@"%s sending a pairing request", __PRETTY_FUNCTION__);
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
-    
-    NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
-    if (!deviceUUID) {
-      deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
-      [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
-    }
-    
-    [dictionary setValue:deviceUUID forKey:zsDeviceID];
-    
-    BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
-    [[self connection] sendRequest:request];
-  }
+  //Start by confirming that the server still supports our schema and version
+  
+  NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+  [dict setValue:zsActID(zsActionVerifySchema) forKey:zsAction];
+  [dict setValue:zsActID([self majorVersionNumber]) forKey:zsSchemaMajorVersion];
+  [dict setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
+  
+  NSData *data = [[self schemaName] dataUsingEncoding:NSUTF8StringEncoding];
+  BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dict];
+  [request send];
+  [dict release], dict = nil;
 }
 
 /* We had an error talking to the server.  Push this error on to our delegate
@@ -311,6 +305,31 @@
       return;
     case zsActionAuthenticateFailed:
       [[self delegate] zSyncPairingCodeRejected:self];
+      return;
+    case zsActionSchemaUnsupported:
+      // TODO: Handle this if we are already paired with this server
+      return;
+    case zsActionSchemaSupported:
+      if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
+        //Start a sync by pushing the data file to the server
+        [self uploadDataToServer];
+      } else {
+        
+        DLog(@"%s sending a pairing request", __PRETTY_FUNCTION__);
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
+        
+        NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
+        if (!deviceUUID) {
+          deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+          [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
+        }
+        
+        [dictionary setValue:deviceUUID forKey:zsDeviceID];
+        
+        BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+        [[self connection] sendRequest:request];
+      }
       return;
     default:
       DLog(@"%s unknown action received %i", __PRETTY_FUNCTION__, action);

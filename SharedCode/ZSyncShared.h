@@ -8,6 +8,10 @@
 #define zsStoreConfiguration @"zsStoreConfiguration"
 #define zsStoreType @"zsStoreType"
 
+#define zsSyncSchemaName @"ZSyncSchemaName"
+#define zsSchemaMajorVersion @"zsSchemaMajorVersion"
+#define zsSchemaMinorVersion @"zsSchemaMinorVersion"
+
 #define zsActID(__ENUM__) [NSString stringWithFormat:@"%i", __ENUM__]
 
 enum {
@@ -18,7 +22,10 @@ enum {
   zsActionAuthenticatePassed,
   zsActionStoreUpload,
   zsActionPerformSync,
-  zsActionCompleteSync
+  zsActionCompleteSync,
+  zsActionVerifySchema,
+  zsActionSchemaSupported,
+  zsActionSchemaUnsupported
 };
 
 #import "MYNetwork.h"

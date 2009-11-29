@@ -8,47 +8,18 @@
 			<key>ImagePath</key>
 			<string>SyncDataClass.tiff</string>
 			<key>Name</key>
-			<string>com.mycompany.myschema.dataclass</string>
+			<string>com.zarrastudios.ZSync</string>
 		</dict>
 	</array>
-	<key>Entities</key>
-	<array>
-		<dict>
-			<key>Attributes</key>
-			<array>
-				<dict>
-					<key>Name</key>
-					<string>firstNameAttribute</string>
-					<key>Type</key>
-					<string>string</string>
-				</dict>
-			</array>
-			<key>DataClass</key>
-			<string>com.mycompany.myschema.dataclass</string>
-			<key>IdentityProperties</key>
-			<array>
-				<string>firstNameAttribute</string>
-			</array>
-			<key>Name</key>
-			<string>com.mycompany.myschema.firstnames</string>
-			<key>Relationships</key>
-			<array>
-				<dict>
-					<key>DeleteRule</key>
-					<string>nullify</string>
-					<key>Name</key>
-					<string>friends</string>
-					<key>Ordinality</key>
-					<string>many</string>
-					<key>Target</key>
-					<array>
-						<string>com.mycompany.myschema.firstnames</string>
-					</array>
-				</dict>
-			</array>
-		</dict>
-	</array>
+  
+  <key>ManagedObjectModels</key>
+  <array>
+  
+    <string>DataModel.xcdatamodel</string>
+  
+  </array>
+  
 	<key>Name</key>
-	<string>com.mycompany.myschema</string>
+	<string>com.zarrastudios.ZSync</string>
 </dict>
 </plist>
