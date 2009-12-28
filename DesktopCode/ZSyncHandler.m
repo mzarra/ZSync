@@ -72,14 +72,15 @@
   [_listener setPickAvailablePort:YES];
   [_listener setBonjourServiceType:zsServiceName];
   
-  NSString *serverName = [[NSProcessInfo processInfo] hostName];
+//  NSString *serverName = [[NSProcessInfo processInfo] hostName];
+  NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/Library/Preferences/SystemConfiguration/preferences.plist"];
+  NSString *serverName = [dict valueForKeyPath:@"System.System.ComputerName"];
   
   NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   if (!uuid) {
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];
     [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
   }
-  
   serverName = [serverName stringByAppendingString:uuid];
   
   [_listener setBonjourServiceName:serverName];
@@ -246,6 +247,7 @@
 
 - (BOOL)connectionReceivedCloseRequest:(BLIPConnection*)connection;
 {
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
   [connection setDelegate:nil];
   [[ZSyncHandler shared] connectionClosed:self];
   return YES;
@@ -263,6 +265,7 @@
 
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
 {
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   BLIPResponse *response = [request response];
   switch (action) {

@@ -29,7 +29,7 @@
 #import "ZSyncTouchHandler.h"
 #import "ZSyncShared.h"
 
-#define zsUUIDStringLength 53
+#define zsUUIDStringLength 55
 
 @interface ZSyncTouchHandler()
 
@@ -277,6 +277,7 @@
   BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dict];
   [request send];
   [dict release], dict = nil;
+  DLog(@"%s initial send complete", __PRETTY_FUNCTION__);
 }
 
 /* We had an error talking to the server.  Push this error on to our delegate
