@@ -72,7 +72,6 @@
   [_listener setPickAvailablePort:YES];
   [_listener setBonjourServiceType:zsServiceName];
   
-//  NSString *serverName = [[NSProcessInfo processInfo] hostName];
   NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/Library/Preferences/SystemConfiguration/preferences.plist"];
   NSString *serverName = [dict valueForKeyPath:@"System.System.ComputerName"];
   
@@ -81,7 +80,7 @@
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];
     [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
   }
-  serverName = [serverName stringByAppendingString:uuid];
+  serverName = [serverName stringByAppendingFormat:@"%@%@", zsServerNameSeperator, uuid];
   
   [_listener setBonjourServiceName:serverName];
   [_listener open];

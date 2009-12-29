@@ -206,8 +206,10 @@
   NSMutableSet *set = [NSMutableSet set];
   for (MYBonjourService *bonjourService in [_serviceBrowser services]) {
     NSString *serverName = [bonjourService name];
-    NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - zsUUIDStringLength, zsUUIDStringLength)];
-    serverName = [serverName substringToIndex:([serverName length] - zsUUIDStringLength)];
+    NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
+    ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
+    NSString *serverUUID = [components objectAtIndex:1];
+    serverName = [components objectAtIndex:0];
     
     ZSyncService *zSyncService = [[ZSyncService alloc] init];
     [zSyncService setService:bonjourService];
@@ -263,7 +265,7 @@
  * then we are ready to start a sync.  If we do not have a server UUID
  * then we need to start a pairing.
  */
-- (void)connectionDidOpen:(TCPConnection*)connection 
+- (void)connectionDidOpen:(BLIPConnection*)connection 
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
   //Start by confirming that the server still supports our schema and version
@@ -274,7 +276,7 @@
   [dict setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
   
   NSData *data = [[self schemaName] dataUsingEncoding:NSUTF8StringEncoding];
-  BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dict];
+  BLIPRequest *request = [connection requestWithBody:data properties:dict];
   [request send];
   [dict release], dict = nil;
   DLog(@"%s initial send complete", __PRETTY_FUNCTION__);

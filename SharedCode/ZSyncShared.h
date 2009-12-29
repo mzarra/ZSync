@@ -12,6 +12,8 @@
 #define zsSchemaMajorVersion @"zsSchemaMajorVersion"
 #define zsSchemaMinorVersion @"zsSchemaMinorVersion"
 
+#define zsServerNameSeperator @"**/**"
+
 #define zsActID(__ENUM__) [NSString stringWithFormat:@"%i", __ENUM__]
 
 enum {
