@@ -43,8 +43,6 @@
   
   [self setTitle:@"ZSync Demo"];
   
-//  [[self navigationItem] setLeftBarButtonItem:[self editButtonItem]];
-  
   UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject)];
   [[self navigationItem] setRightBarButtonItem:button];
   [button release], button = nil;
@@ -54,10 +52,7 @@
   [button release], button = nil;
 	
 	NSError *error = nil;
-	if (![[self fetchedResultsController] performFetch:&error]) {
-		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-		abort();
-	}
+  ZAssert([[self fetchedResultsController] performFetch:&error],@"Error fetching: %@", [error localizedDescription]);
 }
 
 - (void)pair
@@ -68,6 +63,40 @@
 #pragma mark -
 #pragma mark Add a new object
 
+- (void)insertSecondChildren:(NSManagedObject*)parent
+{
+	NSManagedObjectContext *context = [fetchedResultsController managedObjectContext];
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+  NSInteger count = arc4random() % 10;
+  for (NSInteger index = 0; index < count; ++index) {
+    NSManagedObject *child = [NSEntityDescription insertNewObjectForEntityForName:@"SecondChild" 
+                                                                inManagedObjectContext:context];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute1"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute2"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute3"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute4"];
+    [child setValue:parent forKey:@"parent"];
+  }
+}
+
+- (void)insertFirstChildren:(NSManagedObject*)parent
+{
+	NSManagedObjectContext *context = [fetchedResultsController managedObjectContext];
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+  NSInteger count = arc4random() % 10;
+  for (NSInteger index = 0; index < count; ++index) {
+    NSManagedObject *child = [NSEntityDescription insertNewObjectForEntityForName:@"FirstChild" inManagedObjectContext:context];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute1"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute2"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute3"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute4"];
+    [child setValue:parent forKey:@"parent"];
+    [self insertSecondChildren:child];
+  }
+}
+
 - (void)insertNewObject 
 {
 	// Create a new instance of the entity managed by the fetched results controller.
@@ -76,19 +105,17 @@
 	NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
 	
 	// If appropriate, configure the new managed object.
-	[newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute1"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute2"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute3"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute4"];
+  [self insertFirstChildren:newManagedObject];
 	
 	// Save the context.
   NSError *error = nil;
-  if (![context save:&error]) {
-		/*
-		 Replace this implementation with code to handle the error appropriately.
-		 
-		 abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
-		 */
-		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-		abort();
-  }
+  ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 #pragma mark -
@@ -114,7 +141,7 @@
   }
   
 	NSManagedObject *managedObject = [fetchedResultsController objectAtIndexPath:indexPath];
-	[[cell textLabel] setText:[[managedObject valueForKey:@"timeStamp"] description]];
+	[[cell textLabel] setText:[NSString stringWithFormat:@"Row %i with children %i", [indexPath row], [[managedObject valueForKey:@"children"] count]]];
 	
   return cell;
 }
@@ -122,25 +149,15 @@
 // Override to support editing the table view.
 - (void)tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath 
 {
-  
-  if (editingStyle == UITableViewCellEditingStyleDelete) {
-    // Delete the managed object for the given index path
-		NSManagedObjectContext *context = [fetchedResultsController managedObjectContext];
-		[context deleteObject:[fetchedResultsController objectAtIndexPath:indexPath]];
-		
-		// Save the context.
-		NSError *error = nil;
-		if (![context save:&error]) {
-			NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-			abort();
-		}
-	}   
-}
+  if (editingStyle = UITableViewCellEditingStyleDelete) return;
 
-- (BOOL)tableView:(UITableView*)tableView canMoveRowAtIndexPath:(NSIndexPath*)indexPath 
-{
-  // The table view should not be re-orderable.
-  return NO;
+  // Delete the managed object for the given index path
+  NSManagedObjectContext *context = [fetchedResultsController managedObjectContext];
+  [context deleteObject:[fetchedResultsController objectAtIndexPath:indexPath]];
+  
+  // Save the context.
+  NSError *error = nil;
+  ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 #pragma mark -
@@ -150,26 +167,16 @@
 {
   if (fetchedResultsController) return fetchedResultsController;
   
-  /*
-	 Set up the fetched results controller.
-   */
-	// Create the fetch request for the entity.
 	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-	// Edit the entity name as appropriate.
-	NSEntityDescription *entity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:managedObjectContext];
+	NSEntityDescription *entity = [NSEntityDescription entityForName:@"TopLevelObject" inManagedObjectContext:managedObjectContext];
 	[fetchRequest setEntity:entity];
-	
-	// Set the batch size to a suitable number.
 	[fetchRequest setFetchBatchSize:20];
 	
-	// Edit the sort key as appropriate.
-	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
+	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"createDate" ascending:NO];
 	NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
 	
 	[fetchRequest setSortDescriptors:sortDescriptors];
 	
-	// Edit the section name key path and cache name if appropriate.
-  // nil for section name key path means "no sections".
 	NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:managedObjectContext sectionNameKeyPath:nil cacheName:@"Root"];
   [aFetchedResultsController setDelegate:self];
 	[self setFetchedResultsController:aFetchedResultsController];

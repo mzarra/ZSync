@@ -16,7 +16,6 @@
 		B613854110BCEDD8006E7227 /* PairingCodeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B613854010BCEDD8006E7227 /* PairingCodeWindowController.m */; };
 		B613854510BCEEBD006E7227 /* PairingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B613854310BCEEBD006E7227 /* PairingWindow.xib */; };
 		B633AFEA10C149A8009101EF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633AFE910C149A8009101EF /* CoreData.framework */; };
-		B633AFEC10C149F3009101EF /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B633AFEB10C149F3009101EF /* DataModel.xcdatamodel */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
 		B659962F10B658F800B2CC74 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B659962E10B658F800B2CC74 /* libMYNetwork-Desktop.a */; };
 		B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E14910A768840063E436 /* ZSyncHandler.m */; };
@@ -57,7 +56,6 @@
 		B613854010BCEDD8006E7227 /* PairingCodeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingCodeWindowController.m; sourceTree = "<group>"; };
 		B613854410BCEEBD006E7227 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PairingWindow.xib; sourceTree = "<group>"; };
 		B633AFE910C149A8009101EF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		B633AFEB10C149F3009101EF /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = ../SampleTouch/Models/DataModel.xcdatamodel; sourceTree = SOURCE_ROOT; };
 		B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncSchema.xcodeproj; path = SyncSchema/SyncSchema.xcodeproj; sourceTree = "<group>"; };
 		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
 		B6457EA410B05DFC00A96714 /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,7 +127,6 @@
 				B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */,
 				B6457FE710B0A92500A96714 /* SharedCode */,
 				B6C2E14710A765CD0063E436 /* DesktopCode */,
-				7756732906782D8800D1FEB8 /* Models */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -151,7 +148,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B633AFEB10C149F3009101EF /* DataModel.xcdatamodel */,
+				7756732906782D8800D1FEB8 /* DataModel */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				2F7446970DB6B7EA00F9684A /* MainMenu.xib */,
@@ -169,12 +166,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7756732906782D8800D1FEB8 /* Models */ = {
+		7756732906782D8800D1FEB8 /* DataModel */ = {
 			isa = PBXGroup;
 			children = (
 				770B37EC0679A11B001EADE2 /* DataModel.xcdatamodel */,
 			);
-			name = Models;
+			name = DataModel;
+			path = ../DataModel;
 			sourceTree = "<group>";
 		};
 		B6457E2D10B058CD00A96714 /* Products */ = {
@@ -284,7 +282,6 @@
 				770B37ED0679A11B001EADE2 /* DataModel.xcdatamodel in Sources */,
 				B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */,
 				B613854110BCEDD8006E7227 /* PairingCodeWindowController.m in Sources */,
-				B633AFEC10C149F3009101EF /* DataModel.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -21,9 +21,9 @@
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
 		B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B642863F10BEA11700470E43 /* QuartzCore.framework */; };
 		B68F1A3010C223C5008CCD93 /* libMYNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */; };
+		B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
-		B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */; };
 		B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */; };
 /* End PBXBuildFile section */
 
@@ -52,9 +52,9 @@
 		B642863F10BEA11700470E43 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B6457FED10B0A94E00A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMYNetwork.a; sourceTree = "<group>"; };
+		B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
-		B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Models/DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -125,11 +125,11 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B69CD13B10EA9EC4006C50C9 /* DataModel */,
 				B61383ED10BA8049006E7227 /* PairingView.xib */,
 				B6C2E13310A748B50063E436 /* RootViewController.xib */,
 				B6C2E13110A748B50063E436 /* MainWindow.xib */,
 				B61384FA10BCD82C006E7227 /* app.png */,
-				B6C2E13510A748B50063E436 /* DataModel.xcdatamodel */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 			);
 			name = Resources;
@@ -168,6 +168,15 @@
 			name = SharedCode;
 			path = ../SharedCode;
 			sourceTree = "<group>";
+		};
+		B69CD13B10EA9EC4006C50C9 /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+				B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */,
+			);
+			name = DataModel;
+			path = ../DataModel;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -235,10 +244,10 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
-				B6C2E13810A748B50063E436 /* DataModel.xcdatamodel in Sources */,
 				B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */,
 				B61383EC10BA7FFA006E7227 /* PairingEntryController.m in Sources */,
 				B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */,
+				B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
