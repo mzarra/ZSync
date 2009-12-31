@@ -180,31 +180,36 @@
   NSError *error = nil;
   NSPersistentStore *persistentStore = [persistentStoreCoordinator addPersistentStoreWithType:[request valueOfProperty:zsStoreType] configuration:[request valueOfProperty:zsStoreConfiguration] URL:[NSURL fileURLWithPath:filePath] options:nil error:&error];
   
-  NSAssert1(persistentStore != nil, @"Error loading persistent store: %@", [error localizedDescription]);
+  ZAssert(persistentStore != nil, @"Error loading persistent store: %@", [error localizedDescription]);
   
   [persistentStore setIdentifier:[request valueOfProperty:zsStoreIdentifier]];
-}
-
-- (void)performSync
-{
-  // TODO: This identifier needs to be based per plugin
-  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:@"com.zarrastudios.ZSync"];
-  NSError *error = nil;
-  if (![persistentStoreCoordinator syncWithClient:syncClient inBackground:YES handler:self error:&error]) {
-    NSAssert1(NO, @"Error starting sync session: %@", [error localizedDescription]);
-  }
-}
-
-#pragma mark -
-#pragma mark NSPersistentStoreCoordinatorSyncing
-
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
-              didFinishSyncSession:(ISyncSession*)session
-{
-  DLog(@"%s sync complete", __PRETTY_FUNCTION__);
   
-  NSArray *stores = [persistentStoreCoordinator persistentStores];
-  for (NSPersistentStore *store in stores) {
+  BLIPResponse *response = [request response];
+  [response setValue:zsActID(zsActionFileReceived) ofProperty:zsAction];
+  [response setValue:[persistentStore identifier] ofProperty:zsStoreIdentifier];
+  [response send];
+}
+
+- (void)sendDownloadComplete
+{
+  DLog(@"%s sending zsActionCompleteSync", __PRETTY_FUNCTION__);
+  
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:zsActID(zsActionCompleteSync) forKey:zsAction];
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [[self connection] sendRequest:request];
+  [dictionary release], dictionary = nil;
+  
+  //Clean up the persistent store and prep for release
+  [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
+  [managedObjectModel release], managedObjectModel = nil;
+}
+
+- (void)transferStoresToDevice
+{
+  storeFileIdentifiers = [[NSMutableArray alloc] init];
+  
+  for (NSPersistentStore *store in [persistentStoreCoordinator persistentStores]) {
     DLog(@"%s url %@\nIdentifier: %@", __PRETTY_FUNCTION__, [store URL], [store identifier]);
     NSData *data = [[NSData alloc] initWithContentsOfMappedFile:[[store URL] path]];
     
@@ -213,6 +218,7 @@
     [dictionary setValue:[store configurationName] forKey:zsStoreConfiguration];
     [dictionary setValue:[store type] forKey:zsStoreType];
     [dictionary setValue:zsActID(zsActionStoreUpload) forKey:zsAction];
+    
     
     BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
     // TODO: Compression is not working.  Need to find out why
@@ -224,21 +230,37 @@
     [[NSFileManager defaultManager] removeFileAtPath:[[store URL] path] handler:nil];
     NSError *error = nil;
     if (![persistentStoreCoordinator removePersistentStore:store error:&error]) {
-      NSAssert1(NO, @"Error removing persistent store: %@", [error localizedDescription]);
+      ALog(@"Error removing persistent store: %@", [error localizedDescription]);
     }
     
     DLog(@"%s file uploaded", __PRETTY_FUNCTION__);
+    [storeFileIdentifiers addObject:[store identifier]];
   }
+}
+
+- (void)performSync
+{
+  //TODO Testing....
+  [self transferStoresToDevice];
+  if (YES) return;
   
-  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-  [dictionary setValue:zsActID(zsActionCompleteSync) forKey:zsAction];
-  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
-  [[self connection] sendRequest:request];
-  [dictionary release], dictionary = nil;
-  
-  //Clean up the persistent store and prep for release
-  [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
-  [managedObjectModel release], managedObjectModel = nil;
+  // TODO: This identifier needs to be based per plugin
+  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:@"com.zarrastudios.ZSync"];
+  ZAssert(syncClient != nil, @"Sync Client is nil!");
+  NSError *error = nil;
+  if (![persistentStoreCoordinator syncWithClient:syncClient inBackground:YES handler:self error:&error]) {
+    ALog(@"Error starting sync session: %@", [error localizedDescription]);
+  }
+}
+
+#pragma mark -
+#pragma mark NSPersistentStoreCoordinatorSyncing
+
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+              didFinishSyncSession:(ISyncSession*)session
+{
+  DLog(@"%s sync complete", __PRETTY_FUNCTION__);
+  [self transferStoresToDevice];
 }
 
 #pragma mark -
@@ -254,7 +276,25 @@
 
 - (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  if (![[response properties] valueOfProperty:zsAction]) {
+    DLog(@"%s received empty response, ignoring", __PRETTY_FUNCTION__);
+    return;
+  }
+  DLog(@"%s entered\n%@", __PRETTY_FUNCTION__, [[response properties] allProperties]);
+  NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
+  switch (action) {
+    case zsActionFileReceived:
+      ZAssert(storeFileIdentifiers != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
+      [storeFileIdentifiers removeObject:[[response properties] valueOfProperty:zsStoreIdentifier]];
+      if ([storeFileIdentifiers count] == 0) {
+        [self sendDownloadComplete];
+        [storeFileIdentifiers release], storeFileIdentifiers = nil;
+      }
+      break;
+    default:
+      ALog(@"Unknown action received: %i", action);
+      break;
+  }
 }
 
 - (void)connection:(BLIPConnection*)connection closeRequestFailedWithError:(NSError*)error;
@@ -268,6 +308,14 @@
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   BLIPResponse *response = [request response];
   switch (action) {
+    case zsActionFileReceived:
+      ZAssert(storeFileIdentifiers != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
+      [storeFileIdentifiers removeObject:[[request properties] valueOfProperty:zsStoreIdentifier]];
+      if ([storeFileIdentifiers count] == 0) {
+        [self sendDownloadComplete];
+        [storeFileIdentifiers release], storeFileIdentifiers = nil;
+      }
+      return YES;
     case zsActionVerifySchema:
       // TODO: Compare schema string and version numbers
       
@@ -288,6 +336,7 @@
         // TODO: Register the unique ID of this service
         [[ZSyncHandler shared] registerDeviceForPairing:[request valueOfProperty:zsDeviceID]];
         [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
+        [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
         [response send];
         [codeController close];
         [codeController release], codeController = nil;
@@ -304,7 +353,7 @@
       [self performSelector:@selector(performSync) withObject:nil afterDelay:0.01];
       return YES;
     default:
-      NSAssert1(NO, @"Unknown action received: %i", action);
+      ALog(@"Unknown action received: %i", action);
       return NO;
   }
 }

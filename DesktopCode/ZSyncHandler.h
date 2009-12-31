@@ -58,6 +58,8 @@
   BLIPConnection *_connection;
   NSString *pairingCode;
   
+  NSMutableArray *storeFileIdentifiers;
+  
   NSManagedObjectModel *managedObjectModel;
   NSPersistentStoreCoordinator *persistentStoreCoordinator;
   NSManagedObjectContext *managedObjectContext;

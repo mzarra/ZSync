@@ -33,7 +33,7 @@
 
 @interface ZSyncTouchHandler()
 
-@property (nonatomic, assign) id<ZSyncDelegate> delegate;
+@property (nonatomic, assign) id delegate;
 @property (nonatomic, retain) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 @end
@@ -74,6 +74,14 @@
     [[self serviceBrowser] stop];
     [_serviceBrowser release], _serviceBrowser = nil;
   }
+}
+
+- (NSString*)cachePath
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *filePath = [paths objectAtIndex:0];
+  
+  return filePath;
 }
 
 - (void)requestSync;
@@ -187,6 +195,113 @@
   [self setPersistentStoreCoordinator:coordinator];
 }
 
+- (void)receiveFile:(BLIPRequest*)request
+{
+  if (!receivedFileLookupDictionary) {
+    receivedFileLookupDictionary = [[NSMutableDictionary alloc] init];
+  }
+  NSMutableDictionary *fileDict = [[NSMutableDictionary alloc] init];
+  [fileDict setValue:[request valueOfProperty:zsStoreIdentifier] forKey:zsStoreIdentifier];
+  [fileDict setValue:[request valueOfProperty:zsStoreConfiguration] forKey:zsStoreConfiguration];
+  [fileDict setValue:[request valueOfProperty:zsStoreType] forKey:zsStoreType];
+  
+  NSString *tempFilename = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString *tempPath = [[self cachePath] stringByAppendingPathComponent:tempFilename];
+  [[request body] writeToFile:tempPath atomically:YES];
+  [fileDict setValue:tempPath forKey:zsTempFilePath];
+  
+  [receivedFileLookupDictionary setValue:fileDict forKey:[request valueOfProperty:zsStoreIdentifier]];
+  [fileDict release], fileDict = nil;
+  
+  BLIPResponse *response = [request response];
+  [response setValue:zsActID(zsActionFileReceived) ofProperty:zsAction];
+  [response setValue:[request valueOfProperty:zsStoreIdentifier] ofProperty:zsStoreIdentifier];
+  [response send];
+}
+
+- (BOOL)switchStore:(NSPersistentStore*)store withReplacement:(NSDictionary*)replacement error:(NSError**)error
+{
+  NSDictionary *storeOptions = [[store options] copy];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSPersistentStoreCoordinator *psc = [self persistentStoreCoordinator];
+  
+  NSString *newFileTempPath = [replacement valueForKey:zsTempFilePath];
+  NSString *fileOriginalPath = [[store URL] path];
+  NSString *originalFileTempPath = [fileOriginalPath stringByAppendingPathExtension:@"zsync_"];
+  
+  [psc removePersistentStore:store error:error];
+  if (*error) return NO;
+  
+  if ([fileManager fileExistsAtPath:originalFileTempPath]) {
+    DLog(@"%s deleting stored file", __PRETTY_FUNCTION__);
+    [fileManager removeItemAtPath:originalFileTempPath error:error];
+    if (*error) return NO;
+  }
+  
+  [fileManager moveItemAtPath:fileOriginalPath toPath:originalFileTempPath error:error];
+  if (*error) return NO;
+  
+  [fileManager moveItemAtPath:newFileTempPath toPath:fileOriginalPath error:error];
+  if (*error) return NO;
+  
+  NSURL *fileURL = [NSURL fileURLWithPath:fileOriginalPath];
+  NSPersistentStore *newStore = [psc addPersistentStoreWithType:[replacement valueForKey:zsStoreType] configuration:[replacement valueForKey:zsStoreConfiguration] URL:fileURL options:storeOptions error:error];
+  [storeOptions release], storeOptions = nil;
+  if (*error) return NO;
+  
+  // MSZ: Is this even needed at this point?
+  [newStore setIdentifier:[replacement valueForKey:zsStoreIdentifier]];
+  
+  return YES;
+}
+
+- (void)completeSync
+{
+  [[self persistentStoreCoordinator] lock];
+  
+  //First we need to verify that we received every file.  Otherwise we fail
+  for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
+    if ([receivedFileLookupDictionary objectForKey:[store identifier]]) continue;
+    
+    DLog(@"%s Store ID: %@\n%@", __PRETTY_FUNCTION__, [store identifier], [receivedFileLookupDictionary allKeys]);
+    //Fail
+    if ([[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
+      //Flush the temp files
+      for (NSDictionary *fileDict in [receivedFileLookupDictionary allValues]) {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:[fileDict valueForKey:zsTempFilePath] error:&error];
+        // We want to explode on this failure in dev but in prod just note it
+        ZAssert(error == nil, @"Error deleting temp file: %@", [error localizedDescription]);
+      }
+      NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[store identifier] forKey:zsStoreIdentifier];
+      NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsFailedToReceiveAllFiles userInfo:userInfo];
+      [[self delegate] zSync:self errorOccurred:error];
+      [receivedFileLookupDictionary release], receivedFileLookupDictionary = nil;
+    }
+    [[self persistentStoreCoordinator] unlock];
+    return;
+  }
+  
+  //We have all of the files now we need to swap them out.
+  for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
+    NSDictionary *replacement = [receivedFileLookupDictionary valueForKey:[store identifier]];
+    ZAssert(replacement != nil, @"Missing the replacement file for %@\n%@", [store identifier], [receivedFileLookupDictionary allKeys]);
+    NSError *error = nil;
+    if ([self switchStore:store withReplacement:replacement error:&error]) continue;
+    ZAssert(error == nil, @"Error switching stores: %@", [error localizedDescription]);
+    
+    //TODO: We failed in the migration and need to roll back
+  }
+  
+  [receivedFileLookupDictionary release], receivedFileLookupDictionary = nil;
+  
+  if ([[self delegate] respondsToSelector:@selector(zSyncFinished:)]) {
+    [[self delegate] zSyncFinished:self];
+  }
+  
+  [[self persistentStoreCoordinator] lock];
+}
+
 /*
  * We want to start looking for desktops to sync with here.  Once started
  * We want to maintain a list of computers found and also send out a notification
@@ -226,9 +341,21 @@
   return result;
 }
 
+- (void)sendUploadComplete
+{
+  DLog(@"%s sending upload complete", __PRETTY_FUNCTION__);
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [[self connection] sendRequest:request];
+  [dictionary release], dictionary = nil;
+}
+
 - (void)uploadDataToServer
 {
   [[self delegate] zSyncStarted:self];
+  
+  storeFileIdentifiers = [[NSMutableArray alloc] init];
   
   NSAssert([self persistentStoreCoordinator] != nil, @"PSD is nil.  Unable to upload");
   
@@ -249,13 +376,9 @@
     [data release], data = nil;
     [dictionary release], dictionary = nil;
     DLog(@"%s file uploaded", __PRETTY_FUNCTION__);
+    
+    [storeFileIdentifiers addObject:[store identifier]];
   }
-  
-  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-  [dictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
-  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
-  [[self connection] sendRequest:request];
-  [dictionary release], dictionary = nil;
 }
 
 #pragma mark -
@@ -294,31 +417,52 @@
 
 - (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  if (![[response properties] valueOfProperty:zsAction]) {
+    DLog(@"%s received empty response, ignoring", __PRETTY_FUNCTION__);
+    return;
+  }
+  DLog(@"%s entered\n%@", __PRETTY_FUNCTION__, [[response properties] allProperties]);
   NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
+    case zsActionFileReceived:
+      ZAssert(storeFileIdentifiers != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
+      [storeFileIdentifiers removeObject:[[response properties] valueOfProperty:zsStoreIdentifier]];
+      if ([storeFileIdentifiers count] == 0) {
+        [self sendUploadComplete];
+        [storeFileIdentifiers release], storeFileIdentifiers = nil;
+      }
+      return;
     case zsActionRequestPairing:
       //Server has accepted the pairing request
       //Notify the delegate to present a pairing dialog
-      [[self delegate] zSyncPairingRequestAccepted:self];
+      if ([[self delegate] respondsToSelector:@selector(zSyncPairingRequestAccepted:)]) {
+        [[self delegate] zSyncPairingRequestAccepted:self];
+      }
       return;
     case zsActionAuthenticatePassed:
-      [[self delegate] zSyncPairingCodeApproved:self];
+      DLog(@"%s server UUID accepted: %@", __PRETTY_FUNCTION__, [response valueOfProperty:zsServerUUID]);
+      [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerUUID] forKey:zsServerUUID];
+      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeApproved:)]) {
+        [[self delegate] zSyncPairingCodeApproved:self];
+      }
       [self uploadDataToServer];
       return;
     case zsActionAuthenticateFailed:
-      [[self delegate] zSyncPairingCodeRejected:self];
+      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
+        [[self delegate] zSyncPairingCodeRejected:self];
+      }
       return;
     case zsActionSchemaUnsupported:
-      // TODO: Handle this if we are already paired with this server
+      if ([[self delegate] respondsToSelector:@selector(zSyncServerVersionUnsupported:)]) {
+        [[self delegate] zSyncServerVersionUnsupported:self];
+      }
       return;
     case zsActionSchemaSupported:
       if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
         //Start a sync by pushing the data file to the server
         [self uploadDataToServer];
       } else {
-        
-        DLog(@"%s sending a pairing request", __PRETTY_FUNCTION__);
+        //We are not paired so we need to request a pairing session
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
         [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
         
@@ -335,8 +479,7 @@
       }
       return;
     default:
-      DLog(@"%s unknown action received %i", __PRETTY_FUNCTION__, action);
-      //NSAssert1(NO, @"Unknown action received: %i", action);
+      ALog(@"%s unknown action received %i", __PRETTY_FUNCTION__, action);
   }
 }
 
@@ -346,13 +489,15 @@
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
     case zsActionStoreUpload:
-      // TODO: Store the file in a temp location until all files are received
+      DLog(@"%s receiveFile", __PRETTY_FUNCTION__);
+      [self receiveFile:request];
       return YES;
     case zsActionCompleteSync:
-      // TODO: Remove all of the stores from coordinator and replace them
+      DLog(@"%s completeSync", __PRETTY_FUNCTION__);
+      [self completeSync];
       return YES;
     default:
-      NSAssert1(NO, @"Unknown action received: %i", action);
+      ALog(@"Unknown action received: %i", action);
       return NO;
   }
 }

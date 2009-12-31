@@ -24,6 +24,7 @@
 		B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
+		B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA32B310ED55C3008724A6 /* ChildViewController.m */; };
 		B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,8 @@
 		B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
+		B6DA32B210ED55C3008724A6 /* ChildViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildViewController.h; sourceTree = "<group>"; };
+		B6DA32B310ED55C3008724A6 /* ChildViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildViewController.m; sourceTree = "<group>"; };
 		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -87,6 +90,8 @@
 				B61383EB10BA7FFA006E7227 /* PairingEntryController.m */,
 				B61384CF10BCD3D9006E7227 /* PairingServerTableViewController.h */,
 				B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */,
+				B6DA32B210ED55C3008724A6 /* ChildViewController.h */,
+				B6DA32B310ED55C3008724A6 /* ChildViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -248,6 +253,7 @@
 				B61383EC10BA7FFA006E7227 /* PairingEntryController.m in Sources */,
 				B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */,
 				B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */,
+				B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

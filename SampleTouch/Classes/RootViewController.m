@@ -27,6 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 
 #import "RootViewController.h"
+#import "ChildViewController.h"
 
 #import "ZSyncTouch.h"
 
@@ -47,7 +48,7 @@
   [[self navigationItem] setRightBarButtonItem:button];
   [button release], button = nil;
   
-  button = [[UIBarButtonItem alloc] initWithTitle:@"Pair" style:UIBarButtonItemStyleDone target:self action:@selector(pair)];
+  button = [[UIBarButtonItem alloc] initWithTitle:@"Sync" style:UIBarButtonItemStyleDone target:self action:@selector(sync)];
   [[self navigationItem] setLeftBarButtonItem:button];
   [button release], button = nil;
 	
@@ -55,7 +56,7 @@
   ZAssert([[self fetchedResultsController] performFetch:&error],@"Error fetching: %@", [error localizedDescription]);
 }
 
-- (void)pair
+- (void)sync
 {
   [[ZSyncTouchHandler shared] requestSync];
 }
@@ -126,7 +127,6 @@
   return [[fetchedResultsController sections] count];
 }
 
-
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section 
 {
 	id sectionInfo = [[fetchedResultsController sections] objectAtIndex:section];
@@ -138,6 +138,7 @@
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier];
   if (!cell) {
     cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellIdentifier] autorelease];
+    [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
   }
   
 	NSManagedObject *managedObject = [fetchedResultsController objectAtIndexPath:indexPath];
@@ -146,18 +147,14 @@
   return cell;
 }
 
-// Override to support editing the table view.
-- (void)tableView:(UITableView*)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath*)indexPath 
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  if (editingStyle = UITableViewCellEditingStyleDelete) return;
-
-  // Delete the managed object for the given index path
-  NSManagedObjectContext *context = [fetchedResultsController managedObjectContext];
-  [context deleteObject:[fetchedResultsController objectAtIndexPath:indexPath]];
+	NSManagedObject *managedObject = [fetchedResultsController objectAtIndexPath:indexPath];
   
-  // Save the context.
-  NSError *error = nil;
-  ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
+  id controller = [[ChildViewController alloc] init];
+  [controller setChild:managedObject];
+  [[self navigationController] pushViewController:controller animated:YES];
+  [controller release], controller = nil;
 }
 
 #pragma mark -
@@ -191,6 +188,7 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController*)controller 
 {
+  DLog(@"%s ----------------------------------------------------FIRED!!!!!", __PRETTY_FUNCTION__);
 	[[self tableView] reloadData];
 }
 

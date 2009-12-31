@@ -34,7 +34,7 @@
   NSManagedObjectModel *mom = [self managedObjectModel];
   
   if (!mom) {
-    NSAssert(NO, @"Managed object model is nil");
+    ALog(@"Managed object model is nil");
     NSLog(@"%@:%s No model to generate a store from", [self class], _cmd);
     return nil;
   }
@@ -45,8 +45,7 @@
   
   if (![fileManager fileExistsAtPath:applicationSupportDirectory isDirectory:NULL]) {
 		if (![fileManager createDirectoryAtPath:applicationSupportDirectory withIntermediateDirectories:NO attributes:nil error:&error]) {
-      NSAssert(NO, ([NSString stringWithFormat:@"Failed to create App Support directory %@ : %@", applicationSupportDirectory,error]));
-      NSLog(@"Error creating application support directory at %@ : %@",applicationSupportDirectory,error);
+      ALog(@"Failed to create App Support directory %@ : %@", applicationSupportDirectory, error);
       return nil;
 		}
   }

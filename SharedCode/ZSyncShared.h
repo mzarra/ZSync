@@ -1,12 +1,14 @@
 #define zsDomainName @"local."
 #define zsServiceName @"_zsync._tcp"
 #define zsServerUUID @"zsyncServerUUID"
+#define zsErrorDomain @"zsErrorDomain"
 
 #define zsAction @"kZSyncAction"
 #define zsDeviceID @"kZSyncDeviceID"
 #define zsStoreIdentifier @"zsStoreIdentifier"
 #define zsStoreConfiguration @"zsStoreConfiguration"
 #define zsStoreType @"zsStoreType"
+#define zsTempFilePath @"zsTempFilePath"
 
 #define zsSyncSchemaName @"ZSyncSchemaName"
 #define zsSchemaMajorVersion @"zsSchemaMajorVersion"
@@ -27,8 +29,13 @@ enum {
   zsActionCompleteSync,
   zsActionVerifySchema,
   zsActionSchemaSupported,
-  zsActionSchemaUnsupported
+  zsActionSchemaUnsupported,
+  zsActionFileReceived
 };
+
+typedef enum {
+  zsFailedToReceiveAllFiles = 1123
+} ZSErrorCode;
 
 #import "MYNetwork.h"
 

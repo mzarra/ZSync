@@ -116,9 +116,6 @@
     [alertView show];
     [alertView release], alertView = nil;
     return;
-//  } else if ([availableServers count] == 1) {
-//    [[ZSyncTouchHandler shared] requestPairing:[availableServers lastObject]];
-//    return;
   }
   id controller = [[PairingServerTableViewController alloc] initWithServers:availableServers];
   pairingNavController = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -126,19 +123,29 @@
   [controller release], controller = nil;
 }
 
-- (void)zSync:(ZSyncTouchHandler*)handler downloadFinished:(NSString*)tempPath;
-{
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
-}
-
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  [self hideHoverView];
+  
+  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+  [alert show];
+  [alert release], alert = nil;
+  
+  ALog(@"Failure: %@", [error localizedDescription]);
 }
 
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
+  [navigationController popToRootViewControllerAnimated:YES];
+  
+  [self showHoverViewWithMessage:@"Syncing"];
+}
+
+- (void)zSyncFinished:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  [self hideHoverView];
 }
 
 - (void)zSyncFileUploaded:(ZSyncTouchHandler*)handler;
@@ -179,6 +186,11 @@
 }
 
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
+}
+
+- (void)zSyncServerVersionUnsupported:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }

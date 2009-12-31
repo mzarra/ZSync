@@ -51,21 +51,20 @@
  */
 - (void)zSyncNoServerPaired:(NSArray*)availableServers;
 
-/* This message is sent when the file has been received back from the server
- * and has been stored in a temporary cache.  The application is expected
- * to transfer this new file to its permanent location and handle the update
- * of the UI.
- */
-- (void)zSync:(ZSyncTouchHandler*)handler downloadFinished:(NSString*)tempPath;
-
 /* This message can be sent at any time when an error occurred.  The description
  * will be populated with information about the failure.
  */
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
 
 /* This is an information message to indicate that a sync has begun.
+ * This is a good place to presenta  dialog and pop the UI back to its root
  */
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
+
+/* This is an information message to indicate that a sync has finished.
+ * No action should be needed here as Core Data should auto update
+ */
+- (void)zSyncFinished:(ZSyncTouchHandler*)handler;
 
 /* ZSync has started the transfer of data to the server to be synced.  This is
  * an information message only so that the app can update the user on the 
@@ -99,10 +98,18 @@
  */
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
 
+/* This is an information message letting the application know that the server
+ * either selected or previously paired with can no longer talk to this version
+ * of the touch code.  The user should be notified of this and know that syncing
+ * is currently unavailable
+ */
+- (void)zSyncServerVersionUnsupported:(ZSyncTouchHandler*)handler;
+
 @end
 
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
+  NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
   MYBonjourBrowser *_serviceBrowser;
   BLIPConnection *_connection;
@@ -110,6 +117,8 @@
   NSString *schemaName;
   NSInteger majorVersionNumber;
   NSInteger minorVersionNumber;
+  
+  NSMutableDictionary *receivedFileLookupDictionary;
   
   id _delegate;
   
