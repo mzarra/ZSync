@@ -146,11 +146,8 @@
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
   [self hideHoverView];
-}
-
-- (void)zSyncFileUploaded:(ZSyncTouchHandler*)handler;
-{
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshMOC object:self];
 }
 
 - (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;

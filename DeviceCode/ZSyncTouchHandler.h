@@ -62,15 +62,9 @@
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
 
 /* This is an information message to indicate that a sync has finished.
- * No action should be needed here as Core Data should auto update
+ * The application should at this point refresh all displays from the NSManagedObjectContext
  */
 - (void)zSyncFinished:(ZSyncTouchHandler*)handler;
-
-/* ZSync has started the transfer of data to the server to be synced.  This is
- * an information message only so that the app can update the user on the 
- * status of the sync.
- */
-- (void)zSyncFileUploaded:(ZSyncTouchHandler*)handler;
 
 /* Notification that the server has accepted the device and is awaiting
  * a pairing code to be sent back.  The pairing code will be displayed
