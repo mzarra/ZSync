@@ -168,25 +168,27 @@
   
   NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   
-  if (serverUUID) { //See if the server is in this list
-    for (MYBonjourService *service in [_serviceBrowser services]) {
-      NSString *serverName = [service name];
-      NSString *serverUUID = [serverName substringWithRange:NSMakeRange([serverName length] - zsUUIDStringLength, zsUUIDStringLength)];
-      DLog(@"%s serverName: %@\nserverUUID: %@", __PRETTY_FUNCTION__, serverName, serverUUID);
-      if (![serverUUID isEqualToString:serverUUID]) continue;
-      
-      //Found our server, start the sync
-      [self beginSyncWithService:service];
-      [_serviceBrowser stop];
-      [_serviceBrowser release], _serviceBrowser = nil;
-      return;
-    }
-    //Did not find our registered server.  Fail
-    [[self delegate] zSyncServerUnavailable:self];
+  if (!serverUUID) { //See if the server is in this list
+    [[self delegate] zSyncNoServerPaired:[self availableServers]];
     return;
   }
   
-  [[self delegate] zSyncNoServerPaired:[self availableServers]];
+  for (MYBonjourService *service in [_serviceBrowser services]) {
+    NSString *serverName = [service name];
+    NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
+    ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
+    NSString *serverUUID = [components objectAtIndex:1];
+    if (![serverUUID isEqualToString:serverUUID]) continue;
+    
+    //Found our server, start the sync
+    [self beginSyncWithService:service];
+    [_serviceBrowser stop];
+    [_serviceBrowser release], _serviceBrowser = nil;
+    return;
+  }
+  //Did not find our registered server.  Fail
+  [[self delegate] zSyncServerUnavailable:self];
+  
 }
 
 - (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
