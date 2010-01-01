@@ -117,6 +117,7 @@
 	// If appropriate, configure the new managed object.
   NSProcessInfo *info = [NSProcessInfo processInfo];
   
+  [newManagedObject setValue:[NSDate date] forKey:@"createDate"];
 	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute1"];
 	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute2"];
 	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute3"];

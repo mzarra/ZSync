@@ -1,10 +1,16 @@
 #import "AppDelegate.h"
 
+@interface AppDelegate()
+
+- (ISyncClient*)syncClient;
+
+@end
+
 @implementation AppDelegate
 
 @synthesize window;
 
-- (NSString *)applicationSupportDirectory 
+- (NSString*)applicationSupportDirectory 
 {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
   NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
@@ -14,24 +20,15 @@
 #pragma mark -
 #pragma mark Application Delegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void)applicationDidFinishLaunching:(NSNotification*)aNotification
 {
-  NSString *clientIdentifier = [[NSBundle mainBundle] bundleIdentifier];
-  
-  [self managedObjectContext];
-  
   //Register the sync client
   NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncSample" ofType:@"syncschema"];
   ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
-  
-  client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeServer];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypePeer];  
+  [[self syncClient] setSyncAlertHandler:self selector:@selector(syncClient:willSyncEntityNames:)];
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender 
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)sender 
 {
   if (!managedObjectContext) return NSTerminateNow;
   
@@ -69,10 +66,30 @@
   return NSTerminateNow;
 }
 
+- (ISyncClient*)syncClient;
+{
+  NSString *clientIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+  ISyncClient *client = nil;
+  client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeServer];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypePeer];  
+  return client;
+}
+
+- (void)syncClient:(ISyncClient*)syncClient willSyncEntityNames:(NSArray*)entityNames;
+{
+  DLog(@"%s fired %@", __PRETTY_FUNCTION__, entityNames);
+  NSError *error = nil;
+  [[self persistentStoreCoordinator] syncWithClient:syncClient inBackground:NO handler:self error:&error];
+  ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
+}
+
 #pragma mark -
 #pragma mark Window Delegate
 
-- (NSUndoManager *)windowWillReturnUndoManager:(NSWindow *)window 
+- (NSUndoManager*)windowWillReturnUndoManager:(NSWindow*)window 
 {
   return [[self managedObjectContext] undoManager];
 }
@@ -80,7 +97,116 @@
 #pragma mark -
 #pragma mark Core Data
 
-- (NSManagedObjectModel *)managedObjectModel 
+- (void)insertSecondChildren:(NSManagedObject*)parent
+{
+	NSManagedObjectContext *context = [self managedObjectContext];
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+  NSInteger count = arc4random() % 10;
+  for (NSInteger index = 0; index < count; ++index) {
+    NSManagedObject *child = [NSEntityDescription insertNewObjectForEntityForName:@"SecondChild" 
+                                                           inManagedObjectContext:context];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute1"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute2"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute3"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute4"];
+    [child setValue:parent forKey:@"parent"];
+  }
+}
+
+- (void)insertFirstChildren:(NSManagedObject*)parent
+{
+	NSManagedObjectContext *context = [self managedObjectContext];
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+  NSInteger count = arc4random() % 10;
+  for (NSInteger index = 0; index < count; ++index) {
+    NSManagedObject *child = [NSEntityDescription insertNewObjectForEntityForName:@"FirstChild" 
+                                                           inManagedObjectContext:context];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute1"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute2"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute3"];
+    [child setValue:[info globallyUniqueString] forKey:@"attribute4"];
+    [child setValue:parent forKey:@"parent"];
+    [self insertSecondChildren:child];
+  }
+}
+
+- (void)insertNewObject 
+{
+	// Create a new instance of the entity managed by the fetched results controller.
+	NSManagedObjectContext *context = [self managedObjectContext];
+	NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:@"TopLevelObject"
+                                                                    inManagedObjectContext:context];
+	
+	// If appropriate, configure the new managed object.
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+  [newManagedObject setValue:[NSDate date] forKey:@"createDate"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute1"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute2"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute3"];
+	[newManagedObject setValue:[info globallyUniqueString] forKey:@"attribute4"];
+  [self insertFirstChildren:newManagedObject];
+	
+	// Save the context.
+  NSError *error = nil;
+  ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
+}
+
+- (void)modifySecondChild:(NSManagedObject*)object
+{
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+	[object setValue:[info globallyUniqueString] forKey:@"attribute1"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute2"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute3"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute4"];
+}
+
+- (void)modifyFirstChild:(NSManagedObject*)object
+{
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+	[object setValue:[info globallyUniqueString] forKey:@"attribute1"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute2"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute3"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute4"];
+  
+  if ((arc4random() % 4) == 1) [self insertSecondChildren:object];
+  for (NSManagedObject *child in [object valueForKey:@"children"]) {
+    switch ((arc4random() % 10)) {
+      case 1:
+        [[self managedObjectContext] deleteObject:child];
+        break;
+      case 5:
+        [self modifySecondChild:child];
+    }
+  }
+}
+
+- (void)modifyTopObject:(NSManagedObject*)object
+{
+  NSProcessInfo *info = [NSProcessInfo processInfo];
+  
+	[object setValue:[info globallyUniqueString] forKey:@"attribute1"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute2"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute3"];
+	[object setValue:[info globallyUniqueString] forKey:@"attribute4"];
+  
+  if ((arc4random() % 4) == 1) [self insertFirstChildren:object];
+  for (NSManagedObject *child in [object valueForKey:@"children"]) {
+    switch ((arc4random() % 10)) {
+      case 1:
+        [[self managedObjectContext] deleteObject:child];
+        break;
+      case 5:
+        [self modifyFirstChild:child];
+    }
+  }
+}
+
+- (NSManagedObjectModel*)managedObjectModel 
 {
   if (managedObjectModel) return managedObjectModel;
 	
@@ -88,7 +214,7 @@
   return managedObjectModel;
 }
 
-- (NSPersistentStoreCoordinator *) persistentStoreCoordinator 
+- (NSPersistentStoreCoordinator*)persistentStoreCoordinator 
 {
   if (persistentStoreCoordinator) return persistentStoreCoordinator;
   
@@ -111,7 +237,7 @@
 		}
   }
   
-  NSURL *url = [NSURL fileURLWithPath: [applicationSupportDirectory stringByAppendingPathComponent: @"storedata"]];
+  NSURL *url = [NSURL fileURLWithPath: [applicationSupportDirectory stringByAppendingPathComponent: @"dataFile.sqlite"]];
   persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: mom];
   
   NSPersistentStore *store = nil;
@@ -122,14 +248,14 @@
                                                            error:&error];
   ZAssert(store != nil, @"Error creating store: %@", [error localizedDescription]);
   
-  NSURL *fastSyncFileURL = [NSURL fileURLWithPath:[applicationSupportFolder stringByAppendingPathComponent:@"DepartmentsAndEmployeesSyncApp.fastsyncstore"]];
-  [persistentStoreCoordinator setStoresFastSyncDetailsAtURL:fastSyncFileURL forPersistentStore:store];
+  NSURL *fastSyncURL = [NSURL fileURLWithPath:[applicationSupportDirectory stringByAppendingPathComponent:@"dataFile.fastsyncstore"]];
+  [persistentStoreCoordinator setStoresFastSyncDetailsAtURL:fastSyncURL forPersistentStore:store];
   
   
   return persistentStoreCoordinator;
 }
 
-- (NSManagedObjectContext *) managedObjectContext 
+- (NSManagedObjectContext*)managedObjectContext 
 {
   if (managedObjectContext) return managedObjectContext;
   
@@ -153,18 +279,52 @@
 
 - (IBAction)addData:(id)sender;
 {
+  NSInteger numberOfNewRecords = arc4random() % 100;
+  for (NSInteger index = 0; index < numberOfNewRecords; ++index) {
+    [self insertNewObject];
+  }
+  NSError *error = nil;
+  ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 - (IBAction)changeData:(id)sender;
 {
+  NSManagedObjectContext *moc = [self managedObjectContext];
+  NSFetchRequest *request = [[NSFetchRequest alloc] init];
+  [request setEntity:[NSEntityDescription entityForName:@"TopLevelObject" inManagedObjectContext:moc]];
+  
+  NSError *error = nil;
+  NSArray *array = [moc executeFetchRequest:request error:&error];
+  ZAssert(error == nil, @"Error fetching objects: %@", [error localizedDescription]);
+  
+  for (NSManagedObject *topLevelObject in array) {
+    if ((arc4random() % 3) == 0) continue;
+    [self modifyTopObject:topLevelObject];
+  }
+  
+  ZAssert([moc save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
-- (IBAction) saveAction:(id)sender 
+- (IBAction)saveAction:(id)sender 
 {
   NSError *error = nil;
   
   ZAssert([[self managedObjectContext] commitEditing], @"Failed to commit");
   ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
+  
+  ISyncClient *client = [self syncClient];
+  ZAssert(client != nil,@"Sync client is nil");
+  [[self persistentStoreCoordinator] syncWithClient:client inBackground:NO handler:self error:&error];
+  ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
+}
+
+#pragma mark - 
+#pragma mark NSPersistentStoreCoordinatorSyncing
+
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+              didFinishSyncSession:(ISyncSession*)session
+{
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
 }
 
 @end

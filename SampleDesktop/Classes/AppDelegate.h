@@ -1,12 +1,11 @@
 
-@interface AppDelegate : NSObject 
+@interface AppDelegate : NSObject <NSPersistentStoreCoordinatorSyncing>
 {
   NSPersistentStoreCoordinator *persistentStoreCoordinator;
   NSManagedObjectModel *managedObjectModel;
   NSManagedObjectContext *managedObjectContext;
   
   NSWindow *window;
-  ISyncClient *client;
 }
 
 @property (nonatomic, retain) IBOutlet NSWindow *window;

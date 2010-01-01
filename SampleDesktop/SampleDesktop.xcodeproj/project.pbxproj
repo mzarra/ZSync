@@ -15,7 +15,7 @@
 		B691FC4410ED8E6300207210 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FC4310ED8E6300207210 /* main.m */; };
 		B691FC4910ED8E7400207210 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B691FC4510ED8E7400207210 /* InfoPlist.strings */; };
 		B691FC4A10ED8E7400207210 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B691FC4710ED8E7400207210 /* MainMenu.xib */; };
-		B691FCCF10ED92A500207210 /* SyncSchema.syncschema in Resources */ = {isa = PBXBuildFile; fileRef = B6457E3110B058CD00A96714 /* SyncSchema.syncschema */; };
+		B691FCCF10ED92A500207210 /* ZSyncSample.syncschema in Resources */ = {isa = PBXBuildFile; fileRef = B6457E3110B058CD00A96714 /* ZSyncSample.syncschema */; };
 		B691FD5310EDA99200207210 /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B691FC7310ED907400207210 /* clientDescription.plist */; };
 /* End PBXBuildFile section */
 
@@ -162,7 +162,7 @@
 		B6457E2D10B058CD00A96714 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B6457E3110B058CD00A96714 /* SyncSchema.syncschema */,
+				B6457E3110B058CD00A96714 /* ZSyncSample.syncschema */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,10 +220,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B6457E3110B058CD00A96714 /* SyncSchema.syncschema */ = {
+		B6457E3110B058CD00A96714 /* ZSyncSample.syncschema */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = SyncSchema.syncschema;
+			path = ZSyncSample.syncschema;
 			remoteRef = B6457E3010B058CD00A96714 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -234,7 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B691FCCF10ED92A500207210 /* SyncSchema.syncschema in Resources */,
+				B691FCCF10ED92A500207210 /* ZSyncSample.syncschema in Resources */,
 				B691FC4910ED8E7400207210 /* InfoPlist.strings in Resources */,
 				B691FC4A10ED8E7400207210 /* MainMenu.xib in Resources */,
 				B691FD5310EDA99200207210 /* clientDescription.plist in Resources */,
