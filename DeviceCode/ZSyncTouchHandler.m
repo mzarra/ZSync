@@ -206,9 +206,10 @@
   
 }
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator schemaName:(NSString*)name;
 {
   [self setDelegate:delegate];
+  [self setSchemaName:name];
   [self setPersistentStoreCoordinator:coordinator];
 }
 
@@ -291,7 +292,7 @@
         ZAssert(error == nil, @"Error deleting temp file: %@", [error localizedDescription]);
       }
       NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[store identifier] forKey:zsStoreIdentifier];
-      NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsFailedToReceiveAllFiles userInfo:userInfo];
+      NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsErrorFailedToReceiveAllFiles userInfo:userInfo];
       [[self delegate] zSync:self errorOccurred:error];
       [receivedFileLookupDictionary release], receivedFileLookupDictionary = nil;
     }
@@ -311,6 +312,9 @@
   }
   
   [receivedFileLookupDictionary release], receivedFileLookupDictionary = nil;
+  
+  [[self connection] close];
+  [self setConnection:nil];
   
   if ([[self delegate] respondsToSelector:@selector(zSyncFinished:)]) {
     [[self delegate] zSyncFinished:self];
@@ -471,8 +475,11 @@
       }
       return;
     case zsActionSchemaUnsupported:
-      if ([[self delegate] respondsToSelector:@selector(zSyncServerVersionUnsupported:)]) {
-        [[self delegate] zSyncServerVersionUnsupported:self];
+      if ([[self delegate] respondsToSelector:@selector(zSync:serverVersionUnsupported:)]) {
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[response bodyString] forKey:NSLocalizedDescriptionKey];
+        NSError *error = [NSError errorWithDomain:zsErrorDomain code:[[response valueOfProperty:zsErrorCode] integerValue] userInfo:userInfo];
+        
+        [[self delegate] zSync:self serverVersionUnsupported:error];
       }
       return;
     case zsActionSchemaSupported:
@@ -522,7 +529,16 @@
 
 - (void)connectionDidClose:(TCPConnection*)connection;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  if (![self connection]) return;
+  
+  //premature closing
+  [self setConnection:nil];
+  
+  if (![[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) return;
+
+  NSDictionary *userInfo = [NSDictionary dictionaryWithObject:NSLocalizedString(@"Server Hung Up", @"Server Hung Up message text") forKey:NSLocalizedDescriptionKey];
+  NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsErrorServerHungUp userInfo:userInfo];
+  [[self delegate] zSync:self errorOccurred:error];
 }
 
 @end

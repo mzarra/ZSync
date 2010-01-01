@@ -24,3 +24,4 @@
 
 #define kCellIdentifier @"kCellIdentifier"
 #define kRefreshMOC @"kRefreshMOC"
+#define kSyncSchemaName @"com.zarrastudios.ZSync"

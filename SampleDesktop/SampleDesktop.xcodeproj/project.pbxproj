@@ -18,6 +18,7 @@
 		B633AFEA10C149A8009101EF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633AFE910C149A8009101EF /* CoreData.framework */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
 		B659962F10B658F800B2CC74 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B659962E10B658F800B2CC74 /* libMYNetwork-Desktop.a */; };
+		B691FA7510ED75D500207210 /* SyncSchema.syncschema in Resources */ = {isa = PBXBuildFile; fileRef = B6457EA410B05DFC00A96714 /* SyncSchema.syncschema */; };
 		B6C2E14A10A768840063E436 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C2E14910A768840063E436 /* ZSyncHandler.m */; };
 /* End PBXBuildFile section */
 
@@ -264,6 +265,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B691FA7510ED75D500207210 /* SyncSchema.syncschema in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				2F7446990DB6B7EA00F9684A /* MainMenu.xib in Resources */,
 				B613854510BCEEBD006E7227 /* PairingWindow.xib in Resources */,

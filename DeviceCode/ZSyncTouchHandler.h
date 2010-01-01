@@ -56,6 +56,13 @@
  */
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
 
+/* This is an information message letting the application know that the server
+ * either selected or previously paired with can no longer talk to this version
+ * of the touch code.  The user should be notified of this and know that syncing
+ * is currently unavailable
+ */
+- (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
+
 /* This is an information message to indicate that a sync has begun.
  * This is a good place to presenta  dialog and pop the UI back to its root
  */
@@ -91,13 +98,6 @@
  * to let the user change what server is paird.
  */
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
-
-/* This is an information message letting the application know that the server
- * either selected or previously paired with can no longer talk to this version
- * of the touch code.  The user should be notified of this and know that syncing
- * is currently unavailable
- */
-- (void)zSyncServerVersionUnsupported:(ZSyncTouchHandler*)handler;
 
 @end
 
@@ -135,7 +135,7 @@
  */
 + (id)shared;
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator schemaName:(NSString*)name;
 
 - (void)requestSync;
 - (void)requestPairing:(ZSyncService*)server;

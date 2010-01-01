@@ -21,7 +21,7 @@
 	[window addSubview:[navigationController view]];
   [window makeKeyAndVisible];
   
-  [[ZSyncTouchHandler shared] registerDelegate:self withPersistentStoreCoordinator:[self persistentStoreCoordinator]];
+  [[ZSyncTouchHandler shared] registerDelegate:self withPersistentStoreCoordinator:[self persistentStoreCoordinator] schemaName:kSyncSchemaName];
   
   [[[self hoverView] layer] setCornerRadius:10.0f];
   [[[self hoverView] layer] setBorderColor:[[UIColor whiteColor] CGColor]];
@@ -131,7 +131,18 @@
   [alert show];
   [alert release], alert = nil;
   
-  ALog(@"Failure: %@", [error localizedDescription]);
+  DLog(@"Failure: %@", [error localizedDescription]);
+}
+
+- (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
+{
+  [self hideHoverView];
+  
+  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+  [alert show];
+  [alert release], alert = nil;
+  
+  DLog(@"Failure: %@", [error localizedDescription]);
 }
 
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
@@ -183,11 +194,6 @@
 }
 
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
-{
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
-}
-
-- (void)zSyncServerVersionUnsupported:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }

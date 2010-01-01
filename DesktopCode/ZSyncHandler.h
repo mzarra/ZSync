@@ -59,6 +59,7 @@
   id codeController;
   BLIPConnection *_connection;
   NSString *pairingCode;
+  ISyncClient *syncClient;
   
   NSMutableArray *storeFileIdentifiers;
   

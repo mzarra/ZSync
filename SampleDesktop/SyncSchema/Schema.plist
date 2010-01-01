@@ -15,7 +15,7 @@
   <key>ManagedObjectModels</key>
   <array>
   
-    <string>DataModel.xcdatamodel</string>
+    <string>../DataModel.mom</string>
   
   </array>
   

@@ -36,8 +36,12 @@
 					PBXTargetDataSource_PrimaryAttribute,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 281159768;
-			PBXWorkspaceStateSaveDate = 281159768;
+			PBXPerProjectTemplateStateSaveDate = 283997251;
+			PBXWorkspaceStateSaveDate = 283997251;
+		};
+		perUserProjectItems = {
+			B691FAAE10ED772400207210 /* PBXBookmark */ = B691FAAE10ED772400207210 /* PBXBookmark */;
+			B691FAB410ED773C00207210 /* PBXTextBookmark */ = B691FAB410ED773C00207210 /* PBXTextBookmark */;
 		};
 		sourceControlManager = B6457E2A10B058B000A96714 /* Source Control */;
 		userBuildSettings = {
@@ -50,15 +54,15 @@
 	};
 	5A08A9680729C82200F70D60 /* English */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {966, 721}}";
-			sepNavSelRange = "{328, 0}";
-			sepNavVisRange = "{0, 345}";
+			sepNavIntBoundsRect = "{{0, 0}, {954, 1292}}";
+			sepNavSelRange = "{2237, 0}";
+			sepNavVisRange = "{989, 1248}";
 			sepNavWindowFrame = "{{15, 0}, {1013, 778}}";
 		};
 	};
 	5A5A71900674E7A100E5A5E1 /* Info.plist */ = {
 		uiCtxt = {
-			sepNavWindowFrame = "{{13, 90}, {551, 446}}";
+			sepNavWindowFrame = "{{783, 713}, {551, 446}}";
 		};
 	};
 	5A731589072D787F00F51B4F /* Prefix.pch */ = {
@@ -71,10 +75,10 @@
 	};
 	5AA81A60067145AD002E4978 /* Schema.plist */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {650, 721}}";
-			sepNavSelRange = "{361, 0}";
-			sepNavVisRange = "{0, 542}";
-			sepNavWindowFrame = "{{491, 0}, {697, 778}}";
+			sepNavIntBoundsRect = "{{0, 0}, {638, 721}}";
+			sepNavSelRange = "{422, 0}";
+			sepNavVisRange = "{0, 537}";
+			sepNavWindowFrame = "{{605, 205}, {697, 778}}";
 		};
 	};
 	8D5B49AC048680CD000E48DA /* SyncSchema */ = {
@@ -93,5 +97,19 @@
 	B6457E2B10B058B000A96714 /* Code sense */ = {
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
+	};
+	B691FAAE10ED772400207210 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 5AA81A60067145AD002E4978 /* Schema.plist */;
+	};
+	B691FAB410ED773C00207210 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 5AA81A60067145AD002E4978 /* Schema.plist */;
+		name = "Schema.plist: 18";
+		rLen = 0;
+		rLoc = 435;
+		rType = 0;
+		vrLen = 534;
+		vrLoc = 0;
 	};
 }

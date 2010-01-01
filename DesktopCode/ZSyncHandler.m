@@ -241,12 +241,6 @@
 
 - (void)performSync
 {
-  //TODO Testing....
-  [self transferStoresToDevice];
-  if (YES) return;
-  
-  // TODO: This identifier needs to be based per plugin
-  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:@"com.zarrastudios.ZSync"];
   ZAssert(syncClient != nil, @"Sync Client is nil!");
   NSError *error = nil;
   if (![persistentStoreCoordinator syncWithClient:syncClient inBackground:YES handler:self error:&error]) {
@@ -266,6 +260,27 @@
 
 #pragma mark -
 #pragma mark BLIPConnectionDelegate
+
+- (void)registerSyncClient:(BLIPRequest*)request
+{
+  // TODO: Compare version numbers
+  ZAssert([request bodyString] != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
+  
+  syncClient = [[ISyncManager sharedManager] clientWithIdentifier:[request bodyString]];
+  
+  BLIPResponse *response = [request response];
+  
+  if (syncClient) {
+    [response setValue:zsActID(zsActionSchemaSupported) ofProperty:zsAction];
+    [response send];
+    return;
+  }
+  
+  [response setValue:zsActID(zsActionSchemaUnsupported) ofProperty:zsAction];
+  [response setBodyString:[NSString stringWithFormat:NSLocalizedString(@"No Sync Client Registered for %@", @"no sync client registered error message"), [request bodyString]]];
+  [response setValue:zsActID(zsErrorNoSyncClientRegistered) ofProperty:zsErrorCode];
+  [response send];
+}
 
 - (BOOL)connectionReceivedCloseRequest:(BLIPConnection*)connection;
 {
@@ -318,11 +333,7 @@
       }
       return YES;
     case zsActionVerifySchema:
-      // TODO: Compare schema string and version numbers
-      
-      [response setValue:zsActID(zsActionSchemaSupported) ofProperty:zsAction];
-      [response send];
-      
+      [self registerSyncClient:request];
       return YES;
     case zsActionRequestPairing:
       [self setPairingCode:[self generatePairingCode]];
@@ -338,7 +349,7 @@
         [[ZSyncHandler shared] registerDeviceForPairing:[request valueOfProperty:zsDeviceID]];
         [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
         [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
-        [response setValue:[self serverName] ofProperty:zsServerName];
+        [response setValue:[[ZSyncHandler shared] serverName] ofProperty:zsServerName];
         [response send];
         [codeController close];
         [codeController release], codeController = nil;

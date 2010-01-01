@@ -11,7 +11,6 @@
 		5A08A9770729C83A00F70D60 /* Schema.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A9740729C83A00F70D60 /* Schema.strings */; };
 		5AA81A61067145AD002E4978 /* Schema.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA81A60067145AD002E4978 /* Schema.plist */; };
 		5AEAB1D9072D8CEB000A3587 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A73157F072D6ED900F51B4F /* Foundation.framework */; };
-		B68F1A3E10C229A3008CCD93 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B68F1A3D10C229A3008CCD93 /* DataModel.xcdatamodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,7 +21,6 @@
 		5A731589072D787F00F51B4F /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		5AA81A60067145AD002E4978 /* Schema.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = Schema.plist; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
-		B68F1A3D10C229A3008CCD93 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = ../../SampleTouch/Models/DataModel.xcdatamodel; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +58,6 @@
 		5A5A718B0674E78700E5A5E1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B68F1A3D10C229A3008CCD93 /* DataModel.xcdatamodel */,
 				5AA81A60067145AD002E4978 /* Schema.plist */,
 				5A08A9740729C83A00F70D60 /* Schema.strings */,
 				5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */,
@@ -148,7 +145,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B68F1A3E10C229A3008CCD93 /* DataModel.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

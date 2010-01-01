@@ -3,6 +3,7 @@
 #define zsServerUUID @"zsyncServerUUID"
 #define zsServerName @"zsServerName"
 #define zsErrorDomain @"zsErrorDomain"
+#define zsErrorCode @"zsErrorCode"
 
 #define zsAction @"kZSyncAction"
 #define zsDeviceID @"kZSyncDeviceID"
@@ -35,7 +36,9 @@ enum {
 };
 
 typedef enum {
-  zsFailedToReceiveAllFiles = 1123
+  zsErrorFailedToReceiveAllFiles = 1123,
+  zsErrorServerHungUp,
+  zsErrorNoSyncClientRegistered
 } ZSErrorCode;
 
 #import "MYNetwork.h"
