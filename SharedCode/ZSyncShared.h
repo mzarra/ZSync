@@ -1,6 +1,7 @@
 #define zsDomainName @"local."
 #define zsServiceName @"_zsync._tcp"
 #define zsServerUUID @"zsyncServerUUID"
+#define zsServerName @"zsServerName"
 #define zsErrorDomain @"zsErrorDomain"
 
 #define zsAction @"kZSyncAction"

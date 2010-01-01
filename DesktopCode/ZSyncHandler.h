@@ -34,6 +34,7 @@
 @interface ZSyncHandler : NSObject <TCPListenerDelegate>
 {
   NSMutableArray *_connections;
+  NSString *_serverName;
   
   BLIPListener *_listener;
   
@@ -42,6 +43,7 @@
 
 @property (readonly) NSMutableArray *connections;
 @property (assign) id delegate;
+@property (retain) NSString *serverName;
 
 + (id)shared;
 

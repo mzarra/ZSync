@@ -141,7 +141,9 @@
 - (void)requestPairing:(ZSyncService*)server;
 - (void)authenticatePairing:(NSString*)code;
 - (void)cancelPairing;
+- (void)disconnectPairing;
 
+- (NSString*)serverName;
 - (NSArray*)availableServers;
 
 @end

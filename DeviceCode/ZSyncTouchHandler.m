@@ -97,6 +97,21 @@
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
 
+- (void)disconnectPairing;
+{
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
+  if ([self connection]) {
+    [[self connection] close];
+    [self setConnection:nil];
+  }
+}
+
+- (NSString*)serverName;
+{
+  return [[NSUserDefaults standardUserDefaults] valueForKey:zsServerName];
+}
+
 - (void)cancelPairing;
 {
   if (![self connection]) return;
@@ -444,6 +459,7 @@
     case zsActionAuthenticatePassed:
       DLog(@"%s server UUID accepted: %@", __PRETTY_FUNCTION__, [response valueOfProperty:zsServerUUID]);
       [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerUUID] forKey:zsServerUUID];
+      [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerName] forKey:zsServerName];
       if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeApproved:)]) {
         [[self delegate] zSyncPairingCodeApproved:self];
       }

@@ -46,6 +46,7 @@
 
 @synthesize delegate = _delegate;
 @synthesize connections = _connections;
+@synthesize serverName = _serverName;
 
 + (id)shared;
 {
@@ -73,16 +74,16 @@
   [_listener setBonjourServiceType:zsServiceName];
   
   NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/Library/Preferences/SystemConfiguration/preferences.plist"];
-  NSString *serverName = [dict valueForKeyPath:@"System.System.ComputerName"];
+  [self setServerName:[dict valueForKeyPath:@"System.System.ComputerName"]];
   
   NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   if (!uuid) {
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];
     [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
   }
-  serverName = [serverName stringByAppendingFormat:@"%@%@", zsServerNameSeperator, uuid];
+  NSString *broadcastName = [[self serverName] stringByAppendingFormat:@"%@%@", zsServerNameSeperator, uuid];
   
-  [_listener setBonjourServiceName:serverName];
+  [_listener setBonjourServiceName:broadcastName];
   [_listener open];
 }
 
@@ -299,7 +300,7 @@
 
 - (void)connection:(BLIPConnection*)connection closeRequestFailedWithError:(NSError*)error;
 {
-  DLog(@"%s error %@", __PRETTY_FUNCTION__, error);
+  ALog(@"%s error %@", __PRETTY_FUNCTION__, error);
 }
 
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
@@ -337,6 +338,7 @@
         [[ZSyncHandler shared] registerDeviceForPairing:[request valueOfProperty:zsDeviceID]];
         [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
         [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
+        [response setValue:[self serverName] ofProperty:zsServerName];
         [response send];
         [codeController close];
         [codeController release], codeController = nil;
