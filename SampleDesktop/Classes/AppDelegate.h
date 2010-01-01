@@ -6,6 +6,7 @@
   NSManagedObjectContext *managedObjectContext;
   
   NSWindow *window;
+  ISyncClient *client;
 }
 
 @property (nonatomic, retain) IBOutlet NSWindow *window;

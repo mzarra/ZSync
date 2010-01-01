@@ -16,9 +16,19 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+  NSString *clientIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+  
+  [self managedObjectContext];
+  
   //Register the sync client
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"SyncSchema" ofType:@"syncschema"];
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncSample" ofType:@"syncschema"];
   ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
+  
+  client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeServer];
+  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypePeer];  
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender 
@@ -103,15 +113,18 @@
   
   NSURL *url = [NSURL fileURLWithPath: [applicationSupportDirectory stringByAppendingPathComponent: @"storedata"]];
   persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: mom];
-  if (![persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType 
-                                                configuration:nil 
-                                                          URL:url 
-                                                      options:nil 
-                                                        error:&error]) {
-    [[NSApplication sharedApplication] presentError:error];
-    [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
-    return nil;
-  }    
+  
+  NSPersistentStore *store = nil;
+  store = [persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType 
+                                                   configuration:nil 
+                                                             URL:url 
+                                                         options:nil 
+                                                           error:&error];
+  ZAssert(store != nil, @"Error creating store: %@", [error localizedDescription]);
+  
+  NSURL *fastSyncFileURL = [NSURL fileURLWithPath:[applicationSupportFolder stringByAppendingPathComponent:@"DepartmentsAndEmployeesSyncApp.fastsyncstore"]];
+  [persistentStoreCoordinator setStoresFastSyncDetailsAtURL:fastSyncFileURL forPersistentStore:store];
+  
   
   return persistentStoreCoordinator;
 }

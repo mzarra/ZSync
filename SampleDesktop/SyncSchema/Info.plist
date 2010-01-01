@@ -22,7 +22,5 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1</string>
-	<key>ZSyncSchemaName</key>
-	<string>com.zarrastudios.zsync</string>
 </dict>
 </plist>

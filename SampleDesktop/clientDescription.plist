@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DisplayName</key>
+	<string>SampleDesktop</string>
+	<key>Entities</key>
+	<dict>
+		<key>com.zarrastudios.zsync.SampleData.TopLevelObject</key>
+		<array>
+			<string>com.apple.syncservices.RecordEntityName</string>
+			<string>attribute1</string>
+			<string>attribute2</string>
+			<string>attribute3</string>
+			<string>attribute4</string>
+			<string>children</string>
+			<string>createDate</string>
+		</array>
+		<key>com.zarrastudios.zsync.SampleData.FirstChild</key>
+		<array>
+			<string>com.apple.syncservices.RecordEntityName</string>
+			<string>attribute1</string>
+			<string>attribute2</string>
+			<string>attribute3</string>
+			<string>attribute4</string>
+			<string>children</string>
+			<string>parent</string>
+		</array>
+		<key>com.zarrastudios.zsync.SampleData.SecondChild</key>
+		<array>
+			<string>com.apple.syncservices.RecordEntityName</string>
+			<string>attribute1</string>
+			<string>attribute2</string>
+			<string>attribute3</string>
+			<string>attribute4</string>
+			<string>parent</string>
+		</array>
+		<key>com.zarrastudios.zsync.SampleData.StandAlone</key>
+		<array>
+			<string>com.apple.syncservices.RecordEntityName</string>
+			<string>attribute1</string>
+			<string>attribute2</string>
+			<string>attribute3</string>
+			<string>attribute4</string>
+		</array>
+	</dict>
+	<key>Type</key>
+	<string>app</string>
+</dict>
+</plist>

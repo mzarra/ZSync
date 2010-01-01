@@ -8,19 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		5A08A9540729C81600F70D60 /* SyncDataClass.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */; };
-		5A08A9770729C83A00F70D60 /* Schema.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5A08A9740729C83A00F70D60 /* Schema.strings */; };
 		5AA81A61067145AD002E4978 /* Schema.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA81A60067145AD002E4978 /* Schema.plist */; };
 		5AEAB1D9072D8CEB000A3587 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A73157F072D6ED900F51B4F /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SyncDataClass.tiff; sourceTree = SOURCE_ROOT; };
-		5A08A9680729C82200F70D60 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Schema.strings; sourceTree = SOURCE_ROOT; };
 		5A5A71900674E7A100E5A5E1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A73157F072D6ED900F51B4F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5A731589072D787F00F51B4F /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		5AA81A60067145AD002E4978 /* Schema.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = Schema.plist; sourceTree = "<group>"; };
-		8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncSchema.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D5B49B6048680CD000E48DA /* ZSyncSample.syncschema */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZSyncSample.syncschema; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +48,7 @@
 		19C28FB8FE9D52D311CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */,
+				8D5B49B6048680CD000E48DA /* ZSyncSample.syncschema */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,7 +57,6 @@
 			isa = PBXGroup;
 			children = (
 				5AA81A60067145AD002E4978 /* Schema.plist */,
-				5A08A9740729C83A00F70D60 /* Schema.strings */,
 				5A08A94E0729C81600F70D60 /* SyncDataClass.tiff */,
 			);
 			name = Resources;
@@ -92,9 +89,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D5B49AC048680CD000E48DA /* SyncSchema */ = {
+		8D5B49AC048680CD000E48DA /* ZSyncSample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5AE1077508A96056006FCEC0 /* Build configuration list for PBXNativeTarget "SyncSchema" */;
+			buildConfigurationList = 5AE1077508A96056006FCEC0 /* Build configuration list for PBXNativeTarget "ZSyncSample" */;
 			buildPhases = (
 				8D5B49AF048680CD000E48DA /* Resources */,
 				8D5B49B1048680CD000E48DA /* Sources */,
@@ -104,10 +101,10 @@
 			);
 			dependencies = (
 			);
-			name = SyncSchema;
+			name = ZSyncSample;
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = SyncSchema;
-			productReference = 8D5B49B6048680CD000E48DA /* SyncSchema.syncschema */;
+			productReference = 8D5B49B6048680CD000E48DA /* ZSyncSample.syncschema */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -122,7 +119,7 @@
 			projectDirPath = "";
 			projectRoot = ..;
 			targets = (
-				8D5B49AC048680CD000E48DA /* SyncSchema */,
+				8D5B49AC048680CD000E48DA /* ZSyncSample */,
 			);
 		};
 /* End PBXProject section */
@@ -134,7 +131,6 @@
 			files = (
 				5AA81A61067145AD002E4978 /* Schema.plist in Resources */,
 				5A08A9540729C81600F70D60 /* SyncDataClass.tiff in Resources */,
-				5A08A9770729C83A00F70D60 /* Schema.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,17 +146,6 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXVariantGroup section */
-		5A08A9740729C83A00F70D60 /* Schema.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5A08A9680729C82200F70D60 /* English */,
-			);
-			name = Schema.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		5AE1077608A96056006FCEC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -168,7 +153,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = SyncSchema;
+				PRODUCT_NAME = ZSyncSample;
 				WRAPPER_EXTENSION = syncschema;
 			};
 			name = Debug;
@@ -179,7 +164,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = SyncSchema;
+				PRODUCT_NAME = ZSyncSample;
 				SKIP_INSTALL = NO;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = syncschema;
@@ -216,7 +201,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5AE1077508A96056006FCEC0 /* Build configuration list for PBXNativeTarget "SyncSchema" */ = {
+		5AE1077508A96056006FCEC0 /* Build configuration list for PBXNativeTarget "ZSyncSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5AE1077608A96056006FCEC0 /* Debug */,

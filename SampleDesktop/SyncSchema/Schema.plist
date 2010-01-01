@@ -5,21 +5,19 @@
 	<key>DataClasses</key>
 	<array>
 		<dict>
+			<key>Name</key>
+			<string>com.zarrastudios.zsync.SampleData</string>
 			<key>ImagePath</key>
 			<string>SyncDataClass.tiff</string>
-			<key>Name</key>
-			<string>com.zarrastudios.ZSync</string>
 		</dict>
 	</array>
   
   <key>ManagedObjectModels</key>
   <array>
-  
-    <string>../DataModel.mom</string>
-  
+    <string>../../../DataModel.mom</string>
   </array>
   
 	<key>Name</key>
-	<string>com.zarrastudios.ZSync</string>
+	<string>com.zarrastudios.zsync.SampleSchema</string>
 </dict>
 </plist>

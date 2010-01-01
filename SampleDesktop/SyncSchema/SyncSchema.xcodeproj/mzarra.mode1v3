@@ -259,18 +259,21 @@
 						<dict>
 							<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 							<array>
+								<string>089C166AFE841209C02AAC07</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>B691FAAF10ED773C00207210</string>
+								<string>B691FD4510ED985300207210</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>0</integer>
+									<integer>8</integer>
+									<integer>7</integer>
+									<integer>6</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {186, 383}}</string>
+							<string>{{0, 0}, {186, 345}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -282,14 +285,14 @@
 					<key>GeometryConfiguration</key>
 					<dict>
 						<key>Frame</key>
-						<string>{{0, 0}, {203, 401}}</string>
+						<string>{{0, 0}, {203, 363}}</string>
 						<key>GroupTreeTableConfiguration</key>
 						<array>
 							<string>MainColumn</string>
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>1422 917 482 442 0 0 2560 1418 </string>
+						<string>333 1014 597 404 0 0 2560 1418 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -305,15 +308,13 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>MyNewFile14.java</string>
+								<string>&lt;No Editor&gt;</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
-										<key>PBXProjectModuleLabel</key>
-										<string>MyNewFile14.java</string>
 									</dict>
 									<key>SplitCount</key>
 									<string>1</string>
@@ -324,9 +325,9 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {274, 0}}</string>
+								<string>{{0, 0}, {389, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>1422 917 482 442 0 0 2560 1418 </string>
+								<string>333 1014 597 404 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -346,18 +347,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 5}, {274, 396}}</string>
+								<string>{{0, 5}, {389, 358}}</string>
 								<key>RubberWindowFrame</key>
-								<string>1422 917 482 442 0 0 2560 1418 </string>
+								<string>333 1014 597 404 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>396pt</string>
+							<string>358pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>274pt</string>
+					<string>389pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -372,9 +373,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B691FAB010ED773C00207210</string>
+				<string>B691FCFA10ED94B300207210</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B691FAB110ED773C00207210</string>
+				<string>B691FCFB10ED94B300207210</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -512,12 +513,11 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>B691FAB210ED773C00207210</string>
 		<string>B6457E4D10B05ABF00A96714</string>
 		<string>/Users/mzarra/Projects/ZSync/SampleDesktop/SyncSchema/SyncSchema.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>1422 917 482 442 0 0 2560 1418 </string>
+	<string>333 1014 597 404 0 0 2560 1418 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -594,7 +594,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B6457E4D10B05ABF00A96714</string>
-				<string>B691FAB510ED773C00207210</string>
+				<string>B691FCFC10ED94B300207210</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
