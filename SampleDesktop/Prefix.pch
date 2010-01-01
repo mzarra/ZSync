@@ -12,4 +12,5 @@
 #ifdef __OBJC__
   #import <Cocoa/Cocoa.h>
   #import <CoreData/CoreData.h>
+  #import <SyncServices/SyncServices.h>
 #endif

@@ -13,6 +13,12 @@
 		B691FB4410ED855F00207210 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B691FB3E10ED855F00207210 /* InfoPlist.strings */; };
 		B691FB4510ED855F00207210 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B691FB4010ED855F00207210 /* MainMenu.xib */; };
 		B691FB5F10ED867C00207210 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FB5E10ED867C00207210 /* CoreData.framework */; };
+		B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B691FB8310ED875800207210 /* PairingWindow.xib */; };
+		B691FB8D10ED875800207210 /* NSSocket+ZSExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8610ED875800207210 /* NSSocket+ZSExtensions.m */; };
+		B691FB8E10ED875800207210 /* PairingCodeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8810ED875800207210 /* PairingCodeWindowController.m */; };
+		B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8B10ED875800207210 /* ZSyncHandler.m */; };
+		B691FBAB10ED879D00207210 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBA010ED879D00207210 /* libMYNetwork-Desktop.a */; };
+		B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBBC10ED884000207210 /* SyncServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +35,32 @@
 		B691FB4910ED857100207210 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B691FB4A10ED857100207210 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		B691FB5E10ED867C00207210 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		B691FB8410ED875800207210 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PairingWindow.xib; sourceTree = "<group>"; };
+		B691FB8510ED875800207210 /* NSSocket+ZSExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSSocket+ZSExtensions.h"; sourceTree = "<group>"; };
+		B691FB8610ED875800207210 /* NSSocket+ZSExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSSocket+ZSExtensions.m"; sourceTree = "<group>"; };
+		B691FB8710ED875800207210 /* PairingCodeWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingCodeWindowController.h; sourceTree = "<group>"; };
+		B691FB8810ED875800207210 /* PairingCodeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingCodeWindowController.m; sourceTree = "<group>"; };
+		B691FB8910ED875800207210 /* ZSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSync.h; sourceTree = "<group>"; };
+		B691FB8A10ED875800207210 /* ZSyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncHandler.h; sourceTree = "<group>"; };
+		B691FB8B10ED875800207210 /* ZSyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncHandler.m; sourceTree = "<group>"; };
+		B691FB9910ED879D00207210 /* BLIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLIP.h; sourceTree = "<group>"; };
+		B691FB9A10ED879D00207210 /* BLIPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLIPConnection.h; sourceTree = "<group>"; };
+		B691FB9B10ED879D00207210 /* BLIPDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLIPDispatcher.h; sourceTree = "<group>"; };
+		B691FB9C10ED879D00207210 /* BLIPMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLIPMessage.h; sourceTree = "<group>"; };
+		B691FB9D10ED879D00207210 /* BLIPProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLIPProperties.h; sourceTree = "<group>"; };
+		B691FB9E10ED879D00207210 /* BLIPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLIPRequest.h; sourceTree = "<group>"; };
+		B691FB9F10ED879D00207210 /* IPAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPAddress.h; sourceTree = "<group>"; };
+		B691FBA010ED879D00207210 /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Desktop.a"; sourceTree = "<group>"; };
+		B691FBA210ED879D00207210 /* MYBonjourBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYBonjourBrowser.h; sourceTree = "<group>"; };
+		B691FBA310ED879D00207210 /* MYBonjourService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYBonjourService.h; sourceTree = "<group>"; };
+		B691FBA410ED879D00207210 /* MYDNSService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYDNSService.h; sourceTree = "<group>"; };
+		B691FBA510ED879D00207210 /* MYNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYNetwork.h; sourceTree = "<group>"; };
+		B691FBA610ED879D00207210 /* MYPortMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MYPortMapper.h; sourceTree = "<group>"; };
+		B691FBA710ED879D00207210 /* TCPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPConnection.h; sourceTree = "<group>"; };
+		B691FBA810ED879D00207210 /* TCPEndpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPEndpoint.h; sourceTree = "<group>"; };
+		B691FBA910ED879D00207210 /* TCPListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPListener.h; sourceTree = "<group>"; };
+		B691FBAA10ED879D00207210 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
+		B691FBBC10ED884000207210 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +70,8 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B691FB5F10ED867C00207210 /* CoreData.framework in Frameworks */,
+				B691FBAB10ED879D00207210 /* libMYNetwork-Desktop.a in Frameworks */,
+				B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,6 +83,7 @@
 			children = (
 				B691FB5E10ED867C00207210 /* CoreData.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				B691FBBC10ED884000207210 /* SyncServices.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -74,6 +109,8 @@
 		29B97314FDCFA39411CA2CEA /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				B691FB9810ED879D00207210 /* SharedCode */,
+				B691FB8210ED875800207210 /* DesktopCode */,
 				B691FB3910ED855F00207210 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -119,6 +156,47 @@
 			);
 			path = Classes;
 			sourceTree = "<group>";
+		};
+		B691FB8210ED875800207210 /* DesktopCode */ = {
+			isa = PBXGroup;
+			children = (
+				B691FB8310ED875800207210 /* PairingWindow.xib */,
+				B691FB8510ED875800207210 /* NSSocket+ZSExtensions.h */,
+				B691FB8610ED875800207210 /* NSSocket+ZSExtensions.m */,
+				B691FB8710ED875800207210 /* PairingCodeWindowController.h */,
+				B691FB8810ED875800207210 /* PairingCodeWindowController.m */,
+				B691FB8910ED875800207210 /* ZSync.h */,
+				B691FB8A10ED875800207210 /* ZSyncHandler.h */,
+				B691FB8B10ED875800207210 /* ZSyncHandler.m */,
+			);
+			name = DesktopCode;
+			path = ../DesktopCode;
+			sourceTree = SOURCE_ROOT;
+		};
+		B691FB9810ED879D00207210 /* SharedCode */ = {
+			isa = PBXGroup;
+			children = (
+				B691FB9910ED879D00207210 /* BLIP.h */,
+				B691FB9A10ED879D00207210 /* BLIPConnection.h */,
+				B691FB9B10ED879D00207210 /* BLIPDispatcher.h */,
+				B691FB9C10ED879D00207210 /* BLIPMessage.h */,
+				B691FB9D10ED879D00207210 /* BLIPProperties.h */,
+				B691FB9E10ED879D00207210 /* BLIPRequest.h */,
+				B691FB9F10ED879D00207210 /* IPAddress.h */,
+				B691FBA010ED879D00207210 /* libMYNetwork-Desktop.a */,
+				B691FBA210ED879D00207210 /* MYBonjourBrowser.h */,
+				B691FBA310ED879D00207210 /* MYBonjourService.h */,
+				B691FBA410ED879D00207210 /* MYDNSService.h */,
+				B691FBA510ED879D00207210 /* MYNetwork.h */,
+				B691FBA610ED879D00207210 /* MYPortMapper.h */,
+				B691FBA710ED879D00207210 /* TCPConnection.h */,
+				B691FBA810ED879D00207210 /* TCPEndpoint.h */,
+				B691FBA910ED879D00207210 /* TCPListener.h */,
+				B691FBAA10ED879D00207210 /* ZSyncShared.h */,
+			);
+			name = SharedCode;
+			path = ../SharedCode;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -172,6 +250,7 @@
 			files = (
 				B691FB4410ED855F00207210 /* InfoPlist.strings in Resources */,
 				B691FB4510ED855F00207210 /* MainMenu.xib in Resources */,
+				B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +263,9 @@
 			files = (
 				B691FB4210ED855F00207210 /* AppDelegate.m in Sources */,
 				B691FB4310ED855F00207210 /* main.m in Sources */,
+				B691FB8D10ED875800207210 /* NSSocket+ZSExtensions.m in Sources */,
+				B691FB8E10ED875800207210 /* PairingCodeWindowController.m in Sources */,
+				B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +290,14 @@
 			path = en.lproj;
 			sourceTree = "<group>";
 		};
+		B691FB8310ED875800207210 /* PairingWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B691FB8410ED875800207210 /* en */,
+			);
+			name = PairingWindow.xib;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -224,6 +314,11 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../SharedCode\"",
+				);
+				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = ZSyncDaemon;
 			};
 			name = Debug;
@@ -238,6 +333,10 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../SharedCode\"",
+				);
 				PRODUCT_NAME = ZSyncDaemon;
 			};
 			name = Release;

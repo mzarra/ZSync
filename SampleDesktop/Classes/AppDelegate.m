@@ -1,16 +1,8 @@
 #import "AppDelegate.h"
 
-#import "ZSync.h"
-
 @implementation AppDelegate
 
-@synthesize imageView;
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-  [[ZSyncHandler shared] setDelegate:self];
-  [[ZSyncHandler shared] startBroadcasting];
-}
+@synthesize window;
 
 - (NSString *)applicationSupportDirectory 
 {
@@ -18,6 +10,65 @@
   NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
   return [basePath stringByAppendingPathComponent:@"SampleDesktop"];
 }
+
+#pragma mark -
+#pragma mark Application Delegate
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+  //Register the sync client
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"SyncSchema" ofType:@"syncschema"];
+  ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender 
+{
+  if (!managedObjectContext) return NSTerminateNow;
+  
+  if (![managedObjectContext commitEditing]) {
+    NSLog(@"%@:%s unable to commit editing to terminate", [self class], _cmd);
+    return NSTerminateCancel;
+  }
+  
+  if (![managedObjectContext hasChanges]) return NSTerminateNow;
+  
+  NSError *error = nil;
+  if (![managedObjectContext save:&error]) {
+    
+    BOOL result = [sender presentError:error];
+    if (result) return NSTerminateCancel;
+    
+    NSString *question = NSLocalizedString(@"Could not save changes while quitting.  Quit anyway?", @"Quit without saves error question message");
+    NSString *info = NSLocalizedString(@"Quitting now will lose any changes you have made since the last successful save", @"Quit without saves error question info");
+    NSString *quitButton = NSLocalizedString(@"Quit anyway", @"Quit anyway button title");
+    NSString *cancelButton = NSLocalizedString(@"Cancel", @"Cancel button title");
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert setMessageText:question];
+    [alert setInformativeText:info];
+    [alert addButtonWithTitle:quitButton];
+    [alert addButtonWithTitle:cancelButton];
+    
+    NSInteger answer = [alert runModal];
+    [alert release];
+    alert = nil;
+    
+    if (answer == NSAlertAlternateReturn) return NSTerminateCancel;
+    
+  }
+  
+  return NSTerminateNow;
+}
+
+#pragma mark -
+#pragma mark Window Delegate
+
+- (NSUndoManager *)windowWillReturnUndoManager:(NSWindow *)window 
+{
+  return [[self managedObjectContext] undoManager];
+}
+
+#pragma mark -
+#pragma mark Core Data
 
 - (NSManagedObjectModel *)managedObjectModel 
 {
@@ -84,67 +135,23 @@
   return managedObjectContext;
 }
 
-- (NSUndoManager *)windowWillReturnUndoManager:(NSWindow *)window 
+#pragma mark -
+#pragma mark Actions
+
+- (IBAction)addData:(id)sender;
 {
-  return [[self managedObjectContext] undoManager];
+}
+
+- (IBAction)changeData:(id)sender;
+{
 }
 
 - (IBAction) saveAction:(id)sender 
 {
   NSError *error = nil;
   
-  if (![[self managedObjectContext] commitEditing]) {
-    NSLog(@"%@:%s unable to commit editing before saving", [self class], _cmd);
-  }
-  
-  if (![[self managedObjectContext] save:&error]) {
-    [[NSApplication sharedApplication] presentError:error];
-  }
-}
-
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender 
-{
-  [[ZSyncHandler shared] stopBroadcasting];
-  
-  if (!managedObjectContext) return NSTerminateNow;
-  
-  if (![managedObjectContext commitEditing]) {
-    NSLog(@"%@:%s unable to commit editing to terminate", [self class], _cmd);
-    return NSTerminateCancel;
-  }
-  
-  if (![managedObjectContext hasChanges]) return NSTerminateNow;
-  
-  NSError *error = nil;
-  if (![managedObjectContext save:&error]) {
-    
-    BOOL result = [sender presentError:error];
-    if (result) return NSTerminateCancel;
-    
-    NSString *question = NSLocalizedString(@"Could not save changes while quitting.  Quit anyway?", @"Quit without saves error question message");
-    NSString *info = NSLocalizedString(@"Quitting now will lose any changes you have made since the last successful save", @"Quit without saves error question info");
-    NSString *quitButton = NSLocalizedString(@"Quit anyway", @"Quit anyway button title");
-    NSString *cancelButton = NSLocalizedString(@"Cancel", @"Cancel button title");
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:question];
-    [alert setInformativeText:info];
-    [alert addButtonWithTitle:quitButton];
-    [alert addButtonWithTitle:cancelButton];
-    
-    NSInteger answer = [alert runModal];
-    [alert release];
-    alert = nil;
-    
-    if (answer == NSAlertAlternateReturn) return NSTerminateCancel;
-    
-  }
-  
-  return NSTerminateNow;
-}
-
-- (void)showImage:(NSImage*)image
-{
-  [[self imageView] setImage:image];
+  ZAssert([[self managedObjectContext] commitEditing], @"Failed to commit");
+  ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 @end

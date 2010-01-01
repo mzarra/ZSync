@@ -228,8 +228,10 @@
     [data release], data = nil;
     [dictionary release], dictionary = nil;
     
-    [[NSFileManager defaultManager] removeFileAtPath:[[store URL] path] handler:nil];
     NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:[[store URL] path] error:&error];
+    ZAssert(error == nil, @"Error removing file: %@\n%@", [[store URL] path], [error localizedDescription]);
+    
     if (![persistentStoreCoordinator removePersistentStore:store error:&error]) {
       ALog(@"Error removing persistent store: %@", [error localizedDescription]);
     }

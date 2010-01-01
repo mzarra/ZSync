@@ -27,12 +27,14 @@
 //
 
 #import "AppDelegate.h"
+#import "ZSync.h"
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification 
 {
-	// Insert code here to initialize your application 
+  [[ZSyncHandler shared] setDelegate:self];
+  [[ZSyncHandler shared] startBroadcasting];
 }
 
 @end
