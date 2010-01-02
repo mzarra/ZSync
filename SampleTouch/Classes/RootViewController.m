@@ -37,9 +37,12 @@
 
 - (void)refresh:(id)sender
 {
+  DLog(@"%s refreshing the fetchedResultsController", __PRETTY_FUNCTION__);
   NSError *error = nil;
+  //[fetchedResultsController release], fetchedResultsController = nil;
   [[self fetchedResultsController] performFetch:&error];
   ZAssert(error == nil, @"Error fetching: %@", [error localizedDescription]);
+  [[self tableView] reloadData];
 }
 
 #pragma mark -

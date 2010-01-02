@@ -17,5 +17,6 @@
 - (IBAction)saveAction:(id)sender;
 - (IBAction)addData:(id)sender;
 - (IBAction)changeData:(id)sender;
+- (IBAction)performSync:(id)sender;
 
 @end

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64FE70310EE728F00B15A8F /* clientDescription.plist */; };
+		B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */; };
+		B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B64FE93F10EF35DF00B15A8F /* libz.dylib */; };
 		B691FB4210ED855F00207210 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB3B10ED855F00207210 /* AppDelegate.m */; };
 		B691FB4310ED855F00207210 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB3C10ED855F00207210 /* main.m */; };
 		B691FB4410ED855F00207210 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B691FB3E10ED855F00207210 /* InfoPlist.strings */; };
@@ -19,14 +22,17 @@
 		B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8B10ED875800207210 /* ZSyncHandler.m */; };
 		B691FBAB10ED879D00207210 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBA010ED879D00207210 /* libMYNetwork-Desktop.a */; };
 		B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBBC10ED884000207210 /* SyncServices.framework */; };
+		B69D58C510EF45630047178B /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = B69D58C410EF45630047178B /* GTMNSData+zlib.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* ZSyncDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZSyncDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B64FE70310EE728F00B15A8F /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
+		B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		B64FE93F10EF35DF00B15A8F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B691FB3A10ED855F00207210 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B691FB3B10ED855F00207210 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B691FB3C10ED855F00207210 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Classes/main.m; sourceTree = "<group>"; };
@@ -61,6 +67,9 @@
 		B691FBA910ED879D00207210 /* TCPListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPListener.h; sourceTree = "<group>"; };
 		B691FBAA10ED879D00207210 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B691FBBC10ED884000207210 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
+		B69D58C210EF45630047178B /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		B69D58C310EF45630047178B /* GTMNSData+zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSData+zlib.h"; sourceTree = "<group>"; };
+		B69D58C410EF45630047178B /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +81,7 @@
 				B691FB5F10ED867C00207210 /* CoreData.framework in Frameworks */,
 				B691FBAB10ED879D00207210 /* libMYNetwork-Desktop.a in Frameworks */,
 				B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */,
+				B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +102,6 @@
 			isa = PBXGroup;
 			children = (
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
@@ -109,6 +118,7 @@
 		29B97314FDCFA39411CA2CEA /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				B69D58C110EF45630047178B /* GoogleToolboxSubset */,
 				B691FB9810ED879D00207210 /* SharedCode */,
 				B691FB8210ED875800207210 /* DesktopCode */,
 				B691FB3910ED855F00207210 /* Classes */,
@@ -133,6 +143,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B64FE7C710EEA24500B15A8F /* DataModel */,
+				B64FE70310EE728F00B15A8F /* clientDescription.plist */,
 				B691FB3E10ED855F00207210 /* InfoPlist.strings */,
 				B691FB4010ED855F00207210 /* MainMenu.xib */,
 			);
@@ -144,9 +156,19 @@
 			children = (
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				B64FE93F10EF35DF00B15A8F /* libz.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
+		};
+		B64FE7C710EEA24500B15A8F /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+				B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */,
+			);
+			name = DataModel;
+			path = ../DataModel;
+			sourceTree = SOURCE_ROOT;
 		};
 		B691FB3910ED855F00207210 /* Classes */ = {
 			isa = PBXGroup;
@@ -196,6 +218,17 @@
 			);
 			name = SharedCode;
 			path = ../SharedCode;
+			sourceTree = SOURCE_ROOT;
+		};
+		B69D58C110EF45630047178B /* GoogleToolboxSubset */ = {
+			isa = PBXGroup;
+			children = (
+				B69D58C210EF45630047178B /* GTMDefines.h */,
+				B69D58C310EF45630047178B /* GTMNSData+zlib.h */,
+				B69D58C410EF45630047178B /* GTMNSData+zlib.m */,
+			);
+			name = GoogleToolboxSubset;
+			path = ../GoogleToolboxSubset;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -251,6 +284,7 @@
 				B691FB4410ED855F00207210 /* InfoPlist.strings in Resources */,
 				B691FB4510ED855F00207210 /* MainMenu.xib in Resources */,
 				B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */,
+				B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,6 +300,8 @@
 				B691FB8D10ED875800207210 /* NSSocket+ZSExtensions.m in Sources */,
 				B691FB8E10ED875800207210 /* PairingCodeWindowController.m in Sources */,
 				B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */,
+				B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */,
+				B69D58C510EF45630047178B /* GTMNSData+zlib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

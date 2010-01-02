@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SyncsWith</key>
-	<dict>
-		<key>SyncAlertTypes</key>
-		<array>
-			<string>app</string>
-			<string>device</string>
-		</array>
-	</dict>
 	<key>DisplayName</key>
 	<string>SampleDesktop</string>
 	<key>Entities</key>
@@ -53,6 +45,14 @@
 		</array>
 	</dict>
 	<key>Type</key>
-	<string>app</string>
+	<string>device</string>
+	<key>SyncsWith</key>
+	<dict>
+		<key>SyncAlertTypes</key>
+		<array>
+			<string>app</string>
+			<string>device</string>
+		</array>
+	</dict>
 </dict>
 </plist>

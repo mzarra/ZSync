@@ -108,7 +108,6 @@
   MYBonjourBrowser *_serviceBrowser;
   BLIPConnection *_connection;
   
-  NSString *schemaName;
   NSInteger majorVersionNumber;
   NSInteger minorVersionNumber;
   
@@ -123,7 +122,6 @@
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
-@property (nonatomic, copy) NSString *schemaName;
 @property (nonatomic, retain) MYBonjourBrowser *serviceBrowser;
 @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
@@ -135,7 +133,7 @@
  */
 + (id)shared;
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator schemaName:(NSString*)name;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 
 - (void)requestSync;
 - (void)requestPairing:(ZSyncService*)server;

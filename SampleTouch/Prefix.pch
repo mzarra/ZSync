@@ -20,8 +20,9 @@
   #import <UIKit/UIKit.h>
   #import <CoreData/CoreData.h>
   #import <QuartzCore/QuartzCore.h>
+  #import "GTMDefines.h"
+  #import "GTMNSData+zlib.h"
 #endif
 
 #define kCellIdentifier @"kCellIdentifier"
 #define kRefreshMOC @"kRefreshMOC"
-#define kSyncSchemaName @"com.zarrastudios.ZSync"

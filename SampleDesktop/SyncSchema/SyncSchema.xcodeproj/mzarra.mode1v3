@@ -209,8 +209,6 @@
 			<key>ChosenToolbarItems</key>
 			<array>
 				<string>active-combo-popup</string>
-				<string>debugger-enable-breakpoints</string>
-				<string>build-and-go</string>
 				<string>NSToolbarFlexibleSpaceItem</string>
 				<string>com.apple.pbx.toolbar.searchfield</string>
 			</array>
@@ -261,15 +259,13 @@
 							<array>
 								<string>089C166AFE841209C02AAC07</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>B691FD4510ED985300207210</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>8</integer>
-									<integer>7</integer>
-									<integer>6</integer>
+									<integer>3</integer>
+									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -292,7 +288,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>333 1014 597 404 0 0 2560 1418 </string>
+						<string>224 774 597 404 0 0 1920 1178 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -308,13 +304,15 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>&lt;No Editor&gt;</string>
+								<string></string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
+										<key>PBXProjectModuleLabel</key>
+										<string></string>
 									</dict>
 									<key>SplitCount</key>
 									<string>1</string>
@@ -327,7 +325,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {389, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>333 1014 597 404 0 0 2560 1418 </string>
+								<string>224 774 597 404 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -349,7 +347,7 @@
 								<key>Frame</key>
 								<string>{{0, 5}, {389, 358}}</string>
 								<key>RubberWindowFrame</key>
-								<string>333 1014 597 404 0 0 2560 1418 </string>
+								<string>224 774 597 404 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -373,9 +371,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B691FCFA10ED94B300207210</string>
+				<string>B64FE6E710EE6ECF00B15A8F</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B691FCFB10ED94B300207210</string>
+				<string>B64FE6E810EE6ECF00B15A8F</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -513,11 +511,12 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>B64FE6EA10EE6ECF00B15A8F</string>
 		<string>B6457E4D10B05ABF00A96714</string>
 		<string>/Users/mzarra/Projects/ZSync/SampleDesktop/SyncSchema/SyncSchema.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>333 1014 597 404 0 0 2560 1418 </string>
+	<string>224 774 597 404 0 0 1920 1178 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -547,7 +546,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {500, 218}}</string>
 								<key>RubberWindowFrame</key>
-								<string>124 752 500 500 0 0 2560 1418 </string>
+								<string>85 557 500 500 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -571,7 +570,7 @@
 								<key>Frame</key>
 								<string>{{0, 223}, {500, 236}}</string>
 								<key>RubberWindowFrame</key>
-								<string>124 752 500 500 0 0 2560 1418 </string>
+								<string>85 557 500 500 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
@@ -594,7 +593,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B6457E4D10B05ABF00A96714</string>
-				<string>B691FCFC10ED94B300207210</string>
+				<string>B64FE6E910EE6ECF00B15A8F</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -603,7 +602,7 @@
 			<key>WindowContentMinSize</key>
 			<string>486 300</string>
 			<key>WindowString</key>
-			<string>124 752 500 500 0 0 2560 1418 </string>
+			<string>85 557 500 500 0 0 1920 1178 </string>
 			<key>WindowToolGUID</key>
 			<string>B6457E4D10B05ABF00A96714</string>
 			<key>WindowToolIsVisible</key>

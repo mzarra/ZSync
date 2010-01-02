@@ -21,7 +21,7 @@
 	[window addSubview:[navigationController view]];
   [window makeKeyAndVisible];
   
-  [[ZSyncTouchHandler shared] registerDelegate:self withPersistentStoreCoordinator:[self persistentStoreCoordinator] schemaName:kSyncSchemaName];
+  [[ZSyncTouchHandler shared] registerDelegate:self withPersistentStoreCoordinator:[self persistentStoreCoordinator]];
   
   [[[self hoverView] layer] setCornerRadius:10.0f];
   [[[self hoverView] layer] setBorderColor:[[UIColor whiteColor] CGColor]];
@@ -86,10 +86,14 @@
   if (persistentStoreCoordinator) return persistentStoreCoordinator;
 	
   NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent: @"ApplicationData.sqlite"]];
+  
+  NSMutableDictionary *options = [NSMutableDictionary dictionary];
+  [options setValue:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
+  [options setValue:[NSNumber numberWithBool:YES] forKey:NSInferMappingModelAutomaticallyOption];
 	
 	NSError *error = nil;
   persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-  if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error]) {
+  if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:options error:&error]) {
 		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 		abort();
   }    

@@ -25,7 +25,6 @@
   //Register the sync client
   NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncSample" ofType:@"syncschema"];
   ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
-  [[self syncClient] setSyncAlertHandler:self selector:@selector(syncClient:willSyncEntityNames:)];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)sender 
@@ -71,10 +70,10 @@
   NSString *clientIdentifier = [[NSBundle mainBundle] bundleIdentifier];
   ISyncClient *client = nil;
   client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeServer];
-  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypePeer];  
+//  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
+//  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  [client setSyncAlertHandler:self selector:@selector(syncClient:willSyncEntityNames:)];
+
   return client;
 }
 
@@ -83,6 +82,25 @@
   DLog(@"%s fired %@", __PRETTY_FUNCTION__, entityNames);
   NSError *error = nil;
   [[self persistentStoreCoordinator] syncWithClient:syncClient inBackground:NO handler:self error:&error];
+  ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
+}
+
+- (void)saveFired:(NSNotification*)notification
+{
+  DLog(@"%s save fired", __PRETTY_FUNCTION__);
+}
+
+- (IBAction)performSync:(id)sender;
+{
+  DLog(@"%s syncing", __PRETTY_FUNCTION__);
+  NSError *error = nil;
+  ISyncClient *client = [self syncClient];
+  ZAssert(client != nil,@"Sync client is nil");
+  [[self persistentStoreCoordinator] syncWithClient:client inBackground:NO handler:self error:&error];
+  if (error && [error code] == -1) {
+    DLog(@"%s already in a sync", __PRETTY_FUNCTION__);
+    return;
+  }
   ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
 }
 
@@ -151,7 +169,7 @@
 	
 	// Save the context.
   NSError *error = nil;
-  ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
+  //ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 - (void)modifySecondChild:(NSManagedObject*)object
@@ -284,7 +302,7 @@
     [self insertNewObject];
   }
   NSError *error = nil;
-  ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
+  //ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 - (IBAction)changeData:(id)sender;
@@ -302,7 +320,7 @@
     [self modifyTopObject:topLevelObject];
   }
   
-  ZAssert([moc save:&error], @"Error saving context: %@", [error localizedDescription]);
+  //ZAssert([moc save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
 - (IBAction)saveAction:(id)sender 
@@ -311,20 +329,24 @@
   
   ZAssert([[self managedObjectContext] commitEditing], @"Failed to commit");
   ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
-  
-  ISyncClient *client = [self syncClient];
-  ZAssert(client != nil,@"Sync client is nil");
-  [[self persistentStoreCoordinator] syncWithClient:client inBackground:NO handler:self error:&error];
-  ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
 }
 
 #pragma mark - 
 #pragma mark NSPersistentStoreCoordinatorSyncing
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
-              didFinishSyncSession:(ISyncSession*)session
+- (NSArray*)managedObjectContextsToMonitorWhenSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator
 {
-  DLog(@"%s fired", __PRETTY_FUNCTION__);
+	return [NSArray arrayWithObject:[self managedObjectContext]];
+}
+
+- (NSArray*)managedObjectContextsToReloadAfterSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator
+{
+	return [NSArray arrayWithObject:[self managedObjectContext]];
+}
+
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didFinishSyncSession:(ISyncSession *)session
+{
+  DLog(@"%s sync complete", __PRETTY_FUNCTION__);
 }
 
 @end

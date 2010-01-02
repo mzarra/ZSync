@@ -46,7 +46,6 @@
 @synthesize connection = _connection;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
-@synthesize schemaName;
 @synthesize majorVersionNumber;
 @synthesize minorVersionNumber;
 
@@ -86,7 +85,10 @@
 
 - (void)requestSync;
 {
-  if (_serviceBrowser) return; //Already in the middle of something
+  if (_serviceBrowser) {
+    DLog(@"%s service browser is not nil", __PRETTY_FUNCTION__);
+    return; //Already in the middle of something
+  }
   
   //Need to find all of the available servers
   _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
@@ -206,25 +208,31 @@
   
 }
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator schemaName:(NSString*)name;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
   [self setDelegate:delegate];
-  [self setSchemaName:name];
   [self setPersistentStoreCoordinator:coordinator];
 }
 
 - (void)receiveFile:(BLIPRequest*)request
 {
+  ZAssert([request complete], @"Message is incomplete");
+  DLog(@"%s file received", __PRETTY_FUNCTION__);
   if (!receivedFileLookupDictionary) {
     receivedFileLookupDictionary = [[NSMutableDictionary alloc] init];
   }
   NSMutableDictionary *fileDict = [[NSMutableDictionary alloc] init];
   [fileDict setValue:[request valueOfProperty:zsStoreIdentifier] forKey:zsStoreIdentifier];
-  [fileDict setValue:[request valueOfProperty:zsStoreConfiguration] forKey:zsStoreConfiguration];
+  if (![[request valueOfProperty:zsStoreConfiguration] isEqualToString:@"PF_DEFAULT_CONFIGURATION_NAME"]) {
+    [fileDict setValue:[request valueOfProperty:zsStoreConfiguration] forKey:zsStoreConfiguration];
+  }
   [fileDict setValue:[request valueOfProperty:zsStoreType] forKey:zsStoreType];
   
   NSString *tempFilename = [[NSProcessInfo processInfo] globallyUniqueString];
   NSString *tempPath = [[self cachePath] stringByAppendingPathComponent:tempFilename];
+  DLog(@"%s file written to \n%@", __PRETTY_FUNCTION__, tempPath);
+  
+  DLog(@"%s request length: %i", __PRETTY_FUNCTION__, [[request body] length]);
   [[request body] writeToFile:tempPath atomically:YES];
   [fileDict setValue:tempPath forKey:zsTempFilePath];
   
@@ -256,19 +264,18 @@
     if (*error) return NO;
   }
   
-  [fileManager moveItemAtPath:fileOriginalPath toPath:originalFileTempPath error:error];
-  if (*error) return NO;
+  if ([fileManager fileExistsAtPath:fileOriginalPath]) {
+    [fileManager moveItemAtPath:fileOriginalPath toPath:originalFileTempPath error:error];
+    if (*error) return NO;
+  }
   
   [fileManager moveItemAtPath:newFileTempPath toPath:fileOriginalPath error:error];
   if (*error) return NO;
   
   NSURL *fileURL = [NSURL fileURLWithPath:fileOriginalPath];
-  NSPersistentStore *newStore = [psc addPersistentStoreWithType:[replacement valueForKey:zsStoreType] configuration:[replacement valueForKey:zsStoreConfiguration] URL:fileURL options:storeOptions error:error];
+  [psc addPersistentStoreWithType:[replacement valueForKey:zsStoreType] configuration:[replacement valueForKey:zsStoreConfiguration] URL:fileURL options:storeOptions error:error];
   [storeOptions release], storeOptions = nil;
   if (*error) return NO;
-  
-  // MSZ: Is this even needed at this point?
-  [newStore setIdentifier:[replacement valueForKey:zsStoreIdentifier]];
   
   return YES;
 }
@@ -368,6 +375,7 @@
   NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
   [dictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [request setNoReply:YES];
   [[self connection] sendRequest:request];
   [dictionary release], dictionary = nil;
 }
@@ -381,18 +389,20 @@
   NSAssert([self persistentStoreCoordinator] != nil, @"PSD is nil.  Unable to upload");
   
   for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
-    DLog(@"%s url %@\nIdentifier: %@", __PRETTY_FUNCTION__, [store URL], [store identifier]);
     NSData *data = [[NSData alloc] initWithContentsOfMappedFile:[[store URL] path]];
+    DLog(@"%s url %@\nIdentifier: %@\nSize: %i", __PRETTY_FUNCTION__, [store URL], [store identifier], [data length]);
     
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[store identifier] forKey:zsStoreIdentifier];
-    [dictionary setValue:[store configurationName] forKey:zsStoreConfiguration];
+    if (![[store configurationName] isEqualToString:@"PF_DEFAULT_CONFIGURATION_NAME"]) {
+      [dictionary setValue:[store configurationName] forKey:zsStoreConfiguration];
+    }
     [dictionary setValue:[store type] forKey:zsStoreType];
     [dictionary setValue:zsActID(zsActionStoreUpload) forKey:zsAction];
     
     BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
     // TODO: Compression is not working.  Need to find out why
-    //[request setCompressed:YES];
+    [request setCompressed:YES];
     [[self connection] sendRequest:request];
     [data release], data = nil;
     [dictionary release], dictionary = nil;
@@ -400,6 +410,24 @@
     
     [storeFileIdentifiers addObject:[store identifier]];
   }
+}
+
+- (void)processTestFileTransfer:(BLIPRequest*)request
+{
+  NSData *data = [request body];
+  DLog(@"%s length %i", __PRETTY_FUNCTION__, [data length]);
+  NSString *path = [self cachePath];
+  path = [path stringByAppendingPathComponent:@"test.jpg"];
+  
+  NSError *error = nil;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    DLog(@"%s deleting old file", __PRETTY_FUNCTION__);
+    [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+    ZAssert(error == nil, @"error removing test file: %@", [error localizedDescription]);
+  }
+  
+  [data writeToFile:path atomically:YES];
+  DLog(@"%s file written\n%@", __PRETTY_FUNCTION__, path);
 }
 
 #pragma mark -
@@ -419,7 +447,7 @@
   [dict setValue:zsActID([self majorVersionNumber]) forKey:zsSchemaMajorVersion];
   [dict setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
   
-  NSData *data = [[self schemaName] dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *data = [[[UIDevice currentDevice] uniqueIdentifier] dataUsingEncoding:NSUTF8StringEncoding];
   BLIPRequest *request = [connection requestWithBody:data properties:dict];
   [request send];
   [dict release], dict = nil;
@@ -467,6 +495,8 @@
       if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeApproved:)]) {
         [[self delegate] zSyncPairingCodeApproved:self];
       }
+      [[self serviceBrowser] stop];
+      [_serviceBrowser release], _serviceBrowser = nil;
       [self uploadDataToServer];
       return;
     case zsActionAuthenticateFailed:
@@ -510,16 +540,18 @@
 
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
 {
-  DLog(@"%s entered: %@", __PRETTY_FUNCTION__, [request bodyString]);
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
-    case zsActionStoreUpload:
-      DLog(@"%s receiveFile", __PRETTY_FUNCTION__);
-      [self receiveFile:request];
+    case zsActionTestFileTransfer:
+      [self processTestFileTransfer:request];
       return YES;
     case zsActionCompleteSync:
       DLog(@"%s completeSync", __PRETTY_FUNCTION__);
-      [self completeSync];
+      [self performSelector:@selector(completeSync) withObject:nil afterDelay:0.01];
+      return YES;
+    case zsActionStoreUpload:
+      DLog(@"%s receiveFile", __PRETTY_FUNCTION__);
+      [self receiveFile:request];
       return YES;
     default:
       ALog(@"Unknown action received: %i", action);

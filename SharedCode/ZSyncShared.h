@@ -32,7 +32,8 @@ enum {
   zsActionVerifySchema,
   zsActionSchemaSupported,
   zsActionSchemaUnsupported,
-  zsActionFileReceived
+  zsActionFileReceived,
+  zsActionTestFileTransfer
 };
 
 typedef enum {
