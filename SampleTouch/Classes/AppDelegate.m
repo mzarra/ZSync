@@ -110,7 +110,7 @@
 }
 
 #pragma mark -
-#pragma mark ZSyncDelegate
+#pragma mark ZSyncDelegate (Required)
 
 - (void)zSyncNoServerPaired:(NSArray*)availableServers;
 {
@@ -125,28 +125,6 @@
   pairingNavController = [[UINavigationController alloc] initWithRootViewController:controller];
   [[self navigationController] presentModalViewController:pairingNavController animated:YES];
   [controller release], controller = nil;
-}
-
-- (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
-{
-  [self hideHoverView];
-  
-  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
-  [alert show];
-  [alert release], alert = nil;
-  
-  DLog(@"Failure: %@", [error localizedDescription]);
-}
-
-- (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
-{
-  [self hideHoverView];
-  
-  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
-  [alert show];
-  [alert release], alert = nil;
-  
-  DLog(@"Failure: %@", [error localizedDescription]);
 }
 
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
@@ -174,6 +152,31 @@
     [[self pairingNavController] pushViewController:controller animated:YES];
   }
   [controller release], controller = nil;
+}
+
+#pragma mark -
+#pragma mark ZSyncDelegate (Optional)
+
+- (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
+{
+  [self hideHoverView];
+  
+  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+  [alert show];
+  [alert release], alert = nil;
+  
+  DLog(@"Failure: %@", [error localizedDescription]);
+}
+
+- (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
+{
+  [self hideHoverView];
+  
+  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+  [alert show];
+  [alert release], alert = nil;
+  
+  DLog(@"Failure: %@", [error localizedDescription]);
 }
 
 - (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;

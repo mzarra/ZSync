@@ -45,11 +45,31 @@
 
 @protocol ZSyncDelegate 
 
+@required
+
+/* Notification that the server has accepted the device and is awaiting
+ * a pairing code to be sent back.  The pairing code will be displayed
+ * on the server.
+ */
+- (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
+
+/* This is an information message to indicate that a sync has finished.
+ * The application should at this point refresh all displays from the NSManagedObjectContext
+ */
+- (void)zSyncFinished:(ZSyncTouchHandler*)handler;
+
+/* This is an information message to indicate that a sync has begun.
+ * This is a good place to presenta  dialog and pop the UI back to its root
+ */
+- (void)zSyncStarted:(ZSyncTouchHandler*)handler;
+
 /* This message is sent when a list of servers has been created and there is
  * no server currently paired.  It is expected that the app will present a 
  * list of servers or optionally request pairing automatically
  */
 - (void)zSyncNoServerPaired:(NSArray*)availableServers;
+
+@optional
 
 /* This message can be sent at any time when an error occurred.  The description
  * will be populated with information about the failure.
@@ -62,22 +82,6 @@
  * is currently unavailable
  */
 - (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
-
-/* This is an information message to indicate that a sync has begun.
- * This is a good place to presenta  dialog and pop the UI back to its root
- */
-- (void)zSyncStarted:(ZSyncTouchHandler*)handler;
-
-/* This is an information message to indicate that a sync has finished.
- * The application should at this point refresh all displays from the NSManagedObjectContext
- */
-- (void)zSyncFinished:(ZSyncTouchHandler*)handler;
-
-/* Notification that the server has accepted the device and is awaiting
- * a pairing code to be sent back.  The pairing code will be displayed
- * on the server.
- */
-- (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
 
 /* A pairing code was sent to the server and the server rejected it.
  * Another opportunity to enter the pairing code should be displayed
