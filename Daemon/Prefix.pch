@@ -12,6 +12,4 @@
 #ifdef __OBJC__
   #import <Cocoa/Cocoa.h>
   #import <CoreData/CoreData.h>
-  #import "GTMDefines.h"
-  #import "GTMNSData+zlib.h"
 #endif

@@ -168,7 +168,7 @@
   [self insertFirstChildren:newManagedObject];
 	
 	// Save the context.
-  NSError *error = nil;
+  //NSError *error = nil;
   //ZAssert([context save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
@@ -301,7 +301,7 @@
   for (NSInteger index = 0; index < numberOfNewRecords; ++index) {
     [self insertNewObject];
   }
-  NSError *error = nil;
+  //NSError *error = nil;
   //ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 

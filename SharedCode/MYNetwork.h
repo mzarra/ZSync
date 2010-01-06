@@ -8,6 +8,8 @@
  */
 
 #import "BLIP.h"
+#import "GTMDefines.h"
+#import "GTMNSData+zlib.h"
 #import "MYBonjourBrowser.h"
 #import "MYBonjourService.h"
 #import "IPAddress.h"

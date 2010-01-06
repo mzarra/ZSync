@@ -26,7 +26,6 @@
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA32B310ED55C3008724A6 /* ChildViewController.m */; };
-		B6E141F910EF453500C2D289 /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E141F810EF453500C2D289 /* GTMNSData+zlib.m */; };
 		B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */; };
 /* End PBXBuildFile section */
 
@@ -61,9 +60,6 @@
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
 		B6DA32B210ED55C3008724A6 /* ChildViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildViewController.h; sourceTree = "<group>"; };
 		B6DA32B310ED55C3008724A6 /* ChildViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildViewController.m; sourceTree = "<group>"; };
-		B6E141F610EF453500C2D289 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
-		B6E141F710EF453500C2D289 /* GTMNSData+zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSData+zlib.h"; sourceTree = "<group>"; };
-		B6E141F810EF453500C2D289 /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
 		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -114,7 +110,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				B6E141F510EF453500C2D289 /* GoogleToolboxSubset */,
 				B6457FEB10B0A93D00A96714 /* SharedCode */,
 				B631391810AB4E5700E27635 /* DeviceCode */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -192,17 +187,6 @@
 			path = ../DataModel;
 			sourceTree = SOURCE_ROOT;
 		};
-		B6E141F510EF453500C2D289 /* GoogleToolboxSubset */ = {
-			isa = PBXGroup;
-			children = (
-				B6E141F610EF453500C2D289 /* GTMDefines.h */,
-				B6E141F710EF453500C2D289 /* GTMNSData+zlib.h */,
-				B6E141F810EF453500C2D289 /* GTMNSData+zlib.m */,
-			);
-			name = GoogleToolboxSubset;
-			path = ../GoogleToolboxSubset;
-			sourceTree = SOURCE_ROOT;
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -274,7 +258,6 @@
 				B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */,
 				B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */,
 				B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */,
-				B6E141F910EF453500C2D289 /* GTMNSData+zlib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

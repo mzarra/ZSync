@@ -12,6 +12,7 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B633AFEA10C149A8009101EF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633AFE910C149A8009101EF /* CoreData.framework */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
+		B6510A7E10F1067500D22FBC /* App.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6510A7D10F1067500D22FBC /* App.icns */; };
 		B691FC4410ED8E6300207210 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FC4310ED8E6300207210 /* main.m */; };
 		B691FC4910ED8E7400207210 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B691FC4510ED8E7400207210 /* InfoPlist.strings */; };
 		B691FC4A10ED8E7400207210 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B691FC4710ED8E7400207210 /* MainMenu.xib */; };
@@ -50,6 +51,7 @@
 		B633AFE910C149A8009101EF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncSchema.xcodeproj; path = SyncSchema/SyncSchema.xcodeproj; sourceTree = "<group>"; };
 		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
+		B6510A7D10F1067500D22FBC /* App.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = App.icns; sourceTree = "<group>"; };
 		B691FC4310ED8E6300207210 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Classes/main.m; sourceTree = "<group>"; };
 		B691FC4610ED8E7400207210 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B691FC4810ED8E7400207210 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B6510A7D10F1067500D22FBC /* App.icns */,
 				7756732906782D8800D1FEB8 /* DataModel */,
 				B691FC4510ED8E7400207210 /* InfoPlist.strings */,
 				B691FC4710ED8E7400207210 /* MainMenu.xib */,
@@ -238,6 +241,7 @@
 				B691FC4910ED8E7400207210 /* InfoPlist.strings in Resources */,
 				B691FC4A10ED8E7400207210 /* MainMenu.xib in Resources */,
 				B691FD5310EDA99200207210 /* clientDescription.plist in Resources */,
+				B6510A7E10F1067500D22FBC /* App.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
