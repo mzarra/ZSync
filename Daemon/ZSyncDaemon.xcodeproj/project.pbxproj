@@ -22,6 +22,7 @@
 		B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8B10ED875800207210 /* ZSyncHandler.m */; };
 		B691FBAB10ED879D00207210 /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBA010ED879D00207210 /* libMYNetwork-Desktop.a */; };
 		B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBBC10ED884000207210 /* SyncServices.framework */; };
+		B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,9 @@
 		B691FBA910ED879D00207210 /* TCPListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPListener.h; sourceTree = "<group>"; };
 		B691FBAA10ED879D00207210 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B691FBBC10ED884000207210 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
+		B6EC175A10F5033E0051FD2E /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		B6EC175B10F5033E0051FD2E /* GTMNSData+zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSData+zlib.h"; sourceTree = "<group>"; };
+		B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +118,7 @@
 		29B97314FDCFA39411CA2CEA /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				B6EC175910F5033E0051FD2E /* GoogleToolboxSubset */,
 				B691FB9810ED879D00207210 /* SharedCode */,
 				B691FB8210ED875800207210 /* DesktopCode */,
 				B691FB3910ED855F00207210 /* Classes */,
@@ -215,6 +220,17 @@
 			path = ../SharedCode;
 			sourceTree = SOURCE_ROOT;
 		};
+		B6EC175910F5033E0051FD2E /* GoogleToolboxSubset */ = {
+			isa = PBXGroup;
+			children = (
+				B6EC175A10F5033E0051FD2E /* GTMDefines.h */,
+				B6EC175B10F5033E0051FD2E /* GTMNSData+zlib.h */,
+				B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */,
+			);
+			name = GoogleToolboxSubset;
+			path = ../GoogleToolboxSubset;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -285,6 +301,7 @@
 				B691FB8E10ED875800207210 /* PairingCodeWindowController.m in Sources */,
 				B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */,
 				B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */,
+				B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
