@@ -27,7 +27,6 @@
 //
 
 #import "AppDelegate.h"
-#import "ZSync.h"
 
 @implementation AppDelegate
 

@@ -1,4 +1,3 @@
-#import "ZSyncTouch.h"
 
 @interface AppDelegate : NSObject <UIApplicationDelegate, ZSyncDelegate> 
 {

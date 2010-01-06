@@ -21,12 +21,12 @@
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
 		B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B642863F10BEA11700470E43 /* QuartzCore.framework */; };
 		B64FE94710EF35EF00B15A8F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B64FE94610EF35EF00B15A8F /* libz.dylib */; };
-		B68F1A3010C223C5008CCD93 /* libMYNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */; };
 		B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */; };
 		B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13110A748B50063E436 /* MainWindow.xib */; };
 		B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C2E13310A748B50063E436 /* RootViewController.xib */; };
 		B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA32B310ED55C3008724A6 /* ChildViewController.m */; };
 		B6EC175810F503360051FD2E /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC175710F503360051FD2E /* GTMNSData+zlib.m */; };
+		B6EC179B10F508C10051FD2E /* libMYNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EC179A10F508C10051FD2E /* libMYNetwork.a */; };
 		B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */; };
 /* End PBXBuildFile section */
 
@@ -55,7 +55,6 @@
 		B642863F10BEA11700470E43 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B6457FED10B0A94E00A96714 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B64FE94610EF35EF00B15A8F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMYNetwork.a; sourceTree = "<group>"; };
 		B69CD13C10EA9EC4006C50C9 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B6C2E13210A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		B6C2E13410A748B50063E436 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RootViewController.xib; sourceTree = "<group>"; };
@@ -64,6 +63,7 @@
 		B6EC175510F503360051FD2E /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		B6EC175610F503360051FD2E /* GTMNSData+zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSData+zlib.h"; sourceTree = "<group>"; };
 		B6EC175710F503360051FD2E /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
+		B6EC179A10F508C10051FD2E /* libMYNetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMYNetwork.a; sourceTree = "<group>"; };
 		B6FF2CDD10B5106D007AB6D4 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -78,8 +78,8 @@
 				28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */,
 				B6FF2CDE10B5106D007AB6D4 /* CFNetwork.framework in Frameworks */,
 				B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */,
-				B68F1A3010C223C5008CCD93 /* libMYNetwork.a in Frameworks */,
 				B64FE94710EF35EF00B15A8F /* libz.dylib in Frameworks */,
+				B6EC179B10F508C10051FD2E /* libMYNetwork.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,6 +165,7 @@
 		B631391810AB4E5700E27635 /* DeviceCode */ = {
 			isa = PBXGroup;
 			children = (
+				B6EC179A10F508C10051FD2E /* libMYNetwork.a */,
 				B631391910AB4E7F00E27635 /* ZSyncTouch.h */,
 				B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */,
 				B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */,
@@ -176,7 +177,6 @@
 		B6457FEB10B0A93D00A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
-				B68F1A2F10C223C5008CCD93 /* libMYNetwork.a */,
 				B6457FED10B0A94E00A96714 /* ZSyncShared.h */,
 			);
 			name = SharedCode;
@@ -322,6 +322,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
 					"\"$(SRCROOT)/../SharedCode\"",
+					"\"$(SRCROOT)/../DeviceCode\"",
 				);
 				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = SampleTouch;
@@ -340,6 +341,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
 					"\"$(SRCROOT)/../SharedCode\"",
+					"\"$(SRCROOT)/../DeviceCode\"",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "-lMYNetwork-iPhone";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "-lMYNetwork-Simulator";
