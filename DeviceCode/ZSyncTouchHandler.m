@@ -446,8 +446,14 @@
   [dict setValue:zsActID(zsActionVerifySchema) forKey:zsAction];
   [dict setValue:zsActID([self majorVersionNumber]) forKey:zsSchemaMajorVersion];
   [dict setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
+  [dict setValue:[[UIDevice currentDevice] name] forKey:zsDeviceName];
   
-  NSData *data = [[[UIDevice currentDevice] uniqueIdentifier] dataUsingEncoding:NSUTF8StringEncoding];
+  NSString *syncGUID = [[NSUserDefaults standardUserDefaults] stringForKey:zsSyncGUID];
+  if (!syncGUID) {
+    syncGUID = [[NSProcessInfo processInfo] globallyUniqueString];
+    [[NSUserDefaults standardUserDefaults] setValue:syncGUID forKey:zsSyncGUID];
+  }
+  NSData *data = [syncGUID dataUsingEncoding:NSUTF8StringEncoding];
   BLIPRequest *request = [connection requestWithBody:data properties:dict];
   [request send];
   [dict release], dict = nil;

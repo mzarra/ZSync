@@ -26,6 +26,8 @@
 #define zsSyncSchemaName @"ZSyncSchemaName"
 #define zsSchemaMajorVersion @"zsSchemaMajorVersion"
 #define zsSchemaMinorVersion @"zsSchemaMinorVersion"
+#define zsSyncGUID @"zsSyncGUID"
+#define zsDeviceName @"zsDeviceName"
 
 #define zsServerNameSeperator @"**/**"
 

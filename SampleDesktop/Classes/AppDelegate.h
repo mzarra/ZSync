@@ -5,10 +5,13 @@
   NSManagedObjectModel *managedObjectModel;
   NSManagedObjectContext *managedObjectContext;
   
+  NSPanel *syncPanel;
+  
   NSWindow *window;
 }
 
 @property (nonatomic, retain) IBOutlet NSWindow *window;
+@property (nonatomic, retain) IBOutlet NSPanel *syncPanel;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;

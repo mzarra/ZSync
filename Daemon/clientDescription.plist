@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>DisplayName</key>
-	<string>SampleDesktop</string>
+	<string>SampleTouch</string>
 	<key>Entities</key>
 	<dict>
 		<key>com.zarrastudios.zsync.SampleData.TopLevelObject</key>

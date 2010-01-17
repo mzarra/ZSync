@@ -27,9 +27,9 @@
  *  OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
 #import <SyncServices/SyncServices.h>
 #import "ZSyncShared.h"
+#import "ZSyncConnectionDelegate.h"
 
 @interface ZSyncHandler : NSObject <TCPListenerDelegate>
 {
@@ -52,26 +52,7 @@
 - (void)startBroadcasting;
 - (void)stopBroadcasting;
 
-@end
-
-@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate, NSPersistentStoreCoordinatorSyncing>
-{
-  id codeController;
-  BLIPConnection *_connection;
-  NSString *pairingCode;
-  NSString *clientIdentifier;
-  
-  NSMutableArray *storeFileIdentifiers;
-  
-  NSManagedObjectModel *managedObjectModel;
-  NSPersistentStoreCoordinator *persistentStoreCoordinator;
-  NSManagedObjectContext *managedObjectContext;
-}
-
-@property (retain) BLIPConnection *connection;
-@property (retain) NSString *pairingCode;
-@property (retain) NSString *clientIdentifier;
-
-@property (retain) id codeController;
+- (void)connectionClosed:(ZSyncConnectionDelegate*)connection;
+- (void)registerDeviceForPairing:(NSString*)deviceID;
 
 @end

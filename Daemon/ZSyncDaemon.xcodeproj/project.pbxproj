@@ -11,6 +11,7 @@
 		B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64FE70310EE728F00B15A8F /* clientDescription.plist */; };
 		B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */; };
 		B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B64FE93F10EF35DF00B15A8F /* libz.dylib */; };
+		B67ED12E1103765600314759 /* ZSyncConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ED12D1103765600314759 /* ZSyncConnectionDelegate.m */; };
 		B691FB4210ED855F00207210 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB3B10ED855F00207210 /* AppDelegate.m */; };
 		B691FB4310ED855F00207210 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB3C10ED855F00207210 /* main.m */; };
 		B691FB4410ED855F00207210 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B691FB3E10ED855F00207210 /* InfoPlist.strings */; };
@@ -33,6 +34,8 @@
 		B64FE70310EE728F00B15A8F /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
 		B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B64FE93F10EF35DF00B15A8F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		B67ED12C1103765600314759 /* ZSyncConnectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncConnectionDelegate.h; sourceTree = "<group>"; };
+		B67ED12D1103765600314759 /* ZSyncConnectionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncConnectionDelegate.m; sourceTree = "<group>"; };
 		B691FB3A10ED855F00207210 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B691FB3B10ED855F00207210 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B691FB3C10ED855F00207210 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Classes/main.m; sourceTree = "<group>"; };
@@ -191,6 +194,8 @@
 				B691FB8910ED875800207210 /* ZSync.h */,
 				B691FB8A10ED875800207210 /* ZSyncHandler.h */,
 				B691FB8B10ED875800207210 /* ZSyncHandler.m */,
+				B67ED12C1103765600314759 /* ZSyncConnectionDelegate.h */,
+				B67ED12D1103765600314759 /* ZSyncConnectionDelegate.m */,
 			);
 			name = DesktopCode;
 			path = ../DesktopCode;
@@ -302,6 +307,7 @@
 				B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */,
 				B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */,
 				B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */,
+				B67ED12E1103765600314759 /* ZSyncConnectionDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

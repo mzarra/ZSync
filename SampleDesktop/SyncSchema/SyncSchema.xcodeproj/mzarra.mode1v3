@@ -223,6 +223,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -258,13 +260,16 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 							<array>
 								<string>089C166AFE841209C02AAC07</string>
+								<string>5AEAAE81072D7DF3000A3587</string>
+								<string>5A5A718B0674E78700E5A5E1</string>
 								<string>1C37FBAC04509CD000000102</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>3</integer>
+									<integer>5</integer>
+									<integer>4</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -333,8 +338,6 @@
 							<string>0pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -371,9 +374,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B64FE6E710EE6ECF00B15A8F</string>
+				<string>B6EC17D610F53BFC0051FD2E</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B64FE6E810EE6ECF00B15A8F</string>
+				<string>B6EC17D710F53BFC0051FD2E</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -511,9 +514,9 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>B64FE6EA10EE6ECF00B15A8F</string>
+		<string>B6EC17D910F53BFC0051FD2E</string>
 		<string>B6457E4D10B05ABF00A96714</string>
-		<string>/Users/mzarra/Projects/ZSync/SampleDesktop/SyncSchema/SyncSchema.xcodeproj</string>
+		<string>/Users/mzarra/Dropbox/ZSync/SampleDesktop/SyncSchema/SyncSchema.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>224 774 597 404 0 0 1920 1178 </string>
@@ -593,7 +596,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B6457E4D10B05ABF00A96714</string>
-				<string>B64FE6E910EE6ECF00B15A8F</string>
+				<string>B6EC17D810F53BFC0051FD2E</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

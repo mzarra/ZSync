@@ -3,12 +3,14 @@
 @interface AppDelegate()
 
 - (ISyncClient*)syncClient;
+- (IBAction)performSync:(id)sender;
 
 @end
 
 @implementation AppDelegate
 
 @synthesize window;
+@synthesize syncPanel;
 
 - (NSString*)applicationSupportDirectory 
 {
@@ -22,9 +24,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification
 {
-  //Register the sync client
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncSample" ofType:@"syncschema"];
-  ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
+  [self performSync:self];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)sender 
@@ -69,9 +69,14 @@
 {
   NSString *clientIdentifier = [[NSBundle mainBundle] bundleIdentifier];
   ISyncClient *client = nil;
-  client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
-//  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
-//  [client setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  client = [[ISyncManager sharedManager] clientWithIdentifier:clientIdentifier];
+  //client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
+  if (!client) {
+    DLog(@"%s registering schema", __PRETTY_FUNCTION__);
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncSample" ofType:@"syncschema"];
+    ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
+    client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
+  }
   [client setSyncAlertHandler:self selector:@selector(syncClient:willSyncEntityNames:)];
 
   return client;
