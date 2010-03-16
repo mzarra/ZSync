@@ -30,21 +30,20 @@
 
 @implementation PairingCodeWindowController
 
-@synthesize codeString;
-@synthesize textField;
-
-- (id)initWithCodeString:(NSString*)string;
+- (id)initWithDelegate:(id<PairingCodeDelegate>)delegate andCodeString:(NSString*)string;
 {
   if (!(self = [super initWithWindowNibName:@"PairingWindow"])) return nil;
   
   codeString = [string copy];
+  failureCount = 0;
   
   return self;
 }
 
 - (void)windowDidLoad
 {
-  [[self textField] setStringValue:[self codeString]];
+  [[self textField] setStringValue:@""];
+  [[self textField] becomeFirstResponder];
 }
 
 - (void) dealloc
@@ -53,5 +52,33 @@
   [codeString release], codeString = nil;
   [super dealloc];
 }
+
+- (IBAction)enterCode:(id)sender;
+{
+  NSString *enteredText = [[self textField] stringValue];
+  if ([enteredText isEqualToString:[self codeString]]) {
+    [[self delegate] codeEnteredCorrectly:self];
+    [[self window] orderOut:nil];
+  } else {
+    if ((++failureCount) > 3) {
+      [[self delegate] codeEntryCancelled:self];
+      [[self window] orderOut:nil];
+      return;
+    }
+    [[self label] setStringValue:@"Invalid Code"];
+    [[self label] setTextColor:[NSColor redColor]];
+  }
+}
+
+- (IBAction)cancel:(id)sender;
+{
+  [[self delegate] codeEntryCancelled:self];
+  [[self window] orderOut:nil];
+}
+
+@synthesize codeString;
+@synthesize textField;
+@synthesize label;
+@synthesize delegate;
 
 @end

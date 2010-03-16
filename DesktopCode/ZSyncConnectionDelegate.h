@@ -28,8 +28,9 @@
 
 #import <SyncServices/SyncServices.h>
 #import "ZSyncShared.h"
+#import "PairingCodeWindowController.h"
 
-@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate, NSPersistentStoreCoordinatorSyncing>
+@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate, NSPersistentStoreCoordinatorSyncing, PairingCodeDelegate>
 {
   id codeController;
   BLIPConnection *_connection;

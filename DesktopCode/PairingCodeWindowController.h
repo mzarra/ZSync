@@ -26,16 +26,36 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
+@class PairingCodeWindowController;
+
+@protocol PairingCodeDelegate
+
+- (void)codeEnteredCorrectly:(PairingCodeWindowController*)controller;
+- (void)codeEntryCancelled:(PairingCodeWindowController*)controller;
+
+@end
+
 @interface PairingCodeWindowController : NSWindowController
 {
+  NSInteger failureCount;
   NSString *codeString;
   
   NSTextField *textField;
+  NSTextField *label;
+  
+  id<PairingCodeDelegate> delegate;
 }
 
 @property (copy, readonly) NSString *codeString;
-@property (assign) IBOutlet NSTextField *textField;
 
-- (id)initWithCodeString:(NSString*)string;
+@property (assign) IBOutlet NSTextField *textField;
+@property (assign) IBOutlet NSTextField *label;
+
+@property (assign) id<PairingCodeDelegate> delegate;
+
+- (id)initWithDelegate:(id<PairingCodeDelegate>)delegate andCodeString:(NSString*)code;
+
+- (IBAction)enterCode:(id)sender;
+- (IBAction)cancel:(id)sender;
 
 @end

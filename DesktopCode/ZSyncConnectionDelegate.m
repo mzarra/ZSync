@@ -28,8 +28,6 @@
 
 #import "ZSyncConnectionDelegate.h"
 
-#import "PairingCodeWindowController.h"
-
 @implementation ZSyncConnectionDelegate
 
 @synthesize connection = _connection;
@@ -60,7 +58,7 @@
 
 - (void)showCodeWindow
 {
-  codeController = [[PairingCodeWindowController alloc] initWithCodeString:[self pairingCode]];
+  codeController = [[PairingCodeWindowController alloc] initWithDelegate:self andCodeString:[self pairingCode]];
   [[codeController window] center];
   [codeController showWindow:self];
 }
@@ -186,6 +184,17 @@
   [managedObjectContext release], managedObjectContext = nil;
   [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
   [managedObjectModel release], managedObjectModel = nil;
+}
+
+#pragma mark -
+#pragma mark PairingCodeDelegate
+
+- (void)codeEnteredCorrectly:(PairingCodeWindowController*)controller;
+{
+}
+
+- (void)codeEntryCancelled:(PairingCodeWindowController*)controller;
+{
 }
 
 #pragma mark -
