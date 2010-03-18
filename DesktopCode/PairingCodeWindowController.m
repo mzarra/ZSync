@@ -30,55 +30,49 @@
 
 @implementation PairingCodeWindowController
 
-- (id)initWithDelegate:(id<PairingCodeDelegate>)delegate andCodeString:(NSString*)string;
+- (id)initWithDelegate:(id<PairingCodeDelegate>)aDelegate;
 {
-  if (!(self = [super initWithWindowNibName:@"PairingWindow"])) return nil;
+  if (![super initWithWindowNibName:@"PairingWindow"]) return nil;
   
-  codeString = [string copy];
-  failureCount = 0;
+  [self setDelegate:aDelegate];
   
   return self;
 }
 
 - (void)windowDidLoad
 {
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
+  [super windowDidLoad];
+  [[self window] center];
   [[self textField] setStringValue:@""];
+  [[self window] makeKeyAndOrderFront:self];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
   [[self textField] becomeFirstResponder];
 }
 
 - (void) dealloc
 {
   DLog(@"%s window released cleanly", __PRETTY_FUNCTION__);
-  [codeString release], codeString = nil;
   [super dealloc];
 }
 
 - (IBAction)enterCode:(id)sender;
 {
-  NSString *enteredText = [[self textField] stringValue];
-  if ([enteredText isEqualToString:[self codeString]]) {
-    [[self delegate] codeEnteredCorrectly:self];
-    [[self window] orderOut:nil];
-  } else {
-    if ((++failureCount) > 3) {
-      [[self delegate] codeEntryCancelled:self];
-      [[self window] orderOut:nil];
-      return;
-    }
-    [[self label] setStringValue:@"Invalid Code"];
-    [[self label] setTextColor:[NSColor redColor]];
-  }
+  [[self delegate] pairingCodeWindowController:self codeEntered:[[self textField] stringValue]];
+  [[self window] orderOut:nil];
 }
 
 - (IBAction)cancel:(id)sender;
 {
-  [[self delegate] codeEntryCancelled:self];
+  [[self delegate] pairingCodeWindowControllerCancelled:self];
   [[self window] orderOut:nil];
 }
 
-@synthesize codeString;
 @synthesize textField;
-@synthesize label;
 @synthesize delegate;
 
 @end

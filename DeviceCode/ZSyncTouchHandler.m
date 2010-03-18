@@ -40,15 +40,6 @@
 
 @implementation ZSyncTouchHandler
 
-@synthesize delegate = _delegate;
-
-@synthesize serviceBrowser = _serviceBrowser;
-@synthesize connection = _connection;
-@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-
-@synthesize majorVersionNumber;
-@synthesize minorVersionNumber;
-
 + (id)shared;
 {
   static ZSyncTouchHandler *sharedTouchHandler;
@@ -247,7 +238,7 @@
 
 - (BOOL)switchStore:(NSPersistentStore*)store withReplacement:(NSDictionary*)replacement error:(NSError**)error
 {
-  NSDictionary *storeOptions = [[store options] copy];
+  NSDictionary *storeOptions = [[[store options] copy] autorelease];
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSPersistentStoreCoordinator *psc = [self persistentStoreCoordinator];
   
@@ -255,27 +246,21 @@
   NSString *fileOriginalPath = [[store URL] path];
   NSString *originalFileTempPath = [fileOriginalPath stringByAppendingPathExtension:@"zsync_"];
   
-  [psc removePersistentStore:store error:error];
-  if (*error) return NO;
+  if (![psc removePersistentStore:store error:error]) return NO;
   
   if ([fileManager fileExistsAtPath:originalFileTempPath]) {
     DLog(@"%s deleting stored file", __PRETTY_FUNCTION__);
-    [fileManager removeItemAtPath:originalFileTempPath error:error];
-    if (*error) return NO;
+    if ([fileManager removeItemAtPath:originalFileTempPath error:error]) return NO;
   }
   
   if ([fileManager fileExistsAtPath:fileOriginalPath]) {
-    [fileManager moveItemAtPath:fileOriginalPath toPath:originalFileTempPath error:error];
-    if (*error) return NO;
+    if (![fileManager moveItemAtPath:fileOriginalPath toPath:originalFileTempPath error:error]) return NO;
   }
   
-  [fileManager moveItemAtPath:newFileTempPath toPath:fileOriginalPath error:error];
-  if (*error) return NO;
+  if (![fileManager moveItemAtPath:newFileTempPath toPath:fileOriginalPath error:error]) return NO;
   
   NSURL *fileURL = [NSURL fileURLWithPath:fileOriginalPath];
-  [psc addPersistentStoreWithType:[replacement valueForKey:zsStoreType] configuration:[replacement valueForKey:zsStoreConfiguration] URL:fileURL options:storeOptions error:error];
-  [storeOptions release], storeOptions = nil;
-  if (*error) return NO;
+  if (![psc addPersistentStoreWithType:[replacement valueForKey:zsStoreType] configuration:[replacement valueForKey:zsStoreConfiguration] URL:fileURL options:storeOptions error:error]) return NO;
   
   return YES;
 }
@@ -359,6 +344,7 @@
     [zSyncService setName:serverName];
     [zSyncService setUuid:serverUUID];
     [set addObject:zSyncService];
+    [zSyncService release], zSyncService = nil;
   }
   
   NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
@@ -430,6 +416,16 @@
   DLog(@"%s file written\n%@", __PRETTY_FUNCTION__, path);
 }
 
+- (NSString*)generatePairingCode
+{
+  NSMutableString *string = [NSMutableString string];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  [string appendFormat:@"%i", (arc4random() % 10)];
+  return string;
+}
+
 #pragma mark -
 #pragma mark BLIP Delegate
 
@@ -491,24 +487,26 @@
       //Server has accepted the pairing request
       //Notify the delegate to present a pairing dialog
       if ([[self delegate] respondsToSelector:@selector(zSyncPairingRequestAccepted:)]) {
-        [[self delegate] zSyncPairingRequestAccepted:self];
+        // ???: This does nothing currently!
+        //[[self delegate] zSyncPairingRequestAccepted:self];
       }
       return;
     case zsActionAuthenticatePassed:
-      DLog(@"%s server UUID accepted: %@", __PRETTY_FUNCTION__, [response valueOfProperty:zsServerUUID]);
-      [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerUUID] forKey:zsServerUUID];
-      [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerName] forKey:zsServerName];
-      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeApproved:)]) {
-        [[self delegate] zSyncPairingCodeApproved:self];
-      }
-      [[self serviceBrowser] stop];
-      [_serviceBrowser release], _serviceBrowser = nil;
-      [self uploadDataToServer];
+      ALog(@"%s server UUID accepted: %@", __PRETTY_FUNCTION__, [response valueOfProperty:zsServerUUID]);
+//      [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerUUID] forKey:zsServerUUID];
+//      [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerName] forKey:zsServerName];
+//      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeApproved:)]) {
+//        [[self delegate] zSyncPairingCodeApproved:self];
+//      }
+//      [[self serviceBrowser] stop];
+//      [_serviceBrowser release], _serviceBrowser = nil;
+//      [self uploadDataToServer];
       return;
     case zsActionAuthenticateFailed:
-      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
-        [[self delegate] zSyncPairingCodeRejected:self];
-      }
+      ALog(@"%s zsActionAuthenticateFailed called, how?", __PRETTY_FUNCTION__);
+//      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
+//        [[self delegate] zSyncPairingCodeRejected:self];
+//      }
       return;
     case zsActionSchemaUnsupported:
       if ([[self delegate] respondsToSelector:@selector(zSync:serverVersionUnsupported:)]) {
@@ -537,6 +535,10 @@
         
         BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
         [[self connection] sendRequest:request];
+        
+        //Need to push the passcode
+        [self setPasscode:[self generatePairingCode]];
+        [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
       }
       return;
     default:
@@ -548,6 +550,16 @@
 {
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
+    case zsActionAuthenticatePairing:
+      if ([[request bodyString] isEqualToString:[self passcode]]) {
+        [[request response] setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
+      } else {
+        [[request response] setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
+      }
+      [[self delegate] zSyncPairingCodeCompleted:self];
+      //Start a sync by pushing the data file to the server
+      [self uploadDataToServer];
+      return YES;
     case zsActionTestFileTransfer:
       [self processTestFileTransfer:request];
       return YES;
@@ -578,6 +590,16 @@
   NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsErrorServerHungUp userInfo:userInfo];
   [[self delegate] zSync:self errorOccurred:error];
 }
+
+@synthesize delegate = _delegate;
+
+@synthesize serviceBrowser = _serviceBrowser;
+@synthesize connection = _connection;
+@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
+
+@synthesize majorVersionNumber;
+@synthesize minorVersionNumber;
+@synthesize passcode;
 
 @end
 

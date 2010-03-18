@@ -58,7 +58,7 @@
 
 - (void)showCodeWindow
 {
-  codeController = [[PairingCodeWindowController alloc] initWithDelegate:self andCodeString:[self pairingCode]];
+  codeController = [[PairingCodeWindowController alloc] initWithDelegate:self];
   [[codeController window] center];
   [codeController showWindow:self];
 }
@@ -189,12 +189,26 @@
 #pragma mark -
 #pragma mark PairingCodeDelegate
 
-- (void)codeEnteredCorrectly:(PairingCodeWindowController*)controller;
+- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString*)code;
 {
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
+  
+  NSData *data = [code dataUsingEncoding:NSUTF8StringEncoding];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
+  [[self connection] sendRequest:request];
+  [codeController release], codeController = nil;
 }
 
-- (void)codeEntryCancelled:(PairingCodeWindowController*)controller;
+- (void)pairingCodeWindowControllerCancelled:(PairingCodeWindowController*)controller;
 {
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:zsActID(zsActionCancelPairing) forKey:zsAction];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [[self connection] sendRequest:request];
+  [codeController release], codeController = nil;
 }
 
 #pragma mark -
@@ -278,6 +292,10 @@
   DLog(@"%s entered", __PRETTY_FUNCTION__);
   [connection setDelegate:nil];
   [[ZSyncHandler shared] connectionClosed:self];
+  if (codeController) {
+    [[codeController window] orderOut:nil];
+    [codeController release], codeController = nil;
+  }
   return YES;
 }
 

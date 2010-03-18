@@ -30,30 +30,22 @@
 
 @protocol PairingCodeDelegate
 
-- (void)codeEnteredCorrectly:(PairingCodeWindowController*)controller;
-- (void)codeEntryCancelled:(PairingCodeWindowController*)controller;
+- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString*)code;
+- (void)pairingCodeWindowControllerCancelled:(PairingCodeWindowController*)controller;
 
 @end
 
 @interface PairingCodeWindowController : NSWindowController
 {
-  NSInteger failureCount;
-  NSString *codeString;
-  
   NSTextField *textField;
-  NSTextField *label;
   
   id<PairingCodeDelegate> delegate;
 }
 
-@property (copy, readonly) NSString *codeString;
-
 @property (assign) IBOutlet NSTextField *textField;
-@property (assign) IBOutlet NSTextField *label;
-
 @property (assign) id<PairingCodeDelegate> delegate;
 
-- (id)initWithDelegate:(id<PairingCodeDelegate>)delegate andCodeString:(NSString*)code;
+- (id)initWithDelegate:(id<PairingCodeDelegate>)delegate;
 
 - (IBAction)enterCode:(id)sender;
 - (IBAction)cancel:(id)sender;

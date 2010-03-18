@@ -1,14 +1,9 @@
 #import "AppDelegate.h"
 #import "RootViewController.h"
-#import "PairingEntryController.h"
+#import "PairingDisplayController.h"
 #import "PairingServerTableViewController.h"
 
 @implementation AppDelegate
-
-@synthesize window;
-@synthesize navigationController;
-@synthesize pairingNavController;
-@synthesize hoverView, hoverLabel;
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -122,9 +117,10 @@
     return;
   }
   id controller = [[PairingServerTableViewController alloc] initWithServers:availableServers];
-  pairingNavController = [[UINavigationController alloc] initWithRootViewController:controller];
-  [[self navigationController] presentModalViewController:pairingNavController animated:YES];
+  UINavigationController *pairingNavController = [[UINavigationController alloc] initWithRootViewController:controller];
   [controller release], controller = nil;
+  [[self navigationController] presentModalViewController:pairingNavController animated:YES];
+  [pairingNavController release], pairingNavController = nil;
 }
 
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
@@ -143,15 +139,27 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshMOC object:self];
 }
 
-- (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
+- (void)showCode:(NSString*)code
 {
-  PairingEntryController *controller = [[PairingEntryController alloc] init];
-  if (![self pairingNavController]) {
-    [[self navigationController] presentModalViewController:controller animated:YES];
-  } else {
-    [[self pairingNavController] pushViewController:controller animated:YES];
-  }
+  PairingDisplayController *controller = [[PairingDisplayController alloc] initWithPasscode:code];
+  [[self navigationController] presentModalViewController:controller animated:YES];
   [controller release], controller = nil;
+}
+
+- (void)zSyncHandler:(ZSyncTouchHandler*)handler displayPairingCode:(NSString*)passcode;
+{
+  //Let the run cycle complete and insure the previous modal was dismissed
+  [self performSelector:@selector(showCode:) withObject:passcode afterDelay:0.05];
+}
+
+- (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler*)handler;
+{
+  [[self navigationController] dismissModalViewControllerAnimated:YES];
+}
+
+- (void)zSyncPairingCodeCancelled:(ZSyncTouchHandler*)handler;
+{
+  [[self navigationController] dismissModalViewControllerAnimated:YES];
 }
 
 #pragma mark -
@@ -160,6 +168,8 @@
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
 {
   [self hideHoverView];
+  
+  [[self navigationController] dismissModalViewControllerAnimated:YES];
   
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
   [alert show];
@@ -179,21 +189,6 @@
   DLog(@"Failure: %@", [error localizedDescription]);
 }
 
-- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
-{
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
-  PairingEntryController *controller = [[PairingEntryController alloc] init];
-  [[self navigationController] presentModalViewController:controller animated:YES];
-  [controller release], controller = nil;
-}
-
-- (void)zSyncPairingCodeApproved:(ZSyncTouchHandler*)handler;
-{
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
-  [self showHoverViewWithMessage:@"Download Started"];
-  [self performSelector:@selector(hideHoverView) withObject:nil afterDelay:5.0];
-}
-
 - (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
@@ -204,5 +199,10 @@
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
+
+@synthesize window;
+@synthesize navigationController;
+@synthesize hoverView;
+@synthesize hoverLabel;
 
 @end

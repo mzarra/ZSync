@@ -51,7 +51,17 @@
  * a pairing code to be sent back.  The pairing code will be displayed
  * on the server.
  */
-- (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
+- (void)zSyncHandler:(ZSyncTouchHandler*)handler displayPairingCode:(NSString*)passcode;
+
+/* The pairing code has been entered correctly on the server. The client should
+ * dismiss the code display at this time.
+ */
+- (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler*)handler;
+
+/* The pairing code window was cancelled on the server or the connection to the 
+ * server was severed. The client should dismiss the code display at this time. 
+ */
+- (void)zSyncPairingCodeCancelled:(ZSyncTouchHandler*)handler;
 
 /* This is an information message to indicate that a sync has finished.
  * The application should at this point refresh all displays from the NSManagedObjectContext
@@ -83,15 +93,6 @@
  */
 - (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
 
-/* A pairing code was sent to the server and the server rejected it.
- * Another opportunity to enter the pairing code should be displayed
- */
-- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
-
-/* The pairing code was accepted by the server and a sync is starting
- */
-- (void)zSyncPairingCodeApproved:(ZSyncTouchHandler*)handler;
-
 /* The data file transfer (from the server) has started.  This is for 
  * information purposes only and does not require any action by the app.
  */
@@ -117,6 +118,8 @@
   
   NSMutableDictionary *receivedFileLookupDictionary;
   
+  NSString *passcode;
+  
   id _delegate;
   
   /* We are going to start off by trying to swap out the persistent stores
@@ -130,6 +133,7 @@
 @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
+@property (nonatomic, copy) NSString *passcode;
 
 /* This shared singleton design should probably go away.  We cannot assume
  * that the parent app will want to keep us around all of the time and may

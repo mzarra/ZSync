@@ -14,8 +14,8 @@
 		28860BE50F44EE6400985440 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28860BE40F44EE6400985440 /* CoreData.framework */; };
 		2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
-		B61383EC10BA7FFA006E7227 /* PairingEntryController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61383EB10BA7FFA006E7227 /* PairingEntryController.m */; };
-		B61383EF10BA8049006E7227 /* PairingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61383ED10BA8049006E7227 /* PairingView.xib */; };
+		B600B87011519EB80080DEB4 /* PairingDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = B600B86F11519EB80080DEB4 /* PairingDisplayController.m */; };
+		B600B87311519EDA0080DEB4 /* PairingDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B600B87111519EDA0080DEB4 /* PairingDisplayView.xib */; };
 		B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */; };
 		B61384FB10BCD82C006E7227 /* app.png in Resources */ = {isa = PBXBuildFile; fileRef = B61384FA10BCD82C006E7227 /* app.png */; };
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
@@ -43,9 +43,9 @@
 		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		B61383EA10BA7FFA006E7227 /* PairingEntryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingEntryController.h; sourceTree = "<group>"; };
-		B61383EB10BA7FFA006E7227 /* PairingEntryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingEntryController.m; sourceTree = "<group>"; };
-		B61383EE10BA8049006E7227 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PairingView.xib; sourceTree = "<group>"; };
+		B600B86E11519EB80080DEB4 /* PairingDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingDisplayController.h; sourceTree = "<group>"; };
+		B600B86F11519EB80080DEB4 /* PairingDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingDisplayController.m; sourceTree = "<group>"; };
+		B600B87211519EDA0080DEB4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PairingDisplayView.xib; sourceTree = "<group>"; };
 		B61384CF10BCD3D9006E7227 /* PairingServerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingServerTableViewController.h; sourceTree = "<group>"; };
 		B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingServerTableViewController.m; sourceTree = "<group>"; };
 		B61384FA10BCD82C006E7227 /* app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = app.png; path = ../Images/app.png; sourceTree = SOURCE_ROOT; };
@@ -93,12 +93,12 @@
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
 				1D3623240D0F684500981E51 /* AppDelegate.h */,
 				1D3623250D0F684500981E51 /* AppDelegate.m */,
-				B61383EA10BA7FFA006E7227 /* PairingEntryController.h */,
-				B61383EB10BA7FFA006E7227 /* PairingEntryController.m */,
 				B61384CF10BCD3D9006E7227 /* PairingServerTableViewController.h */,
 				B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */,
 				B6DA32B210ED55C3008724A6 /* ChildViewController.h */,
 				B6DA32B310ED55C3008724A6 /* ChildViewController.m */,
+				B600B86E11519EB80080DEB4 /* PairingDisplayController.h */,
+				B600B86F11519EB80080DEB4 /* PairingDisplayController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -139,11 +139,11 @@
 			isa = PBXGroup;
 			children = (
 				B69CD13B10EA9EC4006C50C9 /* DataModel */,
-				B61383ED10BA8049006E7227 /* PairingView.xib */,
 				B6C2E13310A748B50063E436 /* RootViewController.xib */,
 				B6C2E13110A748B50063E436 /* MainWindow.xib */,
 				B61384FA10BCD82C006E7227 /* app.png */,
 				8D1107310486CEB800E47090 /* Info.plist */,
+				B600B87111519EDA0080DEB4 /* PairingDisplayView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -254,8 +254,8 @@
 			files = (
 				B6C2E13610A748B50063E436 /* MainWindow.xib in Resources */,
 				B6C2E13710A748B50063E436 /* RootViewController.xib in Resources */,
-				B61383EF10BA8049006E7227 /* PairingView.xib in Resources */,
 				B61384FB10BCD82C006E7227 /* app.png in Resources */,
+				B600B87311519EDA0080DEB4 /* PairingDisplayView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,23 +270,23 @@
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
 				B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */,
-				B61383EC10BA7FFA006E7227 /* PairingEntryController.m in Sources */,
 				B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */,
 				B69CD13D10EA9EC4006C50C9 /* DataModel.xcdatamodel in Sources */,
 				B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */,
 				B6EC175810F503360051FD2E /* GTMNSData+zlib.m in Sources */,
+				B600B87011519EB80080DEB4 /* PairingDisplayController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		B61383ED10BA8049006E7227 /* PairingView.xib */ = {
+		B600B87111519EDA0080DEB4 /* PairingDisplayView.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B61383EE10BA8049006E7227 /* en */,
+				B600B87211519EDA0080DEB4 /* en */,
 			);
-			name = PairingView.xib;
+			name = PairingDisplayView.xib;
 			sourceTree = "<group>";
 		};
 		B6C2E13110A748B50063E436 /* MainWindow.xib */ = {
@@ -320,7 +320,6 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
 					"\"$(SRCROOT)/../SharedCode\"",
 					"\"$(SRCROOT)/../DeviceCode\"",
 				);
@@ -339,7 +338,6 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../Libraries/MyNetwork\"",
 					"\"$(SRCROOT)/../SharedCode\"",
 					"\"$(SRCROOT)/../DeviceCode\"",
 				);

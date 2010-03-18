@@ -89,11 +89,11 @@
   return cell;
 }
 
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
   ZSyncService *service = [[self servers] objectAtIndex:[indexPath row]];
   [[ZSyncTouchHandler shared] requestPairing:service];
+  [self dismissModalViewControllerAnimated:YES];
 }
 
 - (void)dealloc 
