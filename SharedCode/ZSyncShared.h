@@ -46,12 +46,14 @@ enum {
   zsActionSchemaSupported,
   zsActionSchemaUnsupported,
   zsActionFileReceived,
-  zsActionTestFileTransfer
+  zsActionTestFileTransfer,
+  zsActionDeregisterClient
 };
 
 typedef enum {
   zsErrorFailedToReceiveAllFiles = 1123,
   zsErrorServerHungUp,
+  zsErrorAnotherActivityInProgress,
   zsErrorNoSyncClientRegistered
 } ZSErrorCode;
 

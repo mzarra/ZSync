@@ -35,6 +35,9 @@
 
 @interface ZSyncTouchHandler()
 
+- (void)requestDeregistration;
+- (void)uploadDataToServer;
+
 @property (nonatomic, assign) id delegate;
 @property (nonatomic, retain) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
@@ -98,7 +101,7 @@
   findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0f];
 }
 
-- (void)requestSync;
+- (void)startServerSearch
 {
   if ([self serviceBrowser]) {
     DLog(@"%s service browser is not nil", __PRETTY_FUNCTION__);
@@ -133,6 +136,48 @@
     findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0f];
   }
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
+}
+
+- (void)requestSync;
+{
+  ZAssert([self serverAction] == ZSyncServerActionNoActivity, @"Attempt to sync while another action is active");
+  [self setServerAction:ZSyncServerActionSync];
+  if ([self connection]) {
+    [self uploadDataToServer];
+  } else {
+    [self startServerSearch];
+  }
+}
+
+- (void)deregister;
+{
+  DLog(@"%s deregister request received", __PRETTY_FUNCTION__);
+  if ([self serverAction] != ZSyncServerActionNoActivity) {
+    if ([[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
+      NSString *errorString = [NSString stringWithFormat:@"Another activity in progress: %i", [self serverAction]];
+      NSDictionary *dict = [NSDictionary dictionaryWithObject:errorString forKey:NSLocalizedDescriptionKey];
+      NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsErrorAnotherActivityInProgress userInfo:dict];
+      [[self delegate] zSync:self errorOccurred:error];
+      return;
+    }
+  }
+  if (![[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] || ![[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID]) {
+    if ([[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
+      NSString *errorString = [NSString stringWithFormat:@"Client is not registered with a server", [self serverAction]];
+      NSDictionary *dict = [NSDictionary dictionaryWithObject:errorString forKey:NSLocalizedDescriptionKey];
+      NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsErrorNoSyncClientRegistered userInfo:dict];
+      [[self delegate] zSync:self errorOccurred:error];
+      return;
+    }
+  }
+  [self setServerAction:ZSyncServerActionDeregister];
+  if ([self connection]) {
+    DLog(@"%s requesting deregister", __PRETTY_FUNCTION__);
+    [self requestDeregistration];
+  } else {
+    DLog(@"%s searching for server", __PRETTY_FUNCTION__);
+    [self startServerSearch];
+  }
 }
 
 - (void)disconnectPairing;
@@ -219,6 +264,7 @@
       [findServerTimeoutDate release], findServerTimeoutDate = nil;
       [timer invalidate];
       [[self delegate] zSyncServerUnavailable:self];
+      [self setServerAction:ZSyncServerActionNoActivity];
     }
     return;
   }
@@ -251,7 +297,7 @@
   }
   //Did not find our registered server.  Fail
   [[self delegate] zSyncServerUnavailable:self];
-  
+  [self setServerAction:ZSyncServerActionNoActivity];
 }
 
 - (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
@@ -367,7 +413,9 @@
     [[self delegate] zSyncFinished:self];
   }
   
-  [[self persistentStoreCoordinator] lock];
+  [[self persistentStoreCoordinator] unlock];
+  
+  [self setServerAction:ZSyncServerActionNoActivity];
 }
 
 /*
@@ -421,7 +469,7 @@
   [dictionary release], dictionary = nil;
 }
 
-- (void)uploadDataToServer
+- (void)uploadDataToServer;
 {
   [[self serviceBrowser] stop];
   [self setServiceBrowser:nil];
@@ -484,6 +532,57 @@
   return string;
 }
 
+- (void)requestDeregistration;
+{
+  DLog(@"%s issuing deregister command", __PRETTY_FUNCTION__);
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:zsActID(zsActionDeregisterClient) forKey:zsAction];
+  
+  NSString *syncUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsSyncGUID];
+  
+  NSData *body = [syncUUID dataUsingEncoding:NSUTF8StringEncoding];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:body properties:dictionary];
+  [[self connection] sendRequest:request];
+}
+
+- (void)connectionEstablished
+{
+  switch ([self serverAction]) {
+    case ZSyncServerActionSync:
+      if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
+        //Start a sync by pushing the data file to the server
+        [self uploadDataToServer];
+      } else {
+        //We are not paired so we need to request a pairing session
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
+        
+        NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
+        if (!deviceUUID) {
+          deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+          [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
+        }
+        
+        [dictionary setValue:deviceUUID forKey:zsDeviceID];
+        
+        BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+        [[self connection] sendRequest:request];
+        
+        //Need to push the passcode
+        [self setPasscode:[self generatePairingCode]];
+        [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
+      }
+      break;
+    case ZSyncServerActionDeregister:
+      [self requestDeregistration];
+      break;
+    default:
+      ALog(@"Unknown server action: %i", serverAction);
+  }
+}
+
+
 #pragma mark -
 #pragma mark BLIP Delegate
 
@@ -533,6 +632,14 @@
   DLog(@"%s entered\n%@", __PRETTY_FUNCTION__, [[response properties] allProperties]);
   NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
+    case zsActionDeregisterClient:
+      if ([[self delegate] respondsToSelector:@selector(zSyncDeregisterComplete:)]) {
+        [[self delegate] zSyncDeregisterComplete:self];
+      }
+      [self setServerAction:ZSyncServerActionNoActivity];
+      [[self connection] close];
+      [self setConnection:nil];
+      return;
     case zsActionFileReceived:
       ZAssert(storeFileIdentifiers != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
       [storeFileIdentifiers removeObject:[[response properties] valueOfProperty:zsStoreIdentifier]];
@@ -573,31 +680,11 @@
         
         [[self delegate] zSync:self serverVersionUnsupported:error];
       }
+      [[self connection] close];
+      [self setConnection:nil];
       return;
     case zsActionSchemaSupported:
-      if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
-        //Start a sync by pushing the data file to the server
-        [self uploadDataToServer];
-      } else {
-        //We are not paired so we need to request a pairing session
-        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-        [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
-        
-        NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
-        if (!deviceUUID) {
-          deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
-          [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
-        }
-        
-        [dictionary setValue:deviceUUID forKey:zsDeviceID];
-        
-        BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
-        [[self connection] sendRequest:request];
-        
-        //Need to push the passcode
-        [self setPasscode:[self generatePairingCode]];
-        [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
-      }
+      [self connectionEstablished];
       return;
     default:
       ALog(@"%s unknown action received %i", __PRETTY_FUNCTION__, action);
@@ -641,6 +728,7 @@
   
   //premature closing
   [self setConnection:nil];
+  [self setServerAction:ZSyncServerActionNoActivity];
   
   if (![[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) return;
 
@@ -658,6 +746,7 @@
 @synthesize majorVersionNumber;
 @synthesize minorVersionNumber;
 @synthesize passcode;
+@synthesize serverAction;
 
 @end
 

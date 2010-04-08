@@ -81,6 +81,11 @@
 
 @optional
 
+/* This message will be sent after a successful deregister.
+ * ZSync will not remove the data local to the device.
+ */
+- (void)zSyncDeregisterComplete:(ZSyncTouchHandler*)handler;
+
 /* This message can be sent at any time when an error occurred.  The description
  * will be populated with information about the failure.
  */
@@ -106,6 +111,12 @@
 
 @end
 
+typedef enum {
+  ZSyncServerActionNoActivity = 0,
+  ZSyncServerActionSync,
+  ZSyncServerActionDeregister
+} ZSyncServerAction;
+
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
   NSTimer *networkTimer;
@@ -130,8 +141,11 @@
    * application instead.
    */
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
+  
+  ZSyncServerAction serverAction;
 }
 
+@property (nonatomic, assign) ZSyncServerAction serverAction;
 @property (nonatomic, retain) MYBonjourBrowser *serviceBrowser;
 @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
@@ -151,6 +165,12 @@
 - (void)authenticatePairing:(NSString*)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
+
+/*
+ * When this is called the client will attempt to connect to the server and deregister any sync data.
+ * The client will not forget about the server but will lose all sync history
+ */
+- (void)deregister;
 
 - (NSString*)serverName;
 - (NSArray*)availableServers;

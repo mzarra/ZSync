@@ -54,7 +54,8 @@
   
   [self setTitle:@"ZSync Demo"];
   
-  UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject)];
+  //UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject)];
+  UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:@"Deregister" style:UIBarButtonItemStyleDone target:self action:@selector(deregister)];
   [[self navigationItem] setRightBarButtonItem:button];
   [button release], button = nil;
   
@@ -66,6 +67,11 @@
   ZAssert([[self fetchedResultsController] performFetch:&error],@"Error fetching: %@", [error localizedDescription]);
   
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh:) name:kRefreshMOC object:nil];
+}
+
+- (void)deregister
+{
+  [[ZSyncTouchHandler shared] deregister];
 }
 
 - (void)sync

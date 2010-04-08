@@ -165,6 +165,11 @@
 #pragma mark -
 #pragma mark ZSyncDelegate (Optional)
 
+- (void)zSyncDeregisterComplete:(ZSyncTouchHandler*)handler;
+{
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
+}
+
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
 {
   [self hideHoverView];
