@@ -193,6 +193,7 @@
 {
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
+  [dictionary setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] forKey:zsServerUUID];
   
   NSData *data = [code dataUsingEncoding:NSUTF8StringEncoding];
   
@@ -214,42 +215,49 @@
 #pragma mark -
 #pragma mark NSPersistentStoreCoordinatorSyncing
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator didFinishSyncSession:(ISyncSession*)session
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+              didFinishSyncSession:(ISyncSession*)session
 {
   DLog(@"%s sync is complete", __PRETTY_FUNCTION__);
 }
 
-- (NSArray *)managedObjectContextsToMonitorWhenSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+- (NSArray*)managedObjectContextsToMonitorWhenSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
   return [NSArray arrayWithObject:managedObjectContext];
 }
 
-- (NSArray *)managedObjectContextsToReloadAfterSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+- (NSArray*)managedObjectContextsToReloadAfterSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
   return [NSArray arrayWithObject:managedObjectContext];
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator willPushChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+      willPushChangesInSyncSession:(ISyncSession*)session;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didPushChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+       didPushChangesInSyncSession:(ISyncSession*)session;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator willPullChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+      willPullChangesInSyncSession:(ISyncSession*)session;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didPullChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+       didPullChangesInSyncSession:(ISyncSession*)session;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didCancelSyncSession:(ISyncSession *)session error:(NSError *)error;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+              didCancelSyncSession:(ISyncSession*)session 
+                             error:(NSError*)error;
 {
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
@@ -259,11 +267,14 @@
 
 - (void)registerSyncClient:(BLIPRequest*)request
 {
+  NSString *clientID = [request bodyString];
   // TODO: Compare version numbers
-  ZAssert([request bodyString] != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
+  ZAssert(clientID != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
+  
   
   NSString *clientDescription = [[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"];
-  ISyncClient *syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:[request bodyString] descriptionFilePath:clientDescription];
+  ISyncClient *syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:clientID 
+                                                                   descriptionFilePath:clientDescription];
   NSString *displayName = [syncClient displayName];
   displayName = [displayName stringByAppendingFormat:@": %@", [request valueOfProperty:zsDeviceName]];
   [syncClient setDisplayName:displayName];
@@ -275,7 +286,7 @@
   BLIPResponse *response = [request response];
   
   if (syncClient) {
-    [self setClientIdentifier:[request bodyString]];
+    [self setClientIdentifier:clientID];
     [response setValue:zsActID(zsActionSchemaSupported) ofProperty:zsAction];
     [response send];
     return;
@@ -294,7 +305,6 @@
   [[ZSyncHandler shared] connectionClosed:self];
   if (codeController) {
     [[codeController window] orderOut:nil];
-    [codeController release], codeController = nil;
   }
   return YES;
 }

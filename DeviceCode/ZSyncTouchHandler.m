@@ -553,12 +553,12 @@
     case zsActionAuthenticatePairing:
       if ([[request bodyString] isEqualToString:[self passcode]]) {
         [[request response] setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
+        [[NSUserDefaults standardUserDefaults] setValue:[request valueOfProperty:zsServerUUID] forKey:zsServerUUID];
+        [self performSelector:@selector(uploadDataToServer) withObject:nil afterDelay:0.1];
       } else {
         [[request response] setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
       }
       [[self delegate] zSyncPairingCodeCompleted:self];
-      //Start a sync by pushing the data file to the server
-      [self uploadDataToServer];
       return YES;
     case zsActionTestFileTransfer:
       [self processTestFileTransfer:request];

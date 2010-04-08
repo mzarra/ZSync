@@ -48,7 +48,7 @@
   [[self window] makeKeyAndOrderFront:self];
 }
 
-- (void)windowDidBecomeKey:(NSNotification *)notification
+- (void)windowDidBecomeKey:(NSNotification*)notification
 {
   DLog(@"%s fired", __PRETTY_FUNCTION__);
   [[self textField] becomeFirstResponder];
