@@ -16,6 +16,8 @@
 		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
 		B600B87011519EB80080DEB4 /* PairingDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = B600B86F11519EB80080DEB4 /* PairingDisplayController.m */; };
 		B600B87311519EDA0080DEB4 /* PairingDisplayView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B600B87111519EDA0080DEB4 /* PairingDisplayView.xib */; };
+		B60BDD83116D9D4D006ABE03 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B60BDD82116D9D4D006ABE03 /* Reachability.m */; };
+		B60BDD8B116DA124006ABE03 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60BDD8A116DA124006ABE03 /* SystemConfiguration.framework */; };
 		B61384D110BCD3D9006E7227 /* PairingServerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */; };
 		B61384FB10BCD82C006E7227 /* app.png in Resources */ = {isa = PBXBuildFile; fileRef = B61384FA10BCD82C006E7227 /* app.png */; };
 		B631391C10AB4E9900E27635 /* ZSyncTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */; };
@@ -46,6 +48,9 @@
 		B600B86E11519EB80080DEB4 /* PairingDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingDisplayController.h; sourceTree = "<group>"; };
 		B600B86F11519EB80080DEB4 /* PairingDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingDisplayController.m; sourceTree = "<group>"; };
 		B600B87211519EDA0080DEB4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PairingDisplayView.xib; sourceTree = "<group>"; };
+		B60BDD81116D9D4D006ABE03 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		B60BDD82116D9D4D006ABE03 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		B60BDD8A116DA124006ABE03 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B61384CF10BCD3D9006E7227 /* PairingServerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PairingServerTableViewController.h; sourceTree = "<group>"; };
 		B61384D010BCD3D9006E7227 /* PairingServerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairingServerTableViewController.m; sourceTree = "<group>"; };
 		B61384FA10BCD82C006E7227 /* app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = app.png; path = ../Images/app.png; sourceTree = SOURCE_ROOT; };
@@ -80,6 +85,7 @@
 				B642864010BEA11700470E43 /* QuartzCore.framework in Frameworks */,
 				B64FE94710EF35EF00B15A8F /* libz.dylib in Frameworks */,
 				B6EC179B10F508C10051FD2E /* libMYNetwork.a in Frameworks */,
+				B60BDD8B116DA124006ABE03 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +157,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B60BDD8A116DA124006ABE03 /* SystemConfiguration.framework */,
 				B642863F10BEA11700470E43 /* QuartzCore.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -169,6 +176,8 @@
 				B631391910AB4E7F00E27635 /* ZSyncTouch.h */,
 				B631391A10AB4E9900E27635 /* ZSyncTouchHandler.h */,
 				B631391B10AB4E9900E27635 /* ZSyncTouchHandler.m */,
+				B60BDD81116D9D4D006ABE03 /* Reachability.h */,
+				B60BDD82116D9D4D006ABE03 /* Reachability.m */,
 			);
 			name = DeviceCode;
 			path = ../DeviceCode;
@@ -275,6 +284,7 @@
 				B6DA32B410ED55C3008724A6 /* ChildViewController.m in Sources */,
 				B6EC175810F503360051FD2E /* GTMNSData+zlib.m in Sources */,
 				B600B87011519EB80080DEB4 /* PairingDisplayController.m in Sources */,
+				B60BDD83116D9D4D006ABE03 /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

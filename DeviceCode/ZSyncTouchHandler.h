@@ -108,6 +108,9 @@
 
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
+  NSTimer *networkTimer;
+  NSDate *findServerTimeoutDate;
+  
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
   MYBonjourBrowser *_serviceBrowser;

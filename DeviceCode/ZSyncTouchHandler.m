@@ -29,6 +29,8 @@
 #import "ZSyncTouchHandler.h"
 #import "ZSyncShared.h"
 
+#import "Reachability.h"
+
 #define zsUUIDStringLength 55
 
 @interface ZSyncTouchHandler()
@@ -74,19 +76,62 @@
   return filePath;
 }
 
+- (void)networkTimeout:(NSTimer*)timer
+{
+  DLog(@"%s timeout on local network", __PRETTY_FUNCTION__);
+  networkTimer = nil;
+  if ([[self delegate] respondsToSelector:@selector(zSyncServerUnavailable:)]) {
+    [[self delegate] zSyncServerUnavailable:self];
+  }
+  [[timer userInfo] stopNotifer];
+  [self setServiceBrowser:nil];
+}
+
+- (void)reachabilityChanged:(NSNotification*)notification
+{
+  Reachability *reachability = [notification object];
+  if ([reachability currentReachabilityStatus] == NotReachable) return;
+  DLog(@"%s local network now available", __PRETTY_FUNCTION__);
+  [reachability stopNotifer];
+  [networkTimer invalidate], networkTimer = nil;
+  [[self serviceBrowser] start];
+  findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0f];
+}
+
 - (void)requestSync;
 {
-  if (_serviceBrowser) {
+  if ([self serviceBrowser]) {
     DLog(@"%s service browser is not nil", __PRETTY_FUNCTION__);
     return; //Already in the middle of something
   }
   
-  //Need to find all of the available servers
-  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
-  [_serviceBrowser start];
+  MYBonjourBrowser *browser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
+  [self setServiceBrowser:browser];
+  [browser release], browser = nil;
   
-  // TODO: This sucks.  Has to be a better way
-  // No call back from BLIP when it finds servers so we need to poll for now
+  Reachability *reachability = [Reachability reachabilityForLocalWiFi];
+  if ([reachability currentReachabilityStatus] == NotReachable) {
+    DLog(@"%s local network not available", __PRETTY_FUNCTION__);
+    //start notifying
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(reachabilityChanged:) 
+                                                 name:kReachabilityChangedNotification 
+                                               object:nil];
+    
+    [reachability startNotifer];
+    networkTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 
+                                                    target:self 
+                                                  selector:@selector(networkTimeout:) 
+                                                  userInfo:reachability
+                                                   repeats:NO];
+    
+    
+    return;
+  } else {
+    DLog(@"%s starting browser", __PRETTY_FUNCTION__);
+    [[self serviceBrowser] start];
+    findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0f];
+  }
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
 
@@ -170,9 +215,18 @@
 {
   if (![[_serviceBrowser services] count]) {
     // TODO: This should time out at some point
+    if ([findServerTimeoutDate earlierDate:[NSDate date]] == findServerTimeoutDate) {
+      [findServerTimeoutDate release], findServerTimeoutDate = nil;
+      [timer invalidate];
+      [[self delegate] zSyncServerUnavailable:self];
+    }
     return;
   }
+  
+  DLog(@"%s server list found", __PRETTY_FUNCTION__);
+
   [timer invalidate];
+  [findServerTimeoutDate release], findServerTimeoutDate = nil;
   
   NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   
@@ -188,6 +242,7 @@
     NSString *serverUUID = [components objectAtIndex:1];
     if (![serverUUID isEqualToString:serverUUID]) continue;
     
+    DLog(@"%s our server found", __PRETTY_FUNCTION__);
     //Found our server, start the sync
     [self beginSyncWithService:service];
     [_serviceBrowser stop];
@@ -368,6 +423,9 @@
 
 - (void)uploadDataToServer
 {
+  [[self serviceBrowser] stop];
+  [self setServiceBrowser:nil];
+  
   [[self delegate] zSyncStarted:self];
   
   storeFileIdentifiers = [[NSMutableArray alloc] init];
