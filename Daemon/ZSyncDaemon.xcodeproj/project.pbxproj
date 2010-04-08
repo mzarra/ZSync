@@ -70,7 +70,6 @@
 		B691FBAA10ED879D00207210 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B691FBBC10ED884000207210 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
 		B6EC175A10F5033E0051FD2E /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
-		B6EC175B10F5033E0051FD2E /* GTMNSData+zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSData+zlib.h"; sourceTree = "<group>"; };
 		B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
 		B6EC179E10F509010051FD2E /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Desktop.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -229,7 +228,6 @@
 			isa = PBXGroup;
 			children = (
 				B6EC175A10F5033E0051FD2E /* GTMDefines.h */,
-				B6EC175B10F5033E0051FD2E /* GTMNSData+zlib.h */,
 				B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */,
 			);
 			name = GoogleToolboxSubset;

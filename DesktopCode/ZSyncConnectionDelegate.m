@@ -272,16 +272,22 @@
   ZAssert(clientID != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
   
   
-  NSString *clientDescription = [[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"];
-  ISyncClient *syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:clientID 
-                                                                   descriptionFilePath:clientDescription];
-  NSString *displayName = [syncClient displayName];
-  displayName = [displayName stringByAppendingFormat:@": %@", [request valueOfProperty:zsDeviceName]];
-  [syncClient setDisplayName:displayName];
-  DLog(@"%s display name: %@", __PRETTY_FUNCTION__, [syncClient displayName]);
-  
-  [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
-  [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientID];
+  if (!syncClient) {
+    NSString *clientDescription = [[NSBundle mainBundle] pathForResource:@"clientDescription" 
+                                                                  ofType:@"plist"];
+    syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:clientID 
+                                                        descriptionFilePath:clientDescription];
+    NSString *displayName = [syncClient displayName];
+    displayName = [displayName stringByAppendingFormat:@": %@", [request valueOfProperty:zsDeviceName]];
+    [syncClient setDisplayName:displayName];
+    DLog(@"%s display name: %@", __PRETTY_FUNCTION__, [syncClient displayName]);
+    
+    [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
+    [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  } else {
+    DLog(@"%s client already registered: %@", __PRETTY_FUNCTION__, [syncClient displayName]);
+  }
   
   BLIPResponse *response = [request response];
   
