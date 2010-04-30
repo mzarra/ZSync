@@ -22,14 +22,14 @@
 
 #define kChunkSize 1024
 
-@interface NSData (GTMZlibAdditionsPrivate)
+@interface NSData (GTMZlibAddonsPrivate)
 + (NSData*)gtm_dataByCompressingBytes:(const void*)bytes
                                 length:(NSUInteger)length
                       compressionLevel:(int)level
                                useGzip:(BOOL)useGzip;
 @end
 
-@implementation NSData (GTMZlibAdditionsPrivate)
+@implementation NSData (GTMZlibAddonsPrivate)
 + (NSData*)gtm_dataByCompressingBytes:(const void*)bytes
                                 length:(NSUInteger)length
                       compressionLevel:(int)level
@@ -122,7 +122,7 @@
 @end
 
 
-@implementation NSData (GTMZLibAdditions)
+@implementation NSData (GTMZLibAddons)
 
 + (NSData*)gtm_dataByGzippingBytes:(const void*)bytes
                              length:(NSUInteger)length {
