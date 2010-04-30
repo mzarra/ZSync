@@ -20,7 +20,7 @@
 #import "GTMDefines.h"
 
 /// Helpers for dealing w/ zlib inflate/deflate calls.
-@interface NSData (GTMZLibAdditions)
+@interface NSData (GTMZLibAddons)
 
 /// Return an autoreleased NSData w/ the result of gzipping the bytes.
 //
