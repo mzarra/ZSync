@@ -91,7 +91,6 @@
 		B6DEEC0511BA16A90036A137 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		B6DEEC2F11BA18680036A137 /* ZSyncInstaller.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZSyncInstaller.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6EC175A10F5033E0051FD2E /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
-		B6EC175B10F5033E0051FD2E /* GTMNSData+zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSData+zlib.h"; sourceTree = "<group>"; };
 		B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
 		B6EC179E10F509010051FD2E /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Desktop.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -272,7 +271,6 @@
 			isa = PBXGroup;
 			children = (
 				B6EC175A10F5033E0051FD2E /* GTMDefines.h */,
-				B6EC175B10F5033E0051FD2E /* GTMNSData+zlib.h */,
 				B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */,
 			);
 			name = GoogleToolboxSubset;

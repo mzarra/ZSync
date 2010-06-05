@@ -106,7 +106,7 @@
 }
 
 + (MYDNSConnection*) sharedConnection;
-- (id) initWithServiceRef: (struct _DNSServiceRef_t *)serviceRef;
+- (id) initWithServiceRef: (struct _DNSServiceRef_t*)serviceRef;
 @property (readonly) struct _DNSServiceRef_t* connectionRef;
 - (BOOL) processResult;
 - (void) close;

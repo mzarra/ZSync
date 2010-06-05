@@ -1,9 +1,10 @@
 //
-//  ZSyncConnectionDelegate.h
-//  ZSyncDaemon
+//  PairingDisplayController.m
+//  SampleTouch
 //
-//  Created by Marcus S. Zarra on 1/17/10.
-//  Copyright 2010 Zarra Studios LLC. All rights reserved.
+//  Created by Marcus S. Zarra on 11/25/09.
+//  Copyright 2009 Zarra Studios, LLC. All rights reserved.
+//
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
 //  files (the "Software"), to deal in the Software without
@@ -24,30 +25,18 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
-//
 
-#import <SyncServices/SyncServices.h>
-#import "ZSyncShared.h"
-#import "PairingCodeWindowController.h"
-
-@interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate, NSPersistentStoreCoordinatorSyncing, PairingCodeDelegate>
+@interface PairingDisplayController : UIViewController 
 {
-  PairingCodeWindowController *codeController;
-  BLIPConnection *_connection;
-  NSString *pairingCode;
-  NSString *clientIdentifier;
+  UILabel *_codeLabel;
   
-  NSMutableArray *storeFileIdentifiers;
-  
-  NSManagedObjectModel *managedObjectModel;
-  NSPersistentStoreCoordinator *persistentStoreCoordinator;
-  NSManagedObjectContext *managedObjectContext;
+  NSString *_passcode;
 }
 
-@property (retain) BLIPConnection *connection;
-@property (retain) NSString *pairingCode;
-@property (retain) NSString *clientIdentifier;
+@property (nonatomic, copy) NSString *passcode;
 
-@property (retain) id codeController;
+@property (nonatomic, assign) IBOutlet UILabel *codeLabel;
+
+- (id)initWithPasscode:(NSString*)passcode;
 
 @end

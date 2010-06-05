@@ -9,7 +9,6 @@
   UIView *hoverView;
   UILabel *hoverLabel;
   UINavigationController *navigationController;
-  UINavigationController *pairingNavController;
 }
 
 @property (nonatomic, retain, readonly) IBOutlet UIView *hoverView;
@@ -22,7 +21,6 @@
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, assign) IBOutlet UINavigationController *navigationController;
-@property (nonatomic, assign) UINavigationController *pairingNavController;
 
 - (NSString*)applicationDocumentsDirectory;
 

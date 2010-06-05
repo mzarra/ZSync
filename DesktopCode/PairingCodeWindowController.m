@@ -30,21 +30,28 @@
 
 @implementation PairingCodeWindowController
 
-@synthesize codeString;
-@synthesize textField;
-
-- (id)initWithCodeString:(NSString*)string;
+- (id)initWithDelegate:(id<PairingCodeDelegate>)aDelegate;
 {
-  if (!(self = [super initWithWindowNibName:@"PairingWindow"])) return nil;
+  if (![super initWithWindowNibName:@"PairingWindow"]) return nil;
   
-  codeString = [string copy];
+  [self setDelegate:aDelegate];
   
   return self;
 }
 
 - (void)windowDidLoad
 {
-  [[self textField] setStringValue:[self codeString]];
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
+  [super windowDidLoad];
+  [[self window] center];
+  [[self textField] setStringValue:@""];
+  [[self window] makeKeyAndOrderFront:self];
+}
+
+- (void)windowDidBecomeKey:(NSNotification*)notification
+{
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
+  [[self textField] becomeFirstResponder];
 }
 
 - (void) dealloc
@@ -53,5 +60,20 @@
   [codeString release], codeString = nil;
   [super dealloc];
 }
+
+- (IBAction)enterCode:(id)sender;
+{
+  [[self delegate] pairingCodeWindowController:self codeEntered:[[self textField] stringValue]];
+  [[self window] orderOut:nil];
+}
+
+- (IBAction)cancel:(id)sender;
+{
+  [[self delegate] pairingCodeWindowControllerCancelled:self];
+  [[self window] orderOut:nil];
+}
+
+@synthesize textField;
+@synthesize delegate;
 
 @end

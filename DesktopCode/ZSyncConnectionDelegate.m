@@ -28,8 +28,6 @@
 
 #import "ZSyncConnectionDelegate.h"
 
-#import "PairingCodeWindowController.h"
-
 @implementation ZSyncConnectionDelegate
 
 @synthesize connection = _connection;
@@ -41,7 +39,7 @@
 
 - (void)dealloc
 {
-  DLog(@"Releasing");
+  DLog(@"%s Releasing", __PRETTY_FUNCTION__);
   [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
   [managedObjectModel release], managedObjectModel = nil;
   [_connection release], _connection = nil;
@@ -60,7 +58,7 @@
 
 - (void)showCodeWindow
 {
-  codeController = [[PairingCodeWindowController alloc] initWithCodeString:[self pairingCode]];
+  codeController = [[PairingCodeWindowController alloc] initWithDelegate:self];
   [[codeController window] center];
   [codeController showWindow:self];
 }
@@ -71,7 +69,7 @@
   NSString *filePath = NSTemporaryDirectory();
   filePath = [filePath stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]];
   filePath = [filePath stringByAppendingPathExtension:@"zsync"];
-  DLog(@"request length: %i", [[request body] length]);
+  DLog(@"%s request length: %i", __PRETTY_FUNCTION__, [[request body] length]);
   [[request body] writeToFile:filePath atomically:YES];
   
   if (!persistentStoreCoordinator) {
@@ -104,7 +102,7 @@
 
 - (void)mocSaved:(NSNotification*)notification
 {
-  DLog(@"info %@", [notification userInfo]);
+  DLog(@"%s info %@", __PRETTY_FUNCTION__, [notification userInfo]);
 }
 
 - (void)transferStoresToDevice
@@ -113,7 +111,7 @@
   
   for (NSPersistentStore *store in [persistentStoreCoordinator persistentStores]) {
     NSData *data = [[NSData alloc] initWithContentsOfFile:[[store URL] path]];
-    DLog(@"url %@\nIdentifier: %@\nSize: %i", [store URL], [store identifier], [data length]);
+    DLog(@"%s url %@\nIdentifier: %@\nSize: %i", __PRETTY_FUNCTION__, [store URL], [store identifier], [data length]);
     
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[store identifier] forKey:zsStoreIdentifier];
@@ -138,7 +136,7 @@
       ALog(@"Error removing persistent store: %@", [error localizedDescription]);
     }
     
-    DLog(@"file uploaded");
+    DLog(@"%s file uploaded", __PRETTY_FUNCTION__);
     [storeFileIdentifiers addObject:[store identifier]];
   }
 }
@@ -153,9 +151,9 @@
 //  NSMutableArray *replaceEntityNames = [NSMutableArray array];
 //  for (NSString *entityName in [syncClient enabledEntityNames]) {
 //    NSDate *lastSyncDate = [syncClient lastSyncDateForEntityName:entityName];
-//    DLog(@"%@ %@", entityName, lastSyncDate);
+//    DLog(@"%s %@ %@", __PRETTY_FUNCTION__, entityName, lastSyncDate);
 //    if (!lastSyncDate) {
-//      DLog(@"requesting replace on %@", entityName);
+//      DLog(@"%s requesting replace on %@", __PRETTY_FUNCTION__, entityName);
 //      [replaceEntityNames addObject:entityName];
 //    }
 //  }
@@ -189,70 +187,131 @@
 }
 
 #pragma mark -
+#pragma mark PairingCodeDelegate
+
+- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString*)code;
+{
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
+  [dictionary setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] forKey:zsServerUUID];
+  
+  NSData *data = [code dataUsingEncoding:NSUTF8StringEncoding];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
+  [[self connection] sendRequest:request];
+  [codeController release], codeController = nil;
+}
+
+- (void)pairingCodeWindowControllerCancelled:(PairingCodeWindowController*)controller;
+{
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:zsActID(zsActionCancelPairing) forKey:zsAction];
+  
+  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  [[self connection] sendRequest:request];
+  [codeController release], codeController = nil;
+}
+
+#pragma mark -
 #pragma mark NSPersistentStoreCoordinatorSyncing
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator didFinishSyncSession:(ISyncSession*)session
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+              didFinishSyncSession:(ISyncSession*)session
 {
-  DLog(@"sync is complete");
+  DLog(@"%s sync is complete", __PRETTY_FUNCTION__);
 }
 
-- (NSArray *)managedObjectContextsToMonitorWhenSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+- (NSArray*)managedObjectContextsToMonitorWhenSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
   return [NSArray arrayWithObject:managedObjectContext];
 }
 
-- (NSArray *)managedObjectContextsToReloadAfterSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+- (NSArray*)managedObjectContextsToReloadAfterSyncingPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
   return [NSArray arrayWithObject:managedObjectContext];
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator willPushChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+      willPushChangesInSyncSession:(ISyncSession*)session;
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didPushChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+       didPushChangesInSyncSession:(ISyncSession*)session;
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator willPullChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+      willPullChangesInSyncSession:(ISyncSession*)session;
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didPullChangesInSyncSession:(ISyncSession *)session;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+       didPullChangesInSyncSession:(ISyncSession*)session;
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
-- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didCancelSyncSession:(ISyncSession *)session error:(NSError *)error;
+- (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator 
+              didCancelSyncSession:(ISyncSession*)session 
+                             error:(NSError*)error;
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
 #pragma mark -
 #pragma mark BLIPConnectionDelegate
 
+- (void)deregisterSyncClient:(BLIPRequest*)request
+{
+  NSString *clientID = [request bodyString];
+  DLog(@"%s clientID %@", __PRETTY_FUNCTION__, clientID);
+  // TODO: Compare version numbers
+  ZAssert(clientID != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
+  
+  BLIPResponse *response = [request response];
+  [response setValue:zsActID(zsActionDeregisterClient) ofProperty:zsAction];
+  
+  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientID];
+  if (syncClient) {
+    [[ISyncManager sharedManager] unregisterClient:syncClient];
+  }
+  
+  [response send];
+}
+
 - (void)registerSyncClient:(BLIPRequest*)request
 {
+  NSString *clientID = [request bodyString];
+  DLog(@"%s clientID %@", __PRETTY_FUNCTION__, clientID);
   // TODO: Compare version numbers
-  ZAssert([request bodyString] != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
+  ZAssert(clientID != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
   
-  NSString *clientDescription = [[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"];
-  ISyncClient *syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:[request bodyString] descriptionFilePath:clientDescription];
-  NSString *displayName = [syncClient displayName];
-  displayName = [displayName stringByAppendingFormat:@": %@", [request valueOfProperty:zsDeviceName]];
-  [syncClient setDisplayName:displayName];
-  DLog(@"display name: %@", [syncClient displayName]);
   
-  [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
-  [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientID];
+  if (!syncClient) {
+    NSString *clientDescription = [[NSBundle mainBundle] pathForResource:@"clientDescription" 
+                                                                  ofType:@"plist"];
+    syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:clientID 
+                                                        descriptionFilePath:clientDescription];
+    NSString *displayName = [syncClient displayName];
+    displayName = [displayName stringByAppendingFormat:@": %@", [request valueOfProperty:zsDeviceName]];
+    [syncClient setDisplayName:displayName];
+    DLog(@"%s display name: %@", __PRETTY_FUNCTION__, [syncClient displayName]);
+    
+    [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeApplication];
+    [syncClient setShouldSynchronize:YES withClientsOfType:ISyncClientTypeDevice];
+  } else {
+    DLog(@"%s client already registered: %@", __PRETTY_FUNCTION__, [syncClient displayName]);
+  }
   
   BLIPResponse *response = [request response];
   
   if (syncClient) {
-    [self setClientIdentifier:[request bodyString]];
+    [self setClientIdentifier:clientID];
     [response setValue:zsActID(zsActionSchemaSupported) ofProperty:zsAction];
     [response send];
     return;
@@ -266,19 +325,22 @@
 
 - (BOOL)connectionReceivedCloseRequest:(BLIPConnection*)connection;
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
   [connection setDelegate:nil];
   [[ZSyncHandler shared] connectionClosed:self];
+  if (codeController) {
+    [[codeController window] orderOut:nil];
+  }
   return YES;
 }
 
 - (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
 {
   if (![[response properties] valueOfProperty:zsAction]) {
-    DLog(@"received empty response, ignoring");
+    DLog(@"%s received empty response, ignoring", __PRETTY_FUNCTION__);
     return;
   }
-  DLog(@"entered\n%@", [[response properties] allProperties]);
+  DLog(@"%s entered\n%@", __PRETTY_FUNCTION__, [[response properties] allProperties]);
   NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
     case zsActionFileReceived:
@@ -297,15 +359,18 @@
 
 - (void)connection:(BLIPConnection*)connection closeRequestFailedWithError:(NSError*)error;
 {
-  ALog(@"error %@", error);
+  ALog(@"%s error %@", __PRETTY_FUNCTION__, error);
 }
 
 - (BOOL)connection:(BLIPConnection*)connection receivedRequest:(BLIPRequest*)request
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   BLIPResponse *response = [request response];
   switch (action) {
+    case zsActionDeregisterClient:
+      [self deregisterSyncClient:request];
+      return YES;
     case zsActionVerifySchema:
       [self registerSyncClient:request];
       return YES;
@@ -317,7 +382,7 @@
       return YES;
     case zsActionAuthenticatePairing:
       if ([[self pairingCode] isEqualToString:[request bodyString]]) {
-        DLog(@"passed '%@' '%@'", [request bodyString], [self pairingCode]);
+        DLog(@"%s passed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
         // TODO: Register the unique ID of this service
         [[ZSyncHandler shared] registerDeviceForPairing:[request valueOfProperty:zsDeviceID]];
         [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
@@ -327,7 +392,7 @@
         [codeController close];
         [codeController release], codeController = nil;
       } else {
-        DLog(@"failed '%@' '%@'", [request bodyString], [self pairingCode]);
+        DLog(@"%s failed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
         [response setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
         [response send];
       }

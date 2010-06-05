@@ -51,7 +51,17 @@
  * a pairing code to be sent back.  The pairing code will be displayed
  * on the server.
  */
-- (void)zSyncPairingRequestAccepted:(ZSyncTouchHandler*)handler;
+- (void)zSyncHandler:(ZSyncTouchHandler*)handler displayPairingCode:(NSString*)passcode;
+
+/* The pairing code has been entered correctly on the server. The client should
+ * dismiss the code display at this time.
+ */
+- (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler*)handler;
+
+/* The pairing code window was cancelled on the server or the connection to the 
+ * server was severed. The client should dismiss the code display at this time. 
+ */
+- (void)zSyncPairingCodeCancelled:(ZSyncTouchHandler*)handler;
 
 /* This is an information message to indicate that a sync has finished.
  * The application should at this point refresh all displays from the NSManagedObjectContext
@@ -71,6 +81,11 @@
 
 @optional
 
+/* This message will be sent after a successful deregister.
+ * ZSync will not remove the data local to the device.
+ */
+- (void)zSyncDeregisterComplete:(ZSyncTouchHandler*)handler;
+
 /* This message can be sent at any time when an error occurred.  The description
  * will be populated with information about the failure.
  */
@@ -82,15 +97,6 @@
  * is currently unavailable
  */
 - (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
-
-/* A pairing code was sent to the server and the server rejected it.
- * Another opportunity to enter the pairing code should be displayed
- */
-- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
-
-/* The pairing code was accepted by the server and a sync is starting
- */
-- (void)zSyncPairingCodeApproved:(ZSyncTouchHandler*)handler;
 
 /* The data file transfer (from the server) has started.  This is for 
  * information purposes only and does not require any action by the app.
@@ -105,8 +111,17 @@
 
 @end
 
+typedef enum {
+  ZSyncServerActionNoActivity = 0,
+  ZSyncServerActionSync,
+  ZSyncServerActionDeregister
+} ZSyncServerAction;
+
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
 {
+  NSTimer *networkTimer;
+  NSDate *findServerTimeoutDate;
+  
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
   MYBonjourBrowser *_serviceBrowser;
@@ -117,6 +132,8 @@
   
   NSMutableDictionary *receivedFileLookupDictionary;
   
+  NSString *passcode;
+  
   id _delegate;
   
   /* We are going to start off by trying to swap out the persistent stores
@@ -124,12 +141,16 @@
    * application instead.
    */
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
+  
+  ZSyncServerAction serverAction;
 }
 
+@property (nonatomic, assign) ZSyncServerAction serverAction;
 @property (nonatomic, retain) MYBonjourBrowser *serviceBrowser;
 @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
+@property (nonatomic, copy) NSString *passcode;
 
 /* This shared singleton design should probably go away.  We cannot assume
  * that the parent app will want to keep us around all of the time and may
@@ -145,6 +166,12 @@ withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 - (void)authenticatePairing:(NSString*)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
+
+/*
+ * When this is called the client will attempt to connect to the server and deregister any sync data.
+ * The client will not forget about the server but will lose all sync history
+ */
+- (void)deregister;
 
 - (NSString*)serverName;
 - (NSArray*)availableServers;

@@ -1,8 +1,8 @@
 //
-//  PairingEntryController.h
+//  PairingDisplayController.m
 //  SampleTouch
 //
-//  Created by Marcus S. Zarra on 11/23/09.
+//  Created by Marcus S. Zarra on 11/25/09.
 //  Copyright 2009 Zarra Studios, LLC. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
@@ -26,20 +26,34 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
-#import "ZSyncTouch.h"
+#import "PairingDisplayController.h"
 
-@interface PairingEntryController : UIViewController <UITextFieldDelegate>
+@implementation PairingDisplayController
+
+- (id)initWithPasscode:(NSString*)passcode
 {
-  UITextField *field1;
-  UITextField *field2;
-  UITextField *field3;
-  UITextField *field4;
+  if (![super initWithNibName:@"PairingDisplayView" bundle:nil]) return nil;
   
+  [self setPasscode:passcode];
+  [self setTitle:@"Passcode"];
+  
+  return self;
 }
 
-@property (nonatomic, assign) IBOutlet UITextField *field1;
-@property (nonatomic, assign) IBOutlet UITextField *field2;
-@property (nonatomic, assign) IBOutlet UITextField *field3;
-@property (nonatomic, assign) IBOutlet UITextField *field4;
+- (void)viewDidLoad
+{
+  [super viewDidLoad];
+  
+  [[self codeLabel] setText:[self passcode]];
+}
+
+- (void)dealloc
+{
+  [_passcode release], _passcode = nil;
+  [super dealloc];
+}
+
+@synthesize passcode = _passcode;
+@synthesize codeLabel = _codeLabel;
 
 @end

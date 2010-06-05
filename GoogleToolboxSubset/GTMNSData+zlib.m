@@ -23,14 +23,14 @@
 #define kChunkSize 1024
 
 @interface NSData (GTMZlibAdditionsPrivate)
-+ (NSData *)gtm_dataByCompressingBytes:(const void *)bytes
++ (NSData*)gtm_dataByCompressingBytes:(const void*)bytes
                                 length:(NSUInteger)length
                       compressionLevel:(int)level
                                useGzip:(BOOL)useGzip;
 @end
 
 @implementation NSData (GTMZlibAdditionsPrivate)
-+ (NSData *)gtm_dataByCompressingBytes:(const void *)bytes
++ (NSData*)gtm_dataByCompressingBytes:(const void*)bytes
                                 length:(NSUInteger)length
                       compressionLevel:(int)level
                                useGzip:(BOOL)useGzip {
@@ -124,7 +124,7 @@
 
 @implementation NSData (GTMZLibAdditions)
 
-+ (NSData *)gtm_dataByGzippingBytes:(const void *)bytes
++ (NSData*)gtm_dataByGzippingBytes:(const void*)bytes
                              length:(NSUInteger)length {
   return [self gtm_dataByCompressingBytes:bytes
                                    length:length
@@ -132,14 +132,14 @@
                                   useGzip:YES];
 } // gtm_dataByGzippingBytes:length:
 
-+ (NSData *)gtm_dataByGzippingData:(NSData *)data {
++ (NSData*)gtm_dataByGzippingData:(NSData*)data {
   return [self gtm_dataByCompressingBytes:[data bytes]
                                    length:[data length]
                          compressionLevel:Z_DEFAULT_COMPRESSION
                                   useGzip:YES];
 } // gtm_dataByGzippingData:
 
-+ (NSData *)gtm_dataByGzippingBytes:(const void *)bytes
++ (NSData*)gtm_dataByGzippingBytes:(const void*)bytes
                              length:(NSUInteger)length
                    compressionLevel:(int)level {
   return [self gtm_dataByCompressingBytes:bytes
@@ -148,7 +148,7 @@
                                   useGzip:YES];
 } // gtm_dataByGzippingBytes:length:level:
 
-+ (NSData *)gtm_dataByGzippingData:(NSData *)data
++ (NSData*)gtm_dataByGzippingData:(NSData*)data
                   compressionLevel:(int)level {
   return [self gtm_dataByCompressingBytes:[data bytes]
                                    length:[data length]
@@ -156,7 +156,7 @@
                                   useGzip:YES];
 } // gtm_dataByGzippingData:level:
 
-+ (NSData *)gtm_dataByDeflatingBytes:(const void *)bytes
++ (NSData*)gtm_dataByDeflatingBytes:(const void*)bytes
                               length:(NSUInteger)length {
   return [self gtm_dataByCompressingBytes:bytes
                                    length:length
@@ -164,14 +164,14 @@
                                   useGzip:NO];
 } // gtm_dataByDeflatingBytes:length:
 
-+ (NSData *)gtm_dataByDeflatingData:(NSData *)data {
++ (NSData*)gtm_dataByDeflatingData:(NSData*)data {
   return [self gtm_dataByCompressingBytes:[data bytes]
                                    length:[data length]
                          compressionLevel:Z_DEFAULT_COMPRESSION
                                   useGzip:NO];
 } // gtm_dataByDeflatingData:
 
-+ (NSData *)gtm_dataByDeflatingBytes:(const void *)bytes
++ (NSData*)gtm_dataByDeflatingBytes:(const void*)bytes
                               length:(NSUInteger)length
                     compressionLevel:(int)level {
   return [self gtm_dataByCompressingBytes:bytes
@@ -180,7 +180,7 @@
                                   useGzip:NO];
 } // gtm_dataByDeflatingBytes:length:level:
 
-+ (NSData *)gtm_dataByDeflatingData:(NSData *)data
++ (NSData*)gtm_dataByDeflatingData:(NSData*)data
                    compressionLevel:(int)level {
   return [self gtm_dataByCompressingBytes:[data bytes]
                                    length:[data length]
@@ -188,7 +188,7 @@
                                   useGzip:NO];
 } // gtm_dataByDeflatingData:level:
 
-+ (NSData *)gtm_dataByInflatingBytes:(const void *)bytes
++ (NSData*)gtm_dataByInflatingBytes:(const void*)bytes
                               length:(NSUInteger)length {
   if (!bytes || !length) {
     return nil;
@@ -259,7 +259,7 @@
   return result;
 } // gtm_dataByInflatingBytes:length:
 
-+ (NSData *)gtm_dataByInflatingData:(NSData *)data {
++ (NSData*)gtm_dataByInflatingData:(NSData*)data {
   return [self gtm_dataByInflatingBytes:[data bytes]
                                  length:[data length]];
 } // gtm_dataByInflatingData:
