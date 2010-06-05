@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */ = {isa = PBXBuildFile; fileRef = B63F9C2111B2EA2800811EB1 /* menubar.png */; };
+		B63F9CAC11B2EF6700811EB1 /* ZSyncDaemon.m in Sources */ = {isa = PBXBuildFile; fileRef = B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */; };
 		B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64FE70310EE728F00B15A8F /* clientDescription.plist */; };
 		B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */; };
 		B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B64FE93F10EF35DF00B15A8F /* libz.dylib */; };
@@ -31,6 +33,9 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* ZSyncDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZSyncDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B63F9C2111B2EA2800811EB1 /* menubar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menubar.png; sourceTree = "<group>"; };
+		B63F9CAA11B2EF6700811EB1 /* ZSyncDaemon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncDaemon.h; sourceTree = "<group>"; };
+		B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncDaemon.m; sourceTree = "<group>"; };
 		B64FE70310EE728F00B15A8F /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
 		B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B64FE93F10EF35DF00B15A8F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -121,6 +126,7 @@
 		29B97314FDCFA39411CA2CEA /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				B63F9C2011B2EA1300811EB1 /* Images */,
 				B6EC175910F5033E0051FD2E /* GoogleToolboxSubset */,
 				B691FB9810ED879D00207210 /* SharedCode */,
 				B691FB8210ED875800207210 /* DesktopCode */,
@@ -164,6 +170,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B63F9C2011B2EA1300811EB1 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				B63F9C2111B2EA2800811EB1 /* menubar.png */,
+			);
+			name = Images;
+			path = ../Images;
+			sourceTree = "<group>";
+		};
 		B64FE7C710EEA24500B15A8F /* DataModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,6 +193,8 @@
 			children = (
 				B691FB3A10ED855F00207210 /* AppDelegate.h */,
 				B691FB3B10ED855F00207210 /* AppDelegate.m */,
+				B63F9CAA11B2EF6700811EB1 /* ZSyncDaemon.h */,
+				B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -290,6 +307,7 @@
 				B691FB4510ED855F00207210 /* MainMenu.xib in Resources */,
 				B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */,
 				B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */,
+				B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +326,7 @@
 				B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */,
 				B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */,
 				B67ED12E1103765600314759 /* ZSyncConnectionDelegate.m in Sources */,
+				B63F9CAC11B2EF6700811EB1 /* ZSyncDaemon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

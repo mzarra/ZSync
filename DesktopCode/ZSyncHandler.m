@@ -94,7 +94,7 @@
 
 - (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
 }
 
 - (void)connectionClosed:(ZSyncConnectionDelegate*)delegate;

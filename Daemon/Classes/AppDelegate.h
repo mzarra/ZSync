@@ -28,6 +28,9 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> 
 {
+  NSStatusItem *statusItem;
 }
+
+@property (nonatomic, retain) NSStatusItem *statusItem;
 
 @end

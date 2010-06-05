@@ -3,3 +3,5 @@
   #import <CoreData/CoreData.h>
   #import "ZSync.h"
 #endif
+
+#define ZSyncVersionNumber @"ZSyncVersionNumber"

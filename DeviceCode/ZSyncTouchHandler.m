@@ -65,7 +65,7 @@
 
 - (void)applicationWillTerminate:(NSNotification*)notification
 {
-  DLog(@"%s closing connection", __PRETTY_FUNCTION__);
+  DLog(@"closing connection");
   if ([self connection]) {
     [[self connection] close];
   }
@@ -86,7 +86,7 @@
 - (void)requestSync;
 {
   if (_serviceBrowser) {
-    DLog(@"%s service browser is not nil", __PRETTY_FUNCTION__);
+    DLog(@"service browser is not nil");
     return; //Already in the middle of something
   }
   
@@ -119,7 +119,7 @@
   if (![self connection]) return;
   
   //Start a pairing request
-  DLog(@"%s sending a pairing cancel", __PRETTY_FUNCTION__);
+  DLog(@"sending a pairing cancel");
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:zsActID(zsActionCancelPairing) forKey:zsAction];
   
@@ -150,7 +150,7 @@
   if (![self connection]) return;
   
   //Start a pairing request
-  DLog(@"%s sending a pairing code", __PRETTY_FUNCTION__);
+  DLog(@"sending a pairing code");
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
   
@@ -217,7 +217,7 @@
 - (void)receiveFile:(BLIPRequest*)request
 {
   ZAssert([request complete], @"Message is incomplete");
-  DLog(@"%s file received", __PRETTY_FUNCTION__);
+  DLog(@"file received");
   if (!receivedFileLookupDictionary) {
     receivedFileLookupDictionary = [[NSMutableDictionary alloc] init];
   }
@@ -230,9 +230,9 @@
   
   NSString *tempFilename = [[NSProcessInfo processInfo] globallyUniqueString];
   NSString *tempPath = [[self cachePath] stringByAppendingPathComponent:tempFilename];
-  DLog(@"%s file written to \n%@", __PRETTY_FUNCTION__, tempPath);
+  DLog(@"file written to \n%@", __PRETTY_FUNCTION__, tempPath);
   
-  DLog(@"%s request length: %i", __PRETTY_FUNCTION__, [[request body] length]);
+  DLog(@"request length: %i", __PRETTY_FUNCTION__, [[request body] length]);
   [[request body] writeToFile:tempPath atomically:YES];
   [fileDict setValue:tempPath forKey:zsTempFilePath];
   
@@ -259,7 +259,7 @@
   if (*error) return NO;
   
   if ([fileManager fileExistsAtPath:originalFileTempPath]) {
-    DLog(@"%s deleting stored file", __PRETTY_FUNCTION__);
+    DLog(@"deleting stored file");
     [fileManager removeItemAtPath:originalFileTempPath error:error];
     if (*error) return NO;
   }
@@ -288,7 +288,7 @@
   for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
     if ([receivedFileLookupDictionary objectForKey:[store identifier]]) continue;
     
-    DLog(@"%s Store ID: %@\n%@", __PRETTY_FUNCTION__, [store identifier], [receivedFileLookupDictionary allKeys]);
+    DLog(@"Store ID: %@\n%@", __PRETTY_FUNCTION__, [store identifier], [receivedFileLookupDictionary allKeys]);
     //Fail
     if ([[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
       //Flush the temp files
@@ -371,7 +371,7 @@
 
 - (void)sendUploadComplete
 {
-  DLog(@"%s sending upload complete", __PRETTY_FUNCTION__);
+  DLog(@"sending upload complete");
   NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
   [dictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
@@ -390,7 +390,7 @@
   
   for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
     NSData *data = [[NSData alloc] initWithContentsOfMappedFile:[[store URL] path]];
-    DLog(@"%s url %@\nIdentifier: %@\nSize: %i", __PRETTY_FUNCTION__, [store URL], [store identifier], [data length]);
+    DLog(@"url %@\nIdentifier: %@\nSize: %i", __PRETTY_FUNCTION__, [store URL], [store identifier], [data length]);
     
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     [dictionary setValue:[store identifier] forKey:zsStoreIdentifier];
@@ -406,7 +406,7 @@
     [[self connection] sendRequest:request];
     [data release], data = nil;
     [dictionary release], dictionary = nil;
-    DLog(@"%s file uploaded", __PRETTY_FUNCTION__);
+    DLog(@"file uploaded");
     
     [storeFileIdentifiers addObject:[store identifier]];
   }
@@ -415,19 +415,19 @@
 - (void)processTestFileTransfer:(BLIPRequest*)request
 {
   NSData *data = [request body];
-  DLog(@"%s length %i", __PRETTY_FUNCTION__, [data length]);
+  DLog(@"length %i", __PRETTY_FUNCTION__, [data length]);
   NSString *path = [self cachePath];
   path = [path stringByAppendingPathComponent:@"test.jpg"];
   
   NSError *error = nil;
   if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-    DLog(@"%s deleting old file", __PRETTY_FUNCTION__);
+    DLog(@"deleting old file");
     [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     ZAssert(error == nil, @"error removing test file: %@", [error localizedDescription]);
   }
   
   [data writeToFile:path atomically:YES];
-  DLog(@"%s file written\n%@", __PRETTY_FUNCTION__, path);
+  DLog(@"file written\n%@", __PRETTY_FUNCTION__, path);
 }
 
 #pragma mark -
@@ -439,7 +439,7 @@
  */
 - (void)connectionDidOpen:(BLIPConnection*)connection 
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   //Start by confirming that the server still supports our schema and version
   
   NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
@@ -457,7 +457,7 @@
   BLIPRequest *request = [connection requestWithBody:data properties:dict];
   [request send];
   [dict release], dict = nil;
-  DLog(@"%s initial send complete", __PRETTY_FUNCTION__);
+  DLog(@"initial send complete");
 }
 
 /* We had an error talking to the server.  Push this error on to our delegate
@@ -465,7 +465,7 @@
  */
 - (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [_connection close], [_connection release], _connection = nil;
   [[self delegate] zSync:self errorOccurred:error];
 }
@@ -473,10 +473,10 @@
 - (void)connection:(BLIPConnection*)connection receivedResponse:(BLIPResponse*)response;
 {
   if (![[response properties] valueOfProperty:zsAction]) {
-    DLog(@"%s received empty response, ignoring", __PRETTY_FUNCTION__);
+    DLog(@"received empty response, ignoring");
     return;
   }
-  DLog(@"%s entered\n%@", __PRETTY_FUNCTION__, [[response properties] allProperties]);
+  DLog(@"entered\n%@", __PRETTY_FUNCTION__, [[response properties] allProperties]);
   NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
     case zsActionFileReceived:
@@ -495,7 +495,7 @@
       }
       return;
     case zsActionAuthenticatePassed:
-      DLog(@"%s server UUID accepted: %@", __PRETTY_FUNCTION__, [response valueOfProperty:zsServerUUID]);
+      DLog(@"server UUID accepted: %@", __PRETTY_FUNCTION__, [response valueOfProperty:zsServerUUID]);
       [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerUUID] forKey:zsServerUUID];
       [[NSUserDefaults standardUserDefaults] setValue:[response valueOfProperty:zsServerName] forKey:zsServerName];
       if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeApproved:)]) {
@@ -552,11 +552,11 @@
       [self processTestFileTransfer:request];
       return YES;
     case zsActionCompleteSync:
-      DLog(@"%s completeSync", __PRETTY_FUNCTION__);
+      DLog(@"completeSync");
       [self performSelector:@selector(completeSync) withObject:nil afterDelay:0.01];
       return YES;
     case zsActionStoreUpload:
-      DLog(@"%s receiveFile", __PRETTY_FUNCTION__);
+      DLog(@"receiveFile");
       [self receiveFile:request];
       return YES;
     default:

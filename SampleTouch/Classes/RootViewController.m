@@ -37,7 +37,7 @@
 
 - (void)refresh:(id)sender
 {
-  DLog(@"%s refreshing the fetchedResultsController", __PRETTY_FUNCTION__);
+  DLog(@"refreshing the fetchedResultsController");
   NSError *error = nil;
   //[fetchedResultsController release], fetchedResultsController = nil;
   [[self fetchedResultsController] performFetch:&error];
@@ -201,7 +201,7 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController*)controller 
 {
-  DLog(@"%s ----------------------------------------------------FIRED!!!!!", __PRETTY_FUNCTION__);
+  DLog(@"----------------------------------------------------FIRED!!!!!");
 	[[self tableView] reloadData];
 }
 

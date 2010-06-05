@@ -129,7 +129,7 @@
 
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [navigationController popToRootViewControllerAnimated:YES];
   
   [self showHoverViewWithMessage:@"Syncing"];
@@ -137,7 +137,7 @@
 
 - (void)zSyncFinished:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [self hideHoverView];
   
   [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshMOC object:self];
@@ -181,7 +181,7 @@
 
 - (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   PairingEntryController *controller = [[PairingEntryController alloc] init];
   [[self navigationController] presentModalViewController:controller animated:YES];
   [controller release], controller = nil;
@@ -189,20 +189,20 @@
 
 - (void)zSyncPairingCodeApproved:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [self showHoverViewWithMessage:@"Download Started"];
   [self performSelector:@selector(hideHoverView) withObject:nil afterDelay:5.0];
 }
 
 - (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [self showHoverViewWithMessage:@"Download Started"];
 }
 
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
 }
 
 @end

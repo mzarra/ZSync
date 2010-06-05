@@ -72,7 +72,7 @@
   client = [[ISyncManager sharedManager] clientWithIdentifier:clientIdentifier];
   //client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
   if (!client) {
-    DLog(@"%s registering schema", __PRETTY_FUNCTION__);
+    DLog(@"registering schema");
     NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncSample" ofType:@"syncschema"];
     ZAssert([[ISyncManager sharedManager] registerSchemaWithBundlePath:path], @"Failed to register sync schema");
     client = [[ISyncManager sharedManager] registerClientWithIdentifier:clientIdentifier descriptionFilePath:[[NSBundle mainBundle] pathForResource:@"clientDescription" ofType:@"plist"]];
@@ -84,7 +84,7 @@
 
 - (void)syncClient:(ISyncClient*)syncClient willSyncEntityNames:(NSArray*)entityNames;
 {
-  DLog(@"%s fired %@", __PRETTY_FUNCTION__, entityNames);
+  DLog(@"fired %@", __PRETTY_FUNCTION__, entityNames);
   NSError *error = nil;
   [[self persistentStoreCoordinator] syncWithClient:syncClient inBackground:NO handler:self error:&error];
   ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
@@ -92,18 +92,18 @@
 
 - (void)saveFired:(NSNotification*)notification
 {
-  DLog(@"%s save fired", __PRETTY_FUNCTION__);
+  DLog(@"save fired");
 }
 
 - (IBAction)performSync:(id)sender;
 {
-  DLog(@"%s syncing", __PRETTY_FUNCTION__);
+  DLog(@"syncing");
   NSError *error = nil;
   ISyncClient *client = [self syncClient];
   ZAssert(client != nil,@"Sync client is nil");
   [[self persistentStoreCoordinator] syncWithClient:client inBackground:NO handler:self error:&error];
   if (error && [error code] == -1) {
-    DLog(@"%s already in a sync", __PRETTY_FUNCTION__);
+    DLog(@"already in a sync");
     return;
   }
   ZAssert(error == nil, @"Error requesting sync: %@", [error localizedDescription]);
@@ -351,7 +351,7 @@
 
 - (void)persistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator didFinishSyncSession:(ISyncSession *)session
 {
-  DLog(@"%s sync complete", __PRETTY_FUNCTION__);
+  DLog(@"sync complete");
 }
 
 @end

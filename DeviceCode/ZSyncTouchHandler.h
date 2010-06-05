@@ -137,7 +137,8 @@
  */
 + (id)shared;
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate 
+withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 
 - (void)requestSync;
 - (void)requestPairing:(ZSyncService*)server;
