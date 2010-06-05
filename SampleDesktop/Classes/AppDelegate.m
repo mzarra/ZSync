@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import "ZSyncDaemon.h"
 
 @interface AppDelegate()
 
@@ -24,6 +25,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification
 {
+  [self validateZSync];
   [self performSync:self];
 }
 
@@ -63,6 +65,15 @@
   }
   
   return NSTerminateNow;
+}
+
+- (void)validateZSync;
+{
+  Class zsync = [[NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"ZSyncInstaller" ofType:@"bundle"]] principalClass];
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"SampleDesktop" ofType:@"zsyncPlugin"];
+  NSError *error = nil;
+  ZAssert([zsync installPluginAtPath:path intoDaemonWithError:&error], @"Error installing plugin: %@", [error userInfo]);
+  DLog(@"validation complete");
 }
 
 - (ISyncClient*)syncClient;

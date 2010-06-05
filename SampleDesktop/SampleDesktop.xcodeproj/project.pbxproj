@@ -10,6 +10,7 @@
 		770B37ED0679A11B001EADE2 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* DataModel.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* AppDelegate.m */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B62DD01111BA1FA100AD6EAB /* SampleDesktop.zsyncPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B62DD00911BA1F5500AD6EAB /* SampleDesktop.zsyncPlugin */; };
 		B633AFEA10C149A8009101EF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633AFE910C149A8009101EF /* CoreData.framework */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
 		B6510A7E10F1067500D22FBC /* App.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6510A7D10F1067500D22FBC /* App.icns */; };
@@ -18,9 +19,17 @@
 		B691FC4A10ED8E7400207210 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B691FC4710ED8E7400207210 /* MainMenu.xib */; };
 		B691FCCF10ED92A500207210 /* ZSyncSample.syncschema in Resources */ = {isa = PBXBuildFile; fileRef = B6457E3110B058CD00A96714 /* ZSyncSample.syncschema */; };
 		B691FD5310EDA99200207210 /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B691FC7310ED907400207210 /* clientDescription.plist */; };
+		B6C5980D11BA1AD7007CB1E1 /* ZSyncInstaller.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B6DEEC3611BA18680036A137 /* ZSyncInstaller.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B62DD00E11BA1F9000AD6EAB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B62DD00811BA1F5500AD6EAB;
+			remoteInfo = SampleDesktopPlugin;
+		};
 		B6457E3010B058CD00A96714 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */;
@@ -35,6 +44,27 @@
 			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
 			remoteInfo = SyncSchema;
 		};
+		B6C5980711BA1AAB007CB1E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6DEEBE011BA15400036A137 /* ZSyncDaemon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B6DEEC2E11BA18680036A137;
+			remoteInfo = ZSyncInstaller;
+		};
+		B6DEEBE411BA15400036A137 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6DEEBE011BA15400036A137 /* ZSyncDaemon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ZSyncDaemon;
+		};
+		B6DEEC3511BA18680036A137 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6DEEBE011BA15400036A137 /* ZSyncDaemon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B6DEEC2F11BA18680036A137;
+			remoteInfo = ZSyncInstaller;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +78,8 @@
 		77C8280C06725ACE000B614F /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SampleDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62DD00911BA1F5500AD6EAB /* SampleDesktop.zsyncPlugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleDesktop.zsyncPlugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62DD00A11BA1F5500AD6EAB /* SampleDesktopPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SampleDesktopPlugin-Info.plist"; sourceTree = "<group>"; };
 		B633AFE910C149A8009101EF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncSchema.xcodeproj; path = SyncSchema/SyncSchema.xcodeproj; sourceTree = "<group>"; };
 		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
@@ -56,6 +88,8 @@
 		B691FC4610ED8E7400207210 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B691FC4810ED8E7400207210 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		B691FC7310ED907400207210 /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
+		B6DEEBE011BA15400036A137 /* ZSyncDaemon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZSyncDaemon.xcodeproj; path = ../Daemon/ZSyncDaemon.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B6DEEC1411BA17190036A137 /* ZSyncDaemon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZSyncDaemon.h; path = ../Daemon/Classes/ZSyncDaemon.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +100,13 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */,
 				B633AFEA10C149A8009101EF /* CoreData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B62DD00711BA1F5500AD6EAB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* SampleDesktop.app */,
+				B62DD00911BA1F5500AD6EAB /* SampleDesktop.zsyncPlugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,6 +160,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				B62DD00A11BA1F5500AD6EAB /* SampleDesktopPlugin-Info.plist */,
 			);
 			name = SampleDesktop;
 			sourceTree = "<group>";
@@ -125,6 +168,8 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				B6DEEBE011BA15400036A137 /* ZSyncDaemon.xcodeproj */,
+				B6DEEC1411BA17190036A137 /* ZSyncDaemon.h */,
 				B691FC4310ED8E6300207210 /* main.m */,
 				32CA4F630368D1EE00C91783 /* Prefix.pch */,
 			);
@@ -170,6 +215,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B6DEEBE111BA15400036A137 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6DEEBE511BA15400036A137 /* ZSyncDaemon.app */,
+				B6DEEC3611BA18680036A137 /* ZSyncInstaller.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -184,13 +238,32 @@
 			buildRules = (
 			);
 			dependencies = (
+				B62DD00F11BA1F9000AD6EAB /* PBXTargetDependency */,
 				B6457E3510B058FE00A96714 /* PBXTargetDependency */,
+				B6C5980811BA1AAB007CB1E1 /* PBXTargetDependency */,
 			);
 			name = SampleDesktop;
 			productInstallPath = "$(HOME)/Applications";
 			productName = SampleDesktop;
 			productReference = 8D1107320486CEB800E47090 /* SampleDesktop.app */;
 			productType = "com.apple.product-type.application";
+		};
+		B62DD00811BA1F5500AD6EAB /* SampleDesktopPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B62DD00D11BA1F5600AD6EAB /* Build configuration list for PBXNativeTarget "SampleDesktopPlugin" */;
+			buildPhases = (
+				B62DD00511BA1F5500AD6EAB /* Resources */,
+				B62DD00611BA1F5500AD6EAB /* Sources */,
+				B62DD00711BA1F5500AD6EAB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SampleDesktopPlugin;
+			productName = SampleDesktopPlugin;
+			productReference = B62DD00911BA1F5500AD6EAB /* SampleDesktop.zsyncPlugin */;
+			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
@@ -214,10 +287,15 @@
 					ProductGroup = B6457E2D10B058CD00A96714 /* Products */;
 					ProjectRef = B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */;
 				},
+				{
+					ProductGroup = B6DEEBE111BA15400036A137 /* Products */;
+					ProjectRef = B6DEEBE011BA15400036A137 /* ZSyncDaemon.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* SampleDesktop */,
+				B62DD00811BA1F5500AD6EAB /* SampleDesktopPlugin */,
 			);
 		};
 /* End PBXProject section */
@@ -230,6 +308,20 @@
 			remoteRef = B6457E3010B058CD00A96714 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		B6DEEBE511BA15400036A137 /* ZSyncDaemon.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ZSyncDaemon.app;
+			remoteRef = B6DEEBE411BA15400036A137 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B6DEEC3611BA18680036A137 /* ZSyncInstaller.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ZSyncInstaller.bundle;
+			remoteRef = B6DEEC3511BA18680036A137 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -237,11 +329,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B62DD01111BA1FA100AD6EAB /* SampleDesktop.zsyncPlugin in Resources */,
+				B6C5980D11BA1AD7007CB1E1 /* ZSyncInstaller.bundle in Resources */,
 				B691FCCF10ED92A500207210 /* ZSyncSample.syncschema in Resources */,
 				B691FC4910ED8E7400207210 /* InfoPlist.strings in Resources */,
 				B691FC4A10ED8E7400207210 /* MainMenu.xib in Resources */,
 				B691FD5310EDA99200207210 /* clientDescription.plist in Resources */,
 				B6510A7E10F1067500D22FBC /* App.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B62DD00511BA1F5500AD6EAB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,13 +359,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B62DD00611BA1F5500AD6EAB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		B62DD00F11BA1F9000AD6EAB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B62DD00811BA1F5500AD6EAB /* SampleDesktopPlugin */;
+			targetProxy = B62DD00E11BA1F9000AD6EAB /* PBXContainerItemProxy */;
+		};
 		B6457E3510B058FE00A96714 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SyncSchema;
 			targetProxy = B6457E3410B058FE00A96714 /* PBXContainerItemProxy */;
+		};
+		B6C5980811BA1AAB007CB1E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ZSyncInstaller;
+			targetProxy = B6C5980711BA1AAB007CB1E1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -356,6 +474,56 @@
 			};
 			name = Release;
 		};
+		B62DD00B11BA1F5600AD6EAB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "SampleDesktopPlugin-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = SampleDesktop;
+				WRAPPER_EXTENSION = zsyncPlugin;
+			};
+			name = Debug;
+		};
+		B62DD00C11BA1F5600AD6EAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "SampleDesktopPlugin-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = SampleDesktop;
+				WRAPPER_EXTENSION = zsyncPlugin;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -373,6 +541,15 @@
 			buildConfigurations = (
 				26FC0A890875C7B200E6366F /* Debug */,
 				26FC0A8A0875C7B200E6366F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B62DD00D11BA1F5600AD6EAB /* Build configuration list for PBXNativeTarget "SampleDesktopPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B62DD00B11BA1F5600AD6EAB /* Debug */,
+				B62DD00C11BA1F5600AD6EAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

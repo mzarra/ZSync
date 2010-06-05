@@ -17,6 +17,8 @@
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 
+- (void)validateZSync;
+
 - (IBAction)saveAction:(id)sender;
 - (IBAction)addData:(id)sender;
 - (IBAction)changeData:(id)sender;

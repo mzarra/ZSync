@@ -1,6 +1,21 @@
 #import "ZSyncDaemon.h"
 
+#define ZSyncVersionNumber @"ZSyncVersionNumber"
+
 @implementation ZSyncDaemon
+
++ (NSBundle*)myBundle
+{
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncInstaller" ofType:@"bundle"];
+  return [NSBundle bundleWithPath:path];
+}
+
++ (NSBundle*)daemonBundle
+{
+  NSBundle *myBundle = [self myBundle];
+  NSString *path = [myBundle pathForResource:@"ZSyncDaemon" ofType:@"app"];
+  return [NSBundle bundleWithPath:path];
+}
 
 + (NSString*)basePath
 {
@@ -56,10 +71,7 @@
     if (error) {
       return NO;
     }
-    if (![[NSFileManager defaultManager] createDirectoryAtPath:basePath 
-                                   withIntermediateDirectories:YES 
-                                                    attributes:nil 
-                                                         error:error]) {
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:error]) {
       return NO;
     }
   }
@@ -69,22 +81,36 @@
 
 + (BOOL)installDaemon:(NSError**)error;
 {
-  NSString *myBundlePath = [[NSBundle mainBundle] bundlePath];
-  NSString *applicationPath = [self applicationPath];
+  NSString *basePath = [self basePath];
   NSFileManager *fileManager = [NSFileManager defaultManager];
+  BOOL isDirectory = NO;
+  
+  if (![fileManager fileExistsAtPath:basePath isDirectory:&isDirectory]) {
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:error]) {
+      return NO;
+    }
+  } else if (!isDirectory) {
+    NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at base installation path: %@", basePath];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
+    return NO;
+  }
+  
+  NSString *myBundlePath = [[self daemonBundle] bundlePath];
+  NSString *applicationPath = [self applicationPath];
   return [fileManager copyItemAtPath:myBundlePath toPath:applicationPath error:error];
 }
 
 + (BOOL)stopDaemon:(NSError**)error
 {
-  NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
+  NSString *appName = [[[self myBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
   NSString *command = [NSString stringWithFormat:@"tell application \"%@\" to quit", appName];
   NSAppleScript *quitScript;
   quitScript = [[NSAppleScript alloc] initWithSource:command];
   NSDictionary *errorDict = nil;
   // TODO: This should be turned into an NSError response
   if (![quitScript executeAndReturnError:&errorDict]) {
-    ALog(@"Failure. What does it look like: %@", errorDict);
+    NSAssert1(NO, @"Failure. What does it look like: %@", errorDict);
     [quitScript release], quitScript = nil;
     return NO;
   }
@@ -94,11 +120,11 @@
 
 + (BOOL)updateInstalledApplication:(NSError**)error;
 {
-  NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
+  NSString *appName = [[[self myBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
   
   if ([self isDaemonRunning] && ![self stopDaemon:error]) return NO;
   
-  NSString *myBundlePath = [[NSBundle mainBundle] bundlePath];
+  NSString *myBundlePath = [[self myBundle] bundlePath];
   
   NSString *applicationPath = [self applicationPath];
   NSString *basePath = [self basePath];
@@ -164,7 +190,7 @@
   if (!isDaemonInstalled) {
     if (![self installDaemon:error]) return NO;
   } else {
-    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSDictionary *infoDictionary = [[self daemonBundle] infoDictionary];
     NSInteger currentVersionNumber = [[infoDictionary objectForKey:ZSyncVersionNumber] integerValue];
   
     NSBundle *installed = [NSBundle bundleWithPath:[self applicationPath]];
@@ -184,8 +210,22 @@
   }
   
   //Install the plugin
-  NSString *pluginPath = [[self pluginPath] stringByAppendingPathComponent:[path lastPathComponent]];
+  NSString *pluginPath = [self pluginPath];
   NSFileManager *fileManager = [NSFileManager defaultManager];
+  BOOL isDirectory = NO;
+  
+  if (![fileManager fileExistsAtPath:pluginPath isDirectory:&isDirectory]) {
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:pluginPath withIntermediateDirectories:YES attributes:nil error:error]) {
+      return NO;
+    }
+  } else if (!isDirectory) {
+    NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at base installation path: %@", pluginPath];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
+    return NO;
+  }
+  
+  pluginPath = [pluginPath stringByAppendingPathComponent:[path lastPathComponent]];
   if (![fileManager copyItemAtPath:path toPath:pluginPath error:error]) {
     return NO;
   }
@@ -198,7 +238,7 @@
 
 + (BOOL)isDaemonRunning;
 {
-  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  NSDictionary *infoDictionary = [[self daemonBundle] infoDictionary];
   NSString *myBundleID = [infoDictionary objectForKey:@"CFBundleIdentifier"];
   
   NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
@@ -212,7 +252,7 @@
 
 + (void)startDaemon;
 {
-  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  NSDictionary *infoDictionary = [[self myBundle] infoDictionary];
   NSString *appName = [infoDictionary objectForKey:@"CFBundleExecutable"];
   
   NSWorkspace *workspace = [NSWorkspace sharedWorkspace];

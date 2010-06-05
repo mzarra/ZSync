@@ -45,8 +45,8 @@
     if (!zsSharedSyncHandler) {
       zsSharedSyncHandler = [[ZSyncHandler alloc] init];
     }
-    return zsSharedSyncHandler;
   }
+  return zsSharedSyncHandler;
 }
 
 - (NSMutableArray*)connections
