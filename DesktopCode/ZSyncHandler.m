@@ -45,8 +45,8 @@
     if (!zsSharedSyncHandler) {
       zsSharedSyncHandler = [[ZSyncHandler alloc] init];
     }
-    return zsSharedSyncHandler;
   }
+  return zsSharedSyncHandler;
 }
 
 - (NSMutableArray*)connections
@@ -94,7 +94,7 @@
 
 - (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
 }
 
 - (void)connectionClosed:(ZSyncConnectionDelegate*)delegate;

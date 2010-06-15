@@ -26,8 +26,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-@interface AppDelegate : NSObject <NSApplicationDelegate> 
+@interface AppDelegate : NSObject
 {
+  NSStatusItem *statusItem;
 }
+
+@property (nonatomic, retain) NSStatusItem *statusItem;
 
 @end

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */ = {isa = PBXBuildFile; fileRef = B63F9C2111B2EA2800811EB1 /* menubar.png */; };
+		B63F9CAC11B2EF6700811EB1 /* ZSyncDaemon.m in Sources */ = {isa = PBXBuildFile; fileRef = B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */; };
 		B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64FE70310EE728F00B15A8F /* clientDescription.plist */; };
 		B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */; };
 		B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B64FE93F10EF35DF00B15A8F /* libz.dylib */; };
@@ -22,15 +24,31 @@
 		B691FB8E10ED875800207210 /* PairingCodeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8810ED875800207210 /* PairingCodeWindowController.m */; };
 		B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB8B10ED875800207210 /* ZSyncHandler.m */; };
 		B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBBC10ED884000207210 /* SyncServices.framework */; };
+		B6DEEC0611BA16A90036A137 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6DEEC0511BA16A90036A137 /* icon.icns */; };
+		B6DEEC3A11BA18970036A137 /* ZSyncDaemon.m in Sources */ = {isa = PBXBuildFile; fileRef = B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */; };
+		B6DEEC3D11BA18C00036A137 /* ZSyncDaemon.app in Resources */ = {isa = PBXBuildFile; fileRef = 8D1107320486CEB800E47090 /* ZSyncDaemon.app */; };
 		B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */; };
 		B6EC179F10F509010051FD2E /* libMYNetwork-Desktop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B6EC179E10F509010051FD2E /* libMYNetwork-Desktop.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B6DEEC3811BA187F0036A137 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ZSyncDaemon;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* ZSyncDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZSyncDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B63F9C2111B2EA2800811EB1 /* menubar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menubar.png; sourceTree = "<group>"; };
+		B63F9CAA11B2EF6700811EB1 /* ZSyncDaemon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncDaemon.h; sourceTree = "<group>"; };
+		B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncDaemon.m; sourceTree = "<group>"; };
 		B64FE70310EE728F00B15A8F /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
 		B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		B64FE93F10EF35DF00B15A8F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -69,6 +87,9 @@
 		B691FBA910ED879D00207210 /* TCPListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPListener.h; sourceTree = "<group>"; };
 		B691FBAA10ED879D00207210 /* ZSyncShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncShared.h; sourceTree = "<group>"; };
 		B691FBBC10ED884000207210 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
+		B6C5981811BA1B2D007CB1E1 /* Info-Installer.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Installer.plist"; sourceTree = "<group>"; };
+		B6DEEC0511BA16A90036A137 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
+		B6DEEC2F11BA18680036A137 /* ZSyncInstaller.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZSyncInstaller.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6EC175A10F5033E0051FD2E /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		B6EC175C10F5033E0051FD2E /* GTMNSData+zlib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSData+zlib.m"; sourceTree = "<group>"; };
 		B6EC179E10F509010051FD2E /* libMYNetwork-Desktop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libMYNetwork-Desktop.a"; sourceTree = "<group>"; };
@@ -84,6 +105,13 @@
 				B691FBBD10ED884000207210 /* SyncServices.framework in Frameworks */,
 				B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */,
 				B6EC179F10F509010051FD2E /* libMYNetwork-Desktop.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6DEEC2D11BA18680036A137 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* ZSyncDaemon.app */,
+				B6DEEC2F11BA18680036A137 /* ZSyncInstaller.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,6 +149,7 @@
 		29B97314FDCFA39411CA2CEA /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				B63F9C2011B2EA1300811EB1 /* Images */,
 				B6EC175910F5033E0051FD2E /* GoogleToolboxSubset */,
 				B691FB9810ED879D00207210 /* SharedCode */,
 				B691FB8210ED875800207210 /* DesktopCode */,
@@ -135,6 +165,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				B6C5981811BA1B2D007CB1E1 /* Info-Installer.plist */,
 				B691FB4910ED857100207210 /* Info.plist */,
 				B691FB4A10ED857100207210 /* Prefix.pch */,
 				B691FB3C10ED855F00207210 /* main.m */,
@@ -163,6 +194,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B63F9C2011B2EA1300811EB1 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				B6DEEC0511BA16A90036A137 /* icon.icns */,
+				B63F9C2111B2EA2800811EB1 /* menubar.png */,
+			);
+			name = Images;
+			path = ../Images;
+			sourceTree = "<group>";
+		};
 		B64FE7C710EEA24500B15A8F /* DataModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -177,6 +218,8 @@
 			children = (
 				B691FB3A10ED855F00207210 /* AppDelegate.h */,
 				B691FB3B10ED855F00207210 /* AppDelegate.m */,
+				B63F9CAA11B2EF6700811EB1 /* ZSyncDaemon.h */,
+				B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -255,6 +298,24 @@
 			productReference = 8D1107320486CEB800E47090 /* ZSyncDaemon.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B6DEEC2E11BA18680036A137 /* ZSyncInstaller */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6DEEC3711BA18680036A137 /* Build configuration list for PBXNativeTarget "ZSyncInstaller" */;
+			buildPhases = (
+				B6DEEC2B11BA18680036A137 /* Resources */,
+				B6DEEC2C11BA18680036A137 /* Sources */,
+				B6DEEC2D11BA18680036A137 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B6DEEC3911BA187F0036A137 /* PBXTargetDependency */,
+			);
+			name = ZSyncInstaller;
+			productName = ZSyncInstaller;
+			productReference = B6DEEC2F11BA18680036A137 /* ZSyncInstaller.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -275,6 +336,7 @@
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* ZSyncDaemon */,
+				B6DEEC2E11BA18680036A137 /* ZSyncInstaller */,
 			);
 		};
 /* End PBXProject section */
@@ -288,6 +350,16 @@
 				B691FB4510ED855F00207210 /* MainMenu.xib in Resources */,
 				B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */,
 				B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */,
+				B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */,
+				B6DEEC0611BA16A90036A137 /* icon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6DEEC2B11BA18680036A137 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6DEEC3D11BA18C00036A137 /* ZSyncDaemon.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,10 +378,27 @@
 				B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */,
 				B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */,
 				B67ED12E1103765600314759 /* ZSyncConnectionDelegate.m in Sources */,
+				B63F9CAC11B2EF6700811EB1 /* ZSyncDaemon.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6DEEC2C11BA18680036A137 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6DEEC3A11BA18970036A137 /* ZSyncDaemon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B6DEEC3911BA187F0036A137 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D1107260486CEB800E47090 /* ZSyncDaemon */;
+			targetProxy = B6DEEC3811BA187F0036A137 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		B691FB3E10ED855F00207210 /* InfoPlist.strings */ = {
@@ -341,6 +430,56 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		B6DEEC3211BA18680036A137 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Info-Installer.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZSyncInstaller;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		B6DEEC3311BA18680036A137 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Info-Installer.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZSyncInstaller;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -412,6 +551,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B6DEEC3711BA18680036A137 /* Build configuration list for PBXNativeTarget "ZSyncInstaller" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6DEEC3211BA18680036A137 /* Debug */,
+				B6DEEC3311BA18680036A137 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ZSyncDaemon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

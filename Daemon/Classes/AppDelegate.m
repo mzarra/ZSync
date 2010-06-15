@@ -34,6 +34,43 @@
 {
   [[ZSyncHandler shared] setDelegate:self];
   [[ZSyncHandler shared] startBroadcasting];
+  
+  NSMenu *menu = [[NSMenu alloc] initWithTitle:@"ZSync"];
+  
+  NSMenuItem *aboutMenu = [[NSMenuItem alloc] initWithTitle:@"About" action:@selector(about:) keyEquivalent:@""];
+  [menu addItem:aboutMenu];
+  [aboutMenu release], aboutMenu = nil;
+
+  [menu addItem:[NSMenuItem separatorItem]];
+  
+  NSMenuItem *quitMenu = [[NSMenuItem alloc] initWithTitle:@"Quit" action:@selector(quit:) keyEquivalent:@""];
+  [menu addItem:quitMenu];
+  [quitMenu release], quitMenu = nil;
+  
+  NSImage *statusImage = [NSImage imageNamed:@"menubar.png"];
+  
+  statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:[statusImage size].width] retain];
+  [statusItem setMenu:menu];
+  [statusItem setToolTip:NSLocalizedString(@"ZSync Daemon", @"ZSync menu bar toolitp")];
+  [statusItem setImage:statusImage];
+  [statusItem setAction:@selector(statusItemSelected:)];
+  
+  [menu release], menu = nil;
+  
+  [[NSApplication sharedApplication] hide:self];
 }
+
+- (IBAction)about:(id)sender
+{
+  DLog(@"fired");
+}
+
+- (IBAction)quit:(id)sender
+{
+  DLog(@"fired");
+  [[NSApplication sharedApplication] terminate:self];
+}
+
+@synthesize statusItem;
 
 @end
