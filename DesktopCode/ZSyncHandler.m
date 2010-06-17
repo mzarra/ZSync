@@ -85,6 +85,7 @@
 
 - (void)listener:(TCPListener*)listener didAcceptConnection:(BLIPConnection*)connection
 {
+  DLog(@"fired");
   ZSyncConnectionDelegate *delegate = [[ZSyncConnectionDelegate alloc] init];
   [delegate setConnection:connection];
   [connection setDelegate:delegate];

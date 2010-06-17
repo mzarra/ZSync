@@ -57,7 +57,6 @@
 - (void) dealloc
 {
   DLog(@"window released cleanly");
-  [codeString release], codeString = nil;
   [super dealloc];
 }
 
