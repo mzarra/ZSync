@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace>
+   <FileRef
+      location = "container:Daemon/ZSyncDaemon.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:SampleTouch/SampleTouch.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:SampleDesktop/SampleDesktop.xcodeproj">
+   </FileRef>
+</Workspace>
