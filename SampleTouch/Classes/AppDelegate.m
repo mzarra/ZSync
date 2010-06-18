@@ -125,7 +125,7 @@
 
 - (void)zSyncStarted:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [navigationController popToRootViewControllerAnimated:YES];
   
   [self showHoverViewWithMessage:@"Syncing"];
@@ -133,7 +133,7 @@
 
 - (void)zSyncFinished:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [self hideHoverView];
   
   [[NSNotificationCenter defaultCenter] postNotificationName:kRefreshMOC object:self];
@@ -167,7 +167,7 @@
 
 - (void)zSyncDeregisterComplete:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s fired", __PRETTY_FUNCTION__);
+  DLog(@"fired");
 }
 
 - (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
@@ -196,13 +196,13 @@
 
 - (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
   [self showHoverViewWithMessage:@"Download Started"];
 }
 
 - (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
 {
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"entered");
 }
 
 @synthesize window;
