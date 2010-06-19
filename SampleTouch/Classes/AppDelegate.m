@@ -149,7 +149,7 @@
 - (void)zSyncHandler:(ZSyncTouchHandler*)handler displayPairingCode:(NSString*)passcode;
 {
   //Let the run cycle complete and insure the previous modal was dismissed
-  [self performSelector:@selector(showCode:) withObject:passcode afterDelay:0.25];
+  [self performSelector:@selector(showCode:) withObject:passcode afterDelay:0.1];
 }
 
 - (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler*)handler;

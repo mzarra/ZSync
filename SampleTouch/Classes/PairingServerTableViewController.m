@@ -92,7 +92,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
   ZSyncService *service = [[self servers] objectAtIndex:[indexPath row]];
-  [[ZSyncTouchHandler shared] requestPairing:service];
+  [[ZSyncTouchHandler shared] performSelector:@selector(requestPairing:) withObject:service afterDelay:0.25];
   [self dismissModalViewControllerAnimated:YES];
 }
 

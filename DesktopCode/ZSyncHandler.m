@@ -59,8 +59,6 @@
 
 - (void)startBroadcasting;
 {
-  [self pluginForSchema:@"blah"];
-  
   _listener = [[BLIPListener alloc] initWithPort: 1123];
   [_listener setDelegate:self];
   [_listener setPickAvailablePort:YES];

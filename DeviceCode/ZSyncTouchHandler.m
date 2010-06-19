@@ -689,6 +689,7 @@
       }
       [[self connection] close];
       [self setConnection:nil];
+      [self setServerAction:ZSyncServerActionNoActivity];
       return;
     case zsActionSchemaSupported:
       [self connectionEstablished];
@@ -730,6 +731,7 @@
       if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeCancelled:)]) {
         [[self delegate] zSyncPairingCodeCancelled:self];
       }
+      [self setServerAction:ZSyncServerActionNoActivity];
       return YES;
     default:
       ALog(@"Unknown action received: %i", action);

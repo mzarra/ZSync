@@ -14,10 +14,6 @@
 + (NSString*)basePath;
 + (NSString*)pluginPath;
 
-/*
- * You can confirm a valid UUID as it has the format of
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- */
 + (BOOL)deregisterDeviceForUUID:(NSString*)uuid error:(NSError**)error;
 
 /* 

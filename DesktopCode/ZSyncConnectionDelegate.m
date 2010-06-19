@@ -69,9 +69,12 @@
   DLog(@"%s request length: %i", __PRETTY_FUNCTION__, [[request body] length]);
   [[request body] writeToFile:filePath atomically:YES];
   
+  
   if (!persistentStoreCoordinator) {
     if (!managedObjectModel) {
-      managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];
+      NSBundle *pluginBundle = [[ZSyncHandler shared] pluginForSchema:[syncApplication valueForKey:@"schema"]];
+      NSArray *bundles = [NSArray arrayWithObject:pluginBundle];
+      managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:bundles] retain];
     }
     persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
     managedObjectContext = [[NSManagedObjectContext alloc] init];
