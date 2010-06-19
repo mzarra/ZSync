@@ -1,3 +1,6 @@
+#define zsSchemaIdentifier @"ZSyncSchemaIdentifier"
+#define ZSDaemonHandler [[NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"ZSyncInstaller" ofType:@"bundle"]] principalClass]
+
 @interface ZSyncDaemon : NSObject 
 {
 

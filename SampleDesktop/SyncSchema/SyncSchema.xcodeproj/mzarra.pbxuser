@@ -50,8 +50,8 @@
 					PBXTargetDataSource_PrimaryAttribute,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 298588859;
-			PBXWorkspaceStateSaveDate = 298588859;
+			PBXPerProjectTemplateStateSaveDate = 298599608;
+			PBXWorkspaceStateSaveDate = 298599608;
 		};
 		sourceControlManager = B6457E2A10B058B000A96714 /* Source Control */;
 		userBuildSettings = {

@@ -263,7 +263,14 @@
 
 + (NSManagedObjectContext*)managedObjectContext:(NSError**)error
 {
-  NSString *path = [[self myBundle] pathForResource:@"ZSyncModel" ofType:@"mom"];
+  NSBundle *appBundle = [NSBundle bundleWithPath:[self applicationPath]];
+  if (!appBundle) {
+    NSString *errorDesc = [NSString stringWithFormat:@"ZSyncDaemon is not installed: %@", [self applicationPath]];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    *error = [NSError errorWithDomain:@"ZSync" code:1129 userInfo:dictionary];
+    return nil;
+  }
+  NSString *path = [appBundle pathForResource:@"ZSyncModel" ofType:@"mom"];
   NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];
   
   if (!model) {
@@ -340,8 +347,6 @@
     [deviceArray addObject:dict];
     [dict release], dict = nil;
   }
-  
-  [moc release], moc = nil;
   return deviceArray;
 }
 
