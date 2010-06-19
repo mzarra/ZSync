@@ -33,6 +33,7 @@
 
 @interface ZSyncHandler : NSObject <TCPListenerDelegate>
 {
+  NSManagedObjectContext *managedObjectContext;
   NSMutableArray *_connections;
   NSString *_serverName;
   
@@ -53,6 +54,10 @@
 - (void)stopBroadcasting;
 
 - (void)connectionClosed:(ZSyncConnectionDelegate*)connection;
-- (void)registerDeviceForPairing:(NSString*)deviceID;
+
+- (NSBundle*)pluginForSchema:(NSString*)schema;
+
+- (NSManagedObject*)registerDevice:(NSString*)deviceUUID withName:(NSString*)deviceName;
+- (NSManagedObject*)registerApplication:(NSString*)schema withClient:(NSString*)clientUUID withDevice:(NSManagedObject*)device;
 
 @end

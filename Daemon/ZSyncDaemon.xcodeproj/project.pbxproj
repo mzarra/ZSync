@@ -10,8 +10,9 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */ = {isa = PBXBuildFile; fileRef = B63F9C2111B2EA2800811EB1 /* menubar.png */; };
 		B63F9CAC11B2EF6700811EB1 /* ZSyncDaemon.m in Sources */ = {isa = PBXBuildFile; fileRef = B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */; };
-		B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64FE70310EE728F00B15A8F /* clientDescription.plist */; };
-		B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */; };
+		B64AC5BA11CC12A8006A7B08 /* ZSyncModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = B64AC5B911CC12A8006A7B08 /* ZSyncModel.xcdatamodel */; };
+		B64AC6A511CC3971006A7B08 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FB5E10ED867C00207210 /* CoreData.framework */; };
+		B64AC75611CC3DDA006A7B08 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FBBC10ED884000207210 /* SyncServices.framework */; };
 		B64FE94010EF35DF00B15A8F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B64FE93F10EF35DF00B15A8F /* libz.dylib */; };
 		B67ED12E1103765600314759 /* ZSyncConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B67ED12D1103765600314759 /* ZSyncConnectionDelegate.m */; };
 		B691FB4210ED855F00207210 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FB3B10ED855F00207210 /* AppDelegate.m */; };
@@ -49,8 +50,7 @@
 		B63F9C2111B2EA2800811EB1 /* menubar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menubar.png; sourceTree = "<group>"; };
 		B63F9CAA11B2EF6700811EB1 /* ZSyncDaemon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncDaemon.h; sourceTree = "<group>"; };
 		B63F9CAB11B2EF6700811EB1 /* ZSyncDaemon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncDaemon.m; sourceTree = "<group>"; };
-		B64FE70310EE728F00B15A8F /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
-		B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		B64AC5B911CC12A8006A7B08 /* ZSyncModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = ZSyncModel.xcdatamodel; sourceTree = "<group>"; };
 		B64FE93F10EF35DF00B15A8F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B67ED12C1103765600314759 /* ZSyncConnectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSyncConnectionDelegate.h; sourceTree = "<group>"; };
 		B67ED12D1103765600314759 /* ZSyncConnectionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSyncConnectionDelegate.m; sourceTree = "<group>"; };
@@ -112,6 +112,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B64AC6A511CC3971006A7B08 /* CoreData.framework in Frameworks */,
+				B64AC75611CC3DDA006A7B08 /* SyncServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +123,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B64FE93F10EF35DF00B15A8F /* libz.dylib */,
 				B691FB5E10ED867C00207210 /* CoreData.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				B691FBBC10ED884000207210 /* SyncServices.framework */,
@@ -149,6 +152,7 @@
 		29B97314FDCFA39411CA2CEA /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				B64AC5BD11CC12B8006A7B08 /* Models */,
 				B63F9C2011B2EA1300811EB1 /* Images */,
 				B6EC175910F5033E0051FD2E /* GoogleToolboxSubset */,
 				B691FB9810ED879D00207210 /* SharedCode */,
@@ -176,8 +180,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B64FE7C710EEA24500B15A8F /* DataModel */,
-				B64FE70310EE728F00B15A8F /* clientDescription.plist */,
 				B691FB3E10ED855F00207210 /* InfoPlist.strings */,
 				B691FB4010ED855F00207210 /* MainMenu.xib */,
 			);
@@ -189,7 +191,6 @@
 			children = (
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
-				B64FE93F10EF35DF00B15A8F /* libz.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -204,14 +205,13 @@
 			path = ../Images;
 			sourceTree = "<group>";
 		};
-		B64FE7C710EEA24500B15A8F /* DataModel */ = {
+		B64AC5BD11CC12B8006A7B08 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				B64FE7C810EEA24500B15A8F /* DataModel.xcdatamodel */,
+				B64AC5B911CC12A8006A7B08 /* ZSyncModel.xcdatamodel */,
 			);
-			name = DataModel;
-			path = ../DataModel;
-			sourceTree = SOURCE_ROOT;
+			name = Models;
+			sourceTree = "<group>";
 		};
 		B691FB3910ED855F00207210 /* Classes */ = {
 			isa = PBXGroup;
@@ -349,7 +349,6 @@
 				B691FB4410ED855F00207210 /* InfoPlist.strings in Resources */,
 				B691FB4510ED855F00207210 /* MainMenu.xib in Resources */,
 				B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */,
-				B64FE70410EE728F00B15A8F /* clientDescription.plist in Resources */,
 				B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */,
 				B6DEEC0611BA16A90036A137 /* icon.icns in Resources */,
 			);
@@ -375,10 +374,10 @@
 				B691FB8D10ED875800207210 /* NSSocket+ZSExtensions.m in Sources */,
 				B691FB8E10ED875800207210 /* PairingCodeWindowController.m in Sources */,
 				B691FB8F10ED875800207210 /* ZSyncHandler.m in Sources */,
-				B64FE7C910EEA24500B15A8F /* DataModel.xcdatamodel in Sources */,
 				B6EC175D10F5033E0051FD2E /* GTMNSData+zlib.m in Sources */,
 				B67ED12E1103765600314759 /* ZSyncConnectionDelegate.m in Sources */,
 				B63F9CAC11B2EF6700811EB1 /* ZSyncDaemon.m in Sources */,
+				B64AC5BA11CC12A8006A7B08 /* ZSyncModel.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -604,6 +604,9 @@
   [dict setValue:zsActID([self majorVersionNumber]) forKey:zsSchemaMajorVersion];
   [dict setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
   [dict setValue:[[UIDevice currentDevice] name] forKey:zsDeviceName];
+  [dict setValue:[[UIDevice currentDevice] uniqueIdentifier] forKey:zsDeviceGUID];
+  NSString *deviceGUID = [[[NSBundle mainBundle] infoDictionary] objectForKey:zsSchemaIdentifier];
+  [dict setValue:deviceGUID forKey:zsSchemaIdentifier];
   
   NSString *syncGUID = [[NSUserDefaults standardUserDefaults] stringForKey:zsSyncGUID];
   if (!syncGUID) {
