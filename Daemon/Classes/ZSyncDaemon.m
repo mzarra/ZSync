@@ -1,4 +1,6 @@
 #import "ZSyncDaemon.h"
+#import <CoreData/CoreData.h>
+#import <SyncServices/SyncServices.h>
 
 #define ZSyncVersionNumber @"ZSyncVersionNumber"
 
@@ -257,6 +259,95 @@
   
   NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
   [workspace launchApplication:appName];
+}
+
++ (NSManagedObjectContext*)managedObjectContext:(NSError**)error
+{
+  NSBundle *appBundle = [NSBundle bundleWithPath:[self applicationPath]];
+  if (!appBundle) {
+    NSString *errorDesc = [NSString stringWithFormat:@"ZSyncDaemon is not installed: %@", [self applicationPath]];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    *error = [NSError errorWithDomain:@"ZSync" code:1129 userInfo:dictionary];
+    return nil;
+  }
+  NSString *path = [appBundle pathForResource:@"ZSyncModel" ofType:@"mom"];
+  NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];
+  
+  if (!model) {
+    NSString *errorDesc = [NSString stringWithFormat:@"Failed to find model at path: %@", path];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    *error = [NSError errorWithDomain:@"ZSync" code:1127 userInfo:dictionary];
+    return nil;
+  }
+  
+  NSString *basePath = [ZSyncDaemon basePath];
+  if (![ZSyncDaemon checkBasePath:basePath error:error]) return nil;
+  
+  NSString *filePath = [basePath stringByAppendingPathComponent:@"SyncHistory.sqlite"];
+  
+  NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+  
+  if (![psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[NSURL fileURLWithPath:filePath] options:nil error:error]) return nil;
+  
+  NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
+  [moc setPersistentStoreCoordinator:psc];
+  [psc release], psc = nil;
+  [model release], model = nil;
+  return [moc autorelease];
+}
+
++ (BOOL)deregisterDeviceForUUID:(NSString*)uuid error:(NSError**)error;
+{
+  NSArray *components = [uuid componentsSeparatedByString:@":"];
+  if ([components count] != 2) {
+    NSString *errorDesc = [NSString stringWithFormat:@"Invalid UUID: %@", uuid];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    *error = [NSError errorWithDomain:@"ZSync" code:1128 userInfo:dictionary];
+    return NO;
+  }
+  NSManagedObjectContext *moc = [self managedObjectContext:error];
+  if (!moc) return NO;
+  
+  NSFetchRequest *request = [[NSFetchRequest alloc] init];
+  [request setEntity:[NSEntityDescription entityForName:@"Application" inManagedObjectContext:moc]];
+  [request setPredicate:[NSPredicate predicateWithFormat:@"uuid == %@ && device.uuid == %@", [components objectAtIndex:1], [components objectAtIndex:0]]];
+  
+  id result = [[moc executeFetchRequest:request error:error] lastObject];
+  [request release], request = nil;
+  if (!result && error) return NO;
+  if (!result) return YES;
+  
+  ISyncClient *client = [[ISyncManager sharedManager] clientWithIdentifier:[components objectAtIndex:1]];
+  if (client) {
+    [[ISyncManager sharedManager] unregisterClient:client];
+  }
+  
+  [moc deleteObject:result];
+  return YES;
+}
+
++ (NSArray*)devicesRegisteredForSchema:(NSString*)schema error:(NSError**)error;
+{
+  NSManagedObjectContext *moc = [self managedObjectContext:error];
+  if (!moc) return nil;
+  
+  NSFetchRequest *request = [[NSFetchRequest alloc] init];
+  [request setEntity:[NSEntityDescription entityForName:@"Application" inManagedObjectContext:moc]];
+  [request setPredicate:[NSPredicate predicateWithFormat:@"schema == %@", schema]];
+  
+  NSArray *applications = [moc executeFetchRequest:request error:error];
+  [request release], request = nil;
+  
+  NSMutableArray *deviceArray = [NSMutableArray array];
+  for (NSManagedObject *applicationMO in applications) {
+    NSManagedObject *deviceMO = [applicationMO valueForKey:@"device"];
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:[deviceMO valueForKey:@"name"] forKey:@"name"];
+    [dict setObject:[NSString stringWithFormat:@"%@:%@", [deviceMO valueForKey:@"uuid"], [applicationMO valueForKey:@"uuid"]] forKey:@"uuid"];
+    [deviceArray addObject:dict];
+    [dict release], dict = nil;
+  }
+  return deviceArray;
 }
 
 @end

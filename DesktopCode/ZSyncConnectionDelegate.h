@@ -35,9 +35,10 @@
   PairingCodeWindowController *codeController;
   BLIPConnection *_connection;
   NSString *pairingCode;
-  NSString *clientIdentifier;
   
   NSMutableArray *storeFileIdentifiers;
+  
+  NSManagedObject *syncApplication;
   
   NSManagedObjectModel *managedObjectModel;
   NSPersistentStoreCoordinator *persistentStoreCoordinator;
@@ -46,7 +47,6 @@
 
 @property (retain) BLIPConnection *connection;
 @property (retain) NSString *pairingCode;
-@property (retain) NSString *clientIdentifier;
 
 @property (retain) id codeController;
 

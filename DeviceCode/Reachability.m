@@ -166,7 +166,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 + (Reachability*) reachabilityForLocalWiFi;
 {
-  [super init];
   struct sockaddr_in localWifiAddress;
   bzero(&localWifiAddress, sizeof(localWifiAddress));
   localWifiAddress.sin_len = sizeof(localWifiAddress);

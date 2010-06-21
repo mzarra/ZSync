@@ -26,5 +26,7 @@
 	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
+	<key>ZSyncSchemaIdentifier</key>
+	<string>com.zarrastudios.zsync.SampleSchema</string>
 </dict>
 </plist>

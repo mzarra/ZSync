@@ -13,6 +13,8 @@
 		B62DD01111BA1FA100AD6EAB /* SampleDesktop.zsyncPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B62DD00911BA1F5500AD6EAB /* SampleDesktop.zsyncPlugin */; };
 		B633AFEA10C149A8009101EF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633AFE910C149A8009101EF /* CoreData.framework */; };
 		B6457E4110B059EC00A96714 /* SyncServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6457E4010B059EC00A96714 /* SyncServices.framework */; };
+		B64AC5F211CC1DED006A7B08 /* clientDescription.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64AC5F011CC1DED006A7B08 /* clientDescription.plist */; };
+		B64AC60611CC1EA7006A7B08 /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* DataModel.xcdatamodel */; };
 		B6510A7E10F1067500D22FBC /* App.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6510A7D10F1067500D22FBC /* App.icns */; };
 		B691FC4410ED8E6300207210 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B691FC4310ED8E6300207210 /* main.m */; };
 		B691FC4910ED8E7400207210 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B691FC4510ED8E7400207210 /* InfoPlist.strings */; };
@@ -79,10 +81,11 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SampleDesktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleDesktop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62DD00911BA1F5500AD6EAB /* SampleDesktop.zsyncPlugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleDesktop.zsyncPlugin; sourceTree = BUILT_PRODUCTS_DIR; };
-		B62DD00A11BA1F5500AD6EAB /* SampleDesktopPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SampleDesktopPlugin-Info.plist"; sourceTree = "<group>"; };
 		B633AFE910C149A8009101EF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncSchema.xcodeproj; path = SyncSchema/SyncSchema.xcodeproj; sourceTree = "<group>"; };
 		B6457E4010B059EC00A96714 /* SyncServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SyncServices.framework; path = System/Library/Frameworks/SyncServices.framework; sourceTree = SDKROOT; };
+		B64AC5F011CC1DED006A7B08 /* clientDescription.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = clientDescription.plist; sourceTree = "<group>"; };
+		B64AC5F111CC1DED006A7B08 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6510A7D10F1067500D22FBC /* App.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = App.icns; sourceTree = "<group>"; };
 		B691FC4310ED8E6300207210 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Classes/main.m; sourceTree = "<group>"; };
 		B691FC4610ED8E7400207210 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -154,13 +157,13 @@
 		29B97314FDCFA39411CA2CEA /* SampleDesktop */ = {
 			isa = PBXGroup;
 			children = (
+				B64AC5ED11CC1DC9006A7B08 /* ZSync Plugin */,
 				B6457E2C10B058CD00A96714 /* SyncSchema.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				B62DD00A11BA1F5500AD6EAB /* SampleDesktopPlugin-Info.plist */,
 			);
 			name = SampleDesktop;
 			sourceTree = "<group>";
@@ -213,6 +216,16 @@
 				B6457E3110B058CD00A96714 /* ZSyncSample.syncschema */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B64AC5ED11CC1DC9006A7B08 /* ZSync Plugin */ = {
+			isa = PBXGroup;
+			children = (
+				B64AC5F011CC1DED006A7B08 /* clientDescription.plist */,
+				B64AC5F111CC1DED006A7B08 /* Info.plist */,
+			);
+			name = "ZSync Plugin";
+			path = ZSyncPlugin;
 			sourceTree = "<group>";
 		};
 		B6DEEBE111BA15400036A137 /* Products */ = {
@@ -343,6 +356,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B64AC5F211CC1DED006A7B08 /* clientDescription.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +377,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B64AC60611CC1EA7006A7B08 /* DataModel.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,7 +500,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INFOPLIST_FILE = "SampleDesktopPlugin-Info.plist";
+				INFOPLIST_FILE = ZSyncPlugin/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -509,7 +524,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INFOPLIST_FILE = "SampleDesktopPlugin-Info.plist";
+				INFOPLIST_FILE = ZSyncPlugin/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				OTHER_LDFLAGS = (
 					"-framework",

@@ -10,9 +10,6 @@
 
 @implementation AppDelegate
 
-@synthesize window;
-@synthesize syncPanel;
-
 - (NSString*)applicationSupportDirectory 
 {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
@@ -69,10 +66,9 @@
 
 - (void)validateZSync;
 {
-  Class zsync = [[NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"ZSyncInstaller" ofType:@"bundle"]] principalClass];
   NSString *path = [[NSBundle mainBundle] pathForResource:@"SampleDesktop" ofType:@"zsyncPlugin"];
   NSError *error = nil;
-  ZAssert([zsync installPluginAtPath:path intoDaemonWithError:&error], @"Error installing plugin: %@", [error userInfo]);
+  ZAssert([ZSDaemonHandler installPluginAtPath:path intoDaemonWithError:&error], @"Error installing plugin: %@", [error userInfo]);
   DLog(@"validation complete");
 }
 
@@ -347,6 +343,33 @@
   ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@", [error localizedDescription]);
 }
 
+- (IBAction)showClients:(id)sender;
+{
+  NSBundle *pluginBundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"SampleDesktop" ofType:@"zsyncPlugin"]];
+  NSString *schema = [[pluginBundle infoDictionary] objectForKey:zsSchemaIdentifier];
+  NSError *error = nil;
+  [self setClientList:[ZSDaemonHandler devicesRegisteredForSchema:schema error:&error]];
+  ZAssert(!error, @"Error fetching registered clients: %@\n%@", [error localizedDescription], [error userInfo]);
+  
+  [NSApp beginSheet:[self clientSheet] modalForWindow:[self window] modalDelegate:nil didEndSelector:NULL contextInfo:nil];
+}
+
+- (IBAction)closeClients:(id)sender;
+{
+  [NSApp endSheet:[self clientSheet]];
+  [[self clientSheet] orderOut:nil];
+}
+
+- (IBAction)deregisterClient:(id)sender;
+{
+  id selectedDict = [[[self clientListController] selectedObjects] lastObject];
+  if (!selectedDict) return;
+  
+  NSString *uuid = [selectedDict objectForKey:@"uuid"];
+  NSError *error = nil;
+  ZAssert([ZSDaemonHandler deregisterDeviceForUUID:uuid error:&error], @"Error deregistering device: %@\n%@", [error localizedDescription], [error userInfo]);
+}
+
 #pragma mark - 
 #pragma mark NSPersistentStoreCoordinatorSyncing
 
@@ -364,5 +387,11 @@
 {
   DLog(@"sync complete");
 }
+
+@synthesize clientSheet;
+@synthesize clientList;
+@synthesize clientListController;
+@synthesize window;
+@synthesize syncPanel;
 
 @end
