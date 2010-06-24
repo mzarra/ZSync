@@ -188,6 +188,7 @@
     [[self connection] close];
     [self setConnection:nil];
   }
+  [self setServerAction:ZSyncServerActionNoActivity];
 }
 
 - (NSString*)serverName;
