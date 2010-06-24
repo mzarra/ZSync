@@ -368,6 +368,7 @@
   NSURL *fileURL = [NSURL fileURLWithPath:fileOriginalPath];
   if (![psc addPersistentStoreWithType:[replacement valueForKey:zsStoreType] configuration:[replacement valueForKey:zsStoreConfiguration] URL:fileURL options:storeOptions error:error]) return NO;
   
+  DLog(@"store switched");
   return YES;
 }
 
@@ -404,7 +405,7 @@
     ZAssert(replacement != nil, @"Missing the replacement file for %@\n%@", [store identifier], [receivedFileLookupDictionary allKeys]);
     NSError *error = nil;
     if ([self switchStore:store withReplacement:replacement error:&error]) continue;
-    ZAssert(error == nil, @"Error switching stores: %@", [error localizedDescription]);
+    ZAssert(error == nil, @"Error switching stores: %@\n%@", [error localizedDescription], [error userInfo]);
     
     //TODO: We failed in the migration and need to roll back
   }
@@ -507,6 +508,7 @@
     
     [storeFileIdentifiers addObject:[store identifier]];
   }
+  DLog(@"finished");
 }
 
 - (void)processTestFileTransfer:(BLIPRequest*)request
