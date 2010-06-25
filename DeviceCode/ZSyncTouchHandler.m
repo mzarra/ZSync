@@ -677,12 +677,6 @@
 //      [_serviceBrowser release], _serviceBrowser = nil;
 //      [self uploadDataToServer];
       return;
-    case zsActionAuthenticateFailed:
-      ALog(@"%s zsActionAuthenticateFailed called, how?");
-//      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
-//        [[self delegate] zSyncPairingCodeRejected:self];
-//      }
-      return;
     case zsActionSchemaUnsupported:
       if ([[self delegate] respondsToSelector:@selector(zSync:serverVersionUnsupported:)]) {
         NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[response bodyString] forKey:NSLocalizedDescriptionKey];
@@ -706,6 +700,20 @@
 {
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
+    case zsActionAuthenticateFailed:
+      /* 
+       * The pairing code was not entered correctly so we reset back to a default state
+       * so that the user can start all over again.
+       */
+      [[self connection] close];
+      [self setConnection:nil];
+      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
+        [[self delegate] zSyncPairingCodeRejected:self];
+      }
+      [self setServerAction:ZSyncServerActionNoActivity];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
+      return YES;
     case zsActionAuthenticatePairing:
       if ([[request bodyString] isEqualToString:[self passcode]]) {
         [[request response] setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
@@ -735,6 +743,8 @@
         [[self delegate] zSyncPairingCodeCancelled:self];
       }
       [self setServerAction:ZSyncServerActionNoActivity];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
       return YES;
     default:
       ALog(@"Unknown action received: %i", action);

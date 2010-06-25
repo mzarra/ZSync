@@ -57,7 +57,7 @@
   
   [menu release], menu = nil;
   
-  [[NSApplication sharedApplication] hide:self];
+  [[NSApplication sharedApplication] performSelector:@selector(hide:) withObject:self afterDelay:0.1];
 }
 
 - (IBAction)about:(id)sender

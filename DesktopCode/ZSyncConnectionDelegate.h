@@ -35,6 +35,7 @@
   PairingCodeWindowController *codeController;
   BLIPConnection *_connection;
   NSString *pairingCode;
+  NSInteger pairingCodeEntryCount;
   
   NSMutableArray *storeFileIdentifiers;
   
@@ -47,6 +48,7 @@
 
 @property (retain) BLIPConnection *connection;
 @property (retain) NSString *pairingCode;
+@property (assign) NSInteger pairingCodeEntryCount;
 
 @property (retain) id codeController;
 
