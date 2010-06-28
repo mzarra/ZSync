@@ -58,6 +58,11 @@
  */
 - (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler*)handler;
 
+/* The pairing code was entered incorrectly too many times so everything resets.
+ * The user can select the server again or try another server.
+ */
+- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
+
 /* The pairing code window was cancelled on the server or the connection to the 
  * server was severed. The client should dismiss the code display at this time. 
  */
@@ -158,8 +163,7 @@ typedef enum {
  */
 + (id)shared;
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate 
-withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 
 - (void)requestSync;
 - (void)requestPairing:(ZSyncService*)server;

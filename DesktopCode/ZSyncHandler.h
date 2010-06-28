@@ -57,6 +57,7 @@
 
 - (NSBundle*)pluginForSchema:(NSString*)schema;
 
+- (void)unregisterApplication:(NSManagedObject*)applicationObject;
 - (NSManagedObject*)registerDevice:(NSString*)deviceUUID withName:(NSString*)deviceName;
 - (NSManagedObject*)registerApplication:(NSString*)schema withClient:(NSString*)clientUUID withDevice:(NSManagedObject*)device;
 

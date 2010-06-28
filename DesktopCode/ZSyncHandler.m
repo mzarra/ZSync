@@ -131,6 +131,11 @@
   return managedObjectContext;
 }
 
+- (void)unregisterApplication:(NSManagedObject*)applicationObject;
+{
+  [[self managedObjectContext] deleteObject:applicationObject];
+}
+
 - (NSManagedObject*)registerDevice:(NSString*)deviceUUID withName:(NSString*)deviceName;
 {
   NSManagedObjectContext *moc = [self managedObjectContext];

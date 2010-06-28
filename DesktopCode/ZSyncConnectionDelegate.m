@@ -29,6 +29,8 @@
 #import "ZSyncConnectionDelegate.h"
 #import "ZSyncDaemon.h"
 
+#define kPasscodeEntryMaxAttempts 3
+
 @implementation ZSyncConnectionDelegate
 
 // TODO: Need to move this out of here
@@ -183,16 +185,33 @@
 #pragma mark -
 #pragma mark PairingCodeDelegate
 
-- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString*)code;
+- (void)pairingCodeWindowController:(PairingCodeWindowController*)controller codeEntered:(NSString*)code;
 {
+  [self setPairingCodeEntryCount:([self pairingCodeEntryCount] + 1)];
+  
+  if (![code isEqualToString:[self pairingCode]]) {
+    if ([self pairingCodeEntryCount] < kPasscodeEntryMaxAttempts) {
+      [controller refuseCode];
+      return;
+    }
+    
+    [codeController.window orderOut:nil];
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    [dictionary setValue:zsActID(zsActionAuthenticateFailed) forKey:zsAction];
+    [dictionary setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] forKey:zsServerUUID];
+    
+    [[self connection] sendRequest:[BLIPRequest requestWithBody:nil properties:dictionary]];
+    [codeController release], codeController = nil;
+    return;
+  }
+  
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
   [dictionary setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] forKey:zsServerUUID];
   
   NSData *data = [code dataUsingEncoding:NSUTF8StringEncoding];
   
-  BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
-  [[self connection] sendRequest:request];
+  [[self connection] sendRequest:[BLIPRequest requestWithBody:data properties:dictionary]];
   [codeController release], codeController = nil;
 }
 
@@ -200,6 +219,11 @@
 {
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:zsActID(zsActionCancelPairing) forKey:zsAction];
+  
+  NSString *clientIdentifier = [syncApplication valueForKey:@"uuid"];
+  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientIdentifier];
+  ZAssert(syncClient != nil, @"Sync Client not found");
+  [[ISyncManager sharedManager] unregisterClient:syncClient];
   
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
   [[self connection] sendRequest:request];
@@ -418,5 +442,6 @@
 
 @synthesize connection = _connection;
 @synthesize pairingCode;
+@synthesize pairingCodeEntryCount;
 
 @end

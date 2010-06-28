@@ -50,4 +50,6 @@
 - (IBAction)enterCode:(id)sender;
 - (IBAction)cancel:(id)sender;
 
+- (void)refuseCode;
+
 @end

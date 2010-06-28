@@ -162,6 +162,11 @@
   [[self navigationController] dismissModalViewControllerAnimated:YES];
 }
 
+- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
+{
+  [[self navigationController] dismissModalViewControllerAnimated:YES];
+}
+
 #pragma mark -
 #pragma mark ZSyncDelegate (Optional)
 

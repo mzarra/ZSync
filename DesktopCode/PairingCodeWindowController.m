@@ -27,8 +27,13 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 
 #import "PairingCodeWindowController.h"
+#import <QuartzCore/CoreAnimation.h>
 
 @implementation PairingCodeWindowController
+
+static int numberOfShakes = 4;
+static float durationOfShake = 0.1f;
+static float vigourOfShake = 0.02f;
 
 - (id)initWithDelegate:(id<PairingCodeDelegate>)aDelegate;
 {
@@ -41,16 +46,13 @@
 
 - (void)windowDidLoad
 {
-  DLog(@"%s fired", __PRETTY_FUNCTION__);
   [super windowDidLoad];
+  
+  [NSApp activateIgnoringOtherApps:YES];
+  
   [[self window] center];
   [[self textField] setStringValue:@""];
   [[self window] makeKeyAndOrderFront:self];
-}
-
-- (void)windowDidBecomeKey:(NSNotification*)notification
-{
-  DLog(@"%s fired", __PRETTY_FUNCTION__);
   [[self textField] becomeFirstResponder];
 }
 
@@ -63,13 +65,36 @@
 - (IBAction)enterCode:(id)sender;
 {
   [[self delegate] pairingCodeWindowController:self codeEntered:[[self textField] stringValue]];
-  [[self window] orderOut:nil];
 }
 
 - (IBAction)cancel:(id)sender;
 {
   [[self delegate] pairingCodeWindowControllerCancelled:self];
-  [[self window] orderOut:nil];
+  [NSApp hide:self];
+}
+
+- (CAKeyframeAnimation*)shakeAnimation:(NSRect)frame
+{
+  CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"frame"];
+  
+  NSRect rect1 = NSMakeRect(NSMinX(frame) - frame.size.width * vigourOfShake, NSMinY(frame), frame.size.width, frame.size.height);
+  NSRect rect2 = NSMakeRect(NSMinX(frame) + frame.size.width * vigourOfShake, NSMinY(frame), frame.size.width, frame.size.height);
+  NSArray *arr = [NSArray arrayWithObjects:[NSValue valueWithRect:rect1], [NSValue valueWithRect:rect2], nil];
+  [animation setValues:arr];
+  
+  [animation setDuration:durationOfShake];
+  [animation setRepeatCount:numberOfShakes];
+  
+  return animation;
+}
+
+- (void)refuseCode;
+{
+  NSRect frame = [[self window] frame];
+  [[self window] setAnimations:[NSDictionary dictionaryWithObject:[self shakeAnimation:frame] forKey:@"frame"]];
+  [[[self window] animator] setFrame:frame display:NO];
+  [[self textField] setStringValue:@""];
+  [[self textField] becomeFirstResponder];
 }
 
 @synthesize textField;
