@@ -44,7 +44,7 @@
   if (!isDirectory) {
     NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at base installation path: %@", basePath];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
     return NO;
   }
   return YES;
@@ -60,7 +60,7 @@
   if (!isDirectory) {
     NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at daemon application installation path: %@", applicationPath];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1124 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1124 userInfo:dictionary];
     return NO;
   }
   return YES;
@@ -94,7 +94,7 @@
   } else if (!isDirectory) {
     NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at base installation path: %@", basePath];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
     return NO;
   }
   
@@ -138,7 +138,7 @@
                                    tag:NULL]) {
     NSString *errorDesc = [NSString stringWithFormat:@"Failed to move old app version to the trash"];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1126 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1126 userInfo:dictionary];
     return NO;
   }
   
@@ -163,7 +163,7 @@
   if (!isDirectory) {
     NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at plugin installation path: %@", pluginPath];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
     return NO;
   }
   
@@ -179,7 +179,7 @@
   if (![[path pathExtension] isEqualToString:@"zsyncPlugin"]) {
     NSString *errorDesc = [NSString stringWithFormat:@"url is not a valid ZSync plugin: %@", path];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1125 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1125 userInfo:dictionary];
     return NO;
   }
   
@@ -223,7 +223,7 @@
   } else if (!isDirectory) {
     NSString *errorDesc = [NSString stringWithFormat:@"Unknown file at base installation path: %@", pluginPath];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1123 userInfo:dictionary];
     return NO;
   }
   
@@ -267,7 +267,7 @@
   if (!appBundle) {
     NSString *errorDesc = [NSString stringWithFormat:@"ZSyncDaemon is not installed: %@", [self applicationPath]];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1129 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1129 userInfo:dictionary];
     return nil;
   }
   NSString *path = [appBundle pathForResource:@"ZSyncModel" ofType:@"mom"];
@@ -276,18 +276,26 @@
   if (!model) {
     NSString *errorDesc = [NSString stringWithFormat:@"Failed to find model at path: %@", path];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1127 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1127 userInfo:dictionary];
+    [model release], model = nil;
     return nil;
   }
   
   NSString *basePath = [ZSyncDaemon basePath];
-  if (![ZSyncDaemon checkBasePath:basePath error:error]) return nil;
+  if (![ZSyncDaemon checkBasePath:basePath error:error]) {
+    [model release], model = nil;
+    return nil;
+  }
   
   NSString *filePath = [basePath stringByAppendingPathComponent:@"SyncHistory.sqlite"];
   
   NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
   
-  if (![psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[NSURL fileURLWithPath:filePath] options:nil error:error]) return nil;
+  if (![psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[NSURL fileURLWithPath:filePath] options:nil error:error]) {
+    [psc release], psc = nil;
+    [model release], model = nil;
+    return nil;
+  }
   
   NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
   [moc setPersistentStoreCoordinator:psc];
@@ -302,7 +310,7 @@
   if ([components count] != 2) {
     NSString *errorDesc = [NSString stringWithFormat:@"Invalid UUID: %@", uuid];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
-    *error = [NSError errorWithDomain:@"ZSync" code:1128 userInfo:dictionary];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1128 userInfo:dictionary];
     return NO;
   }
   NSManagedObjectContext *moc = [self managedObjectContext:error];
