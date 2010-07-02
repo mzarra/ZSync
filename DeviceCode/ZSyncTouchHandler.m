@@ -562,22 +562,18 @@
         [self uploadDataToServer];
       } else {
         //We are not paired so we need to request a pairing session
-        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-        [dictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
-        
         NSString *deviceUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsDeviceID];
         if (!deviceUUID) {
           deviceUUID = [[NSProcessInfo processInfo] globallyUniqueString];
           [[NSUserDefaults standardUserDefaults] setValue:deviceUUID forKey:zsDeviceID];
         }
         
-        [dictionary setValue:deviceUUID forKey:zsDeviceID];
-        
-        BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+        [self setPasscode:[self generatePairingCode]];
+        BLIPRequest *request = [BLIPRequest requestWithBodyString:[self passcode]];
+        [request setValue:zsActID(zsActionRequestPairing) ofProperty:zsAction];
+        [request setValue:deviceUUID ofProperty:zsDeviceID];
         [[self connection] sendRequest:request];
         
-        //Need to push the passcode
-        [self setPasscode:[self generatePairingCode]];
         [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
       }
       break;
