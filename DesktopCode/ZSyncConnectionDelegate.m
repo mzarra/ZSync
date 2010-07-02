@@ -322,7 +322,11 @@
   ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientID];
   if (!syncClient) {
     NSString *clientDescription = [plugin pathForResource:@"clientDescription" ofType:@"plist"];
-    syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:clientID descriptionFilePath:clientDescription];
+    @try {
+      syncClient = [[ISyncManager sharedManager] registerClientWithIdentifier:clientID descriptionFilePath:clientDescription];
+    } @catch (NSException *exception) {
+      DLog(@"exception caught: %@", exception);
+    }
     NSString *displayName = [syncClient displayName];
     displayName = [displayName stringByAppendingFormat:@": %@", [request valueOfProperty:zsDeviceName]];
     [syncClient setDisplayName:displayName];
