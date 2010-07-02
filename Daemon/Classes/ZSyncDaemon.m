@@ -100,7 +100,31 @@
   
   NSString *myBundlePath = [[self daemonBundle] bundlePath];
   NSString *applicationPath = [self applicationPath];
-  return [fileManager copyItemAtPath:myBundlePath toPath:applicationPath error:error];
+  
+  if (![fileManager copyItemAtPath:myBundlePath toPath:applicationPath error:error]) return NO;
+  
+  NSURL *itemURL = [NSURL fileURLWithPath:applicationPath];
+    
+  LSSharedFileListRef loginListRef = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
+  if (!loginListRef) {
+    NSString *errorDesc = @"Failed to retrieve login list for startup injection";
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1130 userInfo:dictionary];
+    return NO;
+  }
+    
+  LSSharedFileListItemRef loginItemRef = LSSharedFileListInsertItemURL(loginListRef, kLSSharedFileListItemLast, NULL, NULL, (CFURLRef)itemURL, NULL, NULL);
+  if (!loginItemRef) {
+    NSString *errorDesc = @"Failed to create login item for startup injection";
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:errorDesc forKey:NSLocalizedDescriptionKey];
+    if (error != NULL) *error = [NSError errorWithDomain:@"ZSync" code:1130 userInfo:dictionary];
+    return NO;
+  }
+  
+  CFRelease(loginItemRef);
+  CFRelease(loginListRef);
+  
+  return YES;
 }
 
 + (BOOL)stopDaemon:(NSError**)error
@@ -203,6 +227,7 @@
   
   //Is plugin already installed?
   if ([self isPluginInstalled:path error:error]) {
+    if (![self isDaemonRunning]) [self startDaemon];
     return YES;
   }
   
@@ -254,11 +279,9 @@
 
 + (void)startDaemon;
 {
-  NSDictionary *infoDictionary = [[self myBundle] infoDictionary];
-  NSString *appName = [infoDictionary objectForKey:@"CFBundleExecutable"];
-  
+  NSString *appPath = [self applicationPath];
   NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-  [workspace launchApplication:appName];
+  [workspace launchApplication:appPath];
 }
 
 + (NSManagedObjectContext*)managedObjectContext:(NSError**)error
