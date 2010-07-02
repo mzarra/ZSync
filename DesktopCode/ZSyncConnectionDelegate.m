@@ -205,13 +205,11 @@
     return;
   }
   
-  NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-  [dictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
-  [dictionary setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] forKey:zsServerUUID];
+  BLIPRequest *request = [BLIPRequest requestWithBodyString:code];
+  [request setValue:zsActID(zsActionAuthenticatePairing) ofProperty:zsAction];
+  [request setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
   
-  NSData *data = [code dataUsingEncoding:NSUTF8StringEncoding];
-  
-  [[self connection] sendRequest:[BLIPRequest requestWithBody:data properties:dictionary]];
+  [[self connection] sendRequest:request];
   [codeController release], codeController = nil;
 }
 
@@ -410,12 +408,13 @@
       [self registerSyncClient:request];
       return YES;
     case zsActionRequestPairing:
-      [self setPairingCode:[self generatePairingCode]];
+      [self setPairingCode:[request bodyString]];
       [self showCodeWindow];
       [response setValue:zsActID(zsActionRequestPairing) ofProperty:zsAction];
       [response send];
       return YES;
     case zsActionAuthenticatePairing:
+      ALog(@"Is this every called?");
       if ([[self pairingCode] isEqualToString:[request bodyString]]) {
         DLog(@"%s passed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
         // TODO: Register the unique ID of this service
