@@ -33,6 +33,9 @@
 #define zsDeviceGUID @"zsDeviceGUID"
 #define zsSchemaIdentifier @"ZSyncSchemaIdentifier"
 
+#define zsPreferencesDictionaryKey @"zsPreferencesDictionaryKey"
+#define zsLastModifiedDate @"zsLastModifiedDate"
+
 #define zsServerNameSeperator @"**/**"
 
 #define zsActID(__ENUM__) [NSString stringWithFormat:@"%i", __ENUM__]

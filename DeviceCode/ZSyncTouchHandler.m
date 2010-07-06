@@ -45,18 +45,30 @@
 
 @implementation ZSyncTouchHandler
 
+static ZSyncTouchHandler *sharedTouchHandler;
+
 + (id)shared;
 {
-  static ZSyncTouchHandler *sharedTouchHandler;
   if (sharedTouchHandler) return sharedTouchHandler;
   @synchronized(sharedTouchHandler) {
     sharedTouchHandler = [[ZSyncTouchHandler alloc] init];
-    [[NSNotificationCenter defaultCenter] addObserver:sharedTouchHandler 
-                                             selector:@selector(applicationWillTerminate:) 
-                                                 name:UIApplicationWillTerminateNotification
-                                               object:nil];
   }
   return sharedTouchHandler;
+}
+
+- (id)init
+{
+  if (sharedTouchHandler) {
+    [self autorelease];
+    return sharedTouchHandler;
+  }
+  
+  if (![super init]) return nil;
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignAcive:) name:UIApplicationWillResignActiveNotification object:nil];
+  
+  return self;
 }
 
 - (void)applicationWillTerminate:(NSNotification*)notification
@@ -69,6 +81,12 @@
     [[self serviceBrowser] stop];
     [_serviceBrowser release], _serviceBrowser = nil;
   }
+}
+
+- (void)applicationWillResignAcive:(NSNotification*)notification
+{
+  // TODO: If a sync is active we need to request additional time in iOS4
+  
 }
 
 - (NSString*)cachePath
@@ -305,8 +323,42 @@
   }
 }
 
+- (void)managedObjectContextSaved:(NSNotification*)notification
+{
+  NSManagedObjectContext *savingMOC = [notification object];
+  if ([savingMOC persistentStoreCoordinator] != [self persistentStoreCoordinator]) {
+    //A save occurred against a different PSC; we don't care about that.
+    return;
+  }
+  
+  NSMutableArray *changed = [[NSMutableArray alloc] init];
+  [changed addObjectsFromArray:[[notification userInfo] objectForKey:@"inserted"]];
+  [changed addObjectsFromArray:[[notification userInfo] objectForKey:@"updated"]];
+  [changed addObjectsFromArray:[[notification userInfo] objectForKey:@"deleted"]];
+  if ([changed count] <= 0) {
+    //There are no recognized changes to the data model
+    [changed release], changed = nil;
+    return;
+  }
+  
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary *zsyncDefaults = [[defaults dictionaryForKey:zsPreferencesDictionaryKey] mutableCopy];
+  if (!zsyncDefaults) {
+    zsyncDefaults = [[NSMutableDictionary alloc] init];
+  }
+  NSNumber *lastSavedWithChanges = [NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate]];
+  [zsyncDefaults setObject:lastSavedWithChanges forKey:zsLastModifiedDate];
+  
+  [defaults setObject:zsyncDefaults forKey:zsPreferencesDictionaryKey];
+  [defaults synchronize];
+  [zsyncDefaults release], zsyncDefaults = nil;
+  [changed release], changed = nil;
+}
+
 - (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(managedObjectContextSaved:) name:NSManagedObjectContextDidSaveNotification object:nil];
   [self setDelegate:delegate];
   [self setPersistentStoreCoordinator:coordinator];
 }
@@ -467,12 +519,14 @@
 - (void)sendUploadComplete
 {
   DLog(@"sending upload complete");
-  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-  [dictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
-  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
+  BLIPRequest *request = [BLIPRequest requestWithBodyString:nil];
+  [request setValue:zsActID(zsActionPerformSync) ofProperty:zsAction];
+//  NSNumber *lastModified = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:zsPreferencesDictionaryKey] objectForKey:zsLastModifiedDate];
+//  if (lastModified) {
+//    [request setValue:lastModified ofProperty:zsLastModifiedDate];
+//  }
   [request setNoReply:YES];
   [[self connection] sendRequest:request];
-  [dictionary release], dictionary = nil;
 }
 
 - (void)uploadDataToServer;
@@ -490,20 +544,24 @@
     NSData *data = [[NSData alloc] initWithContentsOfMappedFile:[[store URL] path]];
     DLog(@"url %@\nIdentifier: %@\nSize: %i", [store URL], [store identifier], [data length]);
     
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    [dictionary setValue:[store identifier] forKey:zsStoreIdentifier];
-    if (![[store configurationName] isEqualToString:@"PF_DEFAULT_CONFIGURATION_NAME"]) {
-      [dictionary setValue:[store configurationName] forKey:zsStoreConfiguration];
-    }
-    [dictionary setValue:[store type] forKey:zsStoreType];
-    [dictionary setValue:zsActID(zsActionStoreUpload) forKey:zsAction];
+    BLIPRequest *request = [BLIPRequest requestWithBody:data];
+    [request setValue:zsActID(zsActionStoreUpload) ofProperty:zsAction];
+    [request setValue:[store identifier] ofProperty:zsStoreIdentifier];
     
-    BLIPRequest *request = [BLIPRequest requestWithBody:data properties:dictionary];
-    // TODO: Compression is not working.  Need to find out why
+    NSError *error = nil;
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[[store URL] path] error:&error];
+    ZAssert(fileAttributes && !error, @"Error accessing file attributes: %@\n%@", [error localizedDescription], [error userInfo]);
+    [request setValue:[NSString stringWithFormat:@"%f", [[fileAttributes objectForKey:NSFileModificationDate] timeIntervalSinceReferenceDate]] ofProperty:NSFileModificationDate];
+    [request setValue:[NSString stringWithFormat:@"%f", [[fileAttributes objectForKey:NSFileCreationDate] timeIntervalSinceReferenceDate]] ofProperty:NSFileCreationDate];
+    
+    if (![[store configurationName] isEqualToString:@"PF_DEFAULT_CONFIGURATION_NAME"]) {
+      [request setValue:[store configurationName] ofProperty:zsStoreConfiguration];
+    }
+    [request setValue:[store type] ofProperty:zsStoreType];
+    
     [request setCompressed:YES];
     [[self connection] sendRequest:request];
     [data release], data = nil;
-    [dictionary release], dictionary = nil;
     DLog(@"file uploaded");
     
     [storeFileIdentifiers addObject:[store identifier]];
@@ -584,7 +642,6 @@
       ALog(@"Unknown server action: %i", serverAction);
   }
 }
-
 
 #pragma mark -
 #pragma mark BLIP Delegate
