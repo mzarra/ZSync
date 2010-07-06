@@ -71,15 +71,6 @@
   DLog(@"%s request length: %i", __PRETTY_FUNCTION__, [[request body] length]);
   [[request body] writeToFile:filePath atomically:YES];
   
-  NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-  
-  NSDate *lastModifiedDate = [NSDate dateWithTimeIntervalSinceReferenceDate:[[numberFormatter numberFromString:[request valueOfProperty:NSFileModificationDate]] doubleValue]];
-  NSDate *creationDate = [NSDate dateWithTimeIntervalSinceReferenceDate:[[numberFormatter numberFromString:[request valueOfProperty:NSFileCreationDate]] doubleValue]];
-  [numberFormatter release], numberFormatter = nil;
-  
-  NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:lastModifiedDate, NSFileModificationDate, creationDate, NSFileCreationDate, nil];
-  NSError *error = nil;
-  ZAssert([[NSFileManager defaultManager] setAttributes:attributes ofItemAtPath:filePath error:&error], @"Error setting modification date of %@\n%@\n%@", filePath, [error localizedDescription], [error userInfo]);
   
   if (!persistentStoreCoordinator) {
     if (!managedObjectModel) {
@@ -93,6 +84,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mocSaved:) name: NSManagedObjectContextDidSaveNotification object:managedObjectContext];
   }
   
+  NSError *error = nil;
   NSPersistentStore *ps = nil;
   ps = [persistentStoreCoordinator addPersistentStoreWithType:[request valueOfProperty:zsStoreType] 
                                                 configuration:[request valueOfProperty:zsStoreConfiguration] 
