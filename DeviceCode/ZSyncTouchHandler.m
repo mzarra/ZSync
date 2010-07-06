@@ -356,7 +356,7 @@
   
   if ([fileManager fileExistsAtPath:originalFileTempPath]) {
     DLog(@"deleting stored file");
-    if ([fileManager removeItemAtPath:originalFileTempPath error:error]) return NO;
+    if (![fileManager removeItemAtPath:originalFileTempPath error:error]) return NO;
   }
   
   if ([fileManager fileExistsAtPath:fileOriginalPath]) {
