@@ -210,6 +210,7 @@
   [request setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
   
   [[self connection] sendRequest:request];
+  [[codeController window] orderOut:nil];
   [codeController release], codeController = nil;
 }
 
@@ -225,6 +226,7 @@
   
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
   [[self connection] sendRequest:request];
+  [[codeController window] orderOut:nil];
   [codeController release], codeController = nil;
 }
 

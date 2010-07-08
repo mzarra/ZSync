@@ -354,7 +354,8 @@
   }
   
   [moc deleteObject:result];
-  return YES;
+  
+  return [moc save:error];
 }
 
 + (NSArray*)devicesRegisteredForSchema:(NSString*)schema error:(NSError**)error;
