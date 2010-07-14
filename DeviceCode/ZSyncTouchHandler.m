@@ -444,7 +444,12 @@
   for (MYBonjourService *bonjourService in [_serviceBrowser services]) {
     NSString *serverName = [bonjourService name];
     NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
-    ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
+	if (!components || [components count] != 2) {
+		NSLog(@"Wrong number of components: %i\n%@", [components count], serverName);
+		continue;
+	}
+
+	ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
     NSString *serverUUID = [components objectAtIndex:1];
     serverName = [components objectAtIndex:0];
     
