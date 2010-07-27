@@ -34,7 +34,8 @@
 {
   [[ZSyncHandler shared] setDelegate:self];
   [[ZSyncHandler shared] startBroadcasting];
-  
+
+#ifdef USEZSMENU
   NSMenu *menu = [[NSMenu alloc] initWithTitle:@"ZSync"];
   
   NSMenuItem *aboutMenu = [[NSMenuItem alloc] initWithTitle:@"About" action:@selector(about:) keyEquivalent:@""];
@@ -56,7 +57,8 @@
   [statusItem setAction:@selector(statusItemSelected:)];
   
   [menu release], menu = nil;
-  
+#endif
+
   [[NSApplication sharedApplication] performSelector:@selector(hide:) withObject:self afterDelay:0.1];
 }
 
