@@ -489,7 +489,7 @@
   
   storeFileIdentifiers = [[NSMutableArray alloc] init];
   
-  NSAssert([self persistentStoreCoordinator] != nil, @"PSD is nil.  Unable to upload");
+  NSAssert([self persistentStoreCoordinator] != nil, @"The persistent store coordinator was nil. Make sure you are calling registerDelegate:withPersistentStoreCoordinator: before trying to sync.");
   
   for (NSPersistentStore *store in [[self persistentStoreCoordinator] persistentStores]) {
     NSData *data = [[NSData alloc] initWithContentsOfMappedFile:[[store URL] path]];
