@@ -9,6 +9,7 @@
 + (BOOL)installPluginAtPath:(NSString*)path intoDaemonWithError:(NSError**)error;
 + (BOOL)isDaemonRunning;
 + (void)startDaemon;
++ (BOOL)stopDaemon:(NSError**)error;
 
 + (BOOL)checkBasePath:(NSString*)basePath error:(NSError**)error;
 + (NSString*)basePath;
