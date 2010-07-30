@@ -342,7 +342,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
 {
   NSDictionary *infoDictionary = [[self daemonBundle] infoDictionary];
   NSString *appName = [infoDictionary objectForKey:@"CFBundleExecutable"];
-  NSLog(@"Looking for '%@'", appName);
   
   kinfo_proc *procList = NULL;
   size_t procCount;
@@ -352,7 +351,6 @@ static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount)
   int index;
   for (index = procCount - 1; index >= 0; --index) {
     NSString *name = [[NSString alloc] initWithCString:procList[index].kp_proc.p_comm];
-    NSLog(@"Name '%@'", name);
     if ([name isEqualToString:appName]) {
       [name release], name = nil;
       return YES;
