@@ -288,8 +288,9 @@
       NSString *serverName = [service name];
       NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
       ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
-      NSString *serverUUID = [components objectAtIndex:1];
-      if (![serverUUID isEqualToString:serverUUID]) continue;
+      NSString *incomingServerUUID = [components objectAtIndex:1];
+      if (!incomingServerUUID) continue;
+      if (![incomingServerUUID isEqualToString:serverUUID]) continue;
       
       DLog(@"our server found");
       //Found our server, start the sync
