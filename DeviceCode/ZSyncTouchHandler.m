@@ -133,7 +133,8 @@
   } else {
     DLog(@"starting browser");
     [[self serviceBrowser] start];
-    findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0f];
+    /// !!!: Temporary test to see if a timeout is the issue
+    findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:300.0f];
   }
   [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
