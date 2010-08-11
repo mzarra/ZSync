@@ -27,19 +27,21 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 
 #import "ZSyncShared.h"
+#import "ServerBrowserDelegate.h"
 
 @class ZSyncTouchHandler;
+@class ServerBrowser;
 
 @interface ZSyncService : NSObject
 {
   NSString *name;
   NSString *uuid;
-  MYBonjourService *service;
+  NSNetService *service;
 }
 
 @property (nonatomic, retain) NSString *name;
 @property (nonatomic, retain) NSString *uuid;
-@property (nonatomic, retain) MYBonjourService *service;
+@property (nonatomic, retain) NSNetService *service;
 
 @end
 
@@ -122,14 +124,14 @@ typedef enum {
   ZSyncServerActionDeregister
 } ZSyncServerAction;
 
-@interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate>
+@interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate, ServerBrowserDelegate>
 {
   NSTimer *networkTimer;
   NSDate *findServerTimeoutDate;
   
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
-  MYBonjourBrowser *_serviceBrowser;
+  ServerBrowser *_serviceBrowser;
   BLIPConnection *_connection;
   
   NSInteger majorVersionNumber;
@@ -151,7 +153,7 @@ typedef enum {
 }
 
 @property (nonatomic, assign) ZSyncServerAction serverAction;
-@property (nonatomic, retain) MYBonjourBrowser *serviceBrowser;
+@property (nonatomic, retain) ServerBrowser *serviceBrowser;
 @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
@@ -170,6 +172,7 @@ typedef enum {
 - (void)authenticatePairing:(NSString*)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
+- (void)stopRequestingSync;
 
 /*
  * When this is called the client will attempt to connect to the server and deregister any sync data.

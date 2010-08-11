@@ -28,6 +28,8 @@
 
 #import "ZSyncTouchHandler.h"
 #import "ZSyncShared.h"
+#import "ServerBrowser.h"
+
 
 #import "Reachability.h"
 
@@ -66,6 +68,7 @@
     [[self connection] close];
   }
   if ([self serviceBrowser]) {
+    [[self serviceBrowser] setDelegate:nil];
     [[self serviceBrowser] stop];
     [_serviceBrowser release], _serviceBrowser = nil;
   }
@@ -87,7 +90,6 @@
     [[self delegate] zSyncServerUnavailable:self];
   }
   [[timer userInfo] stopNotifer];
-  [self setServiceBrowser:nil];
 }
 
 - (void)reachabilityChanged:(NSNotification*)notification
@@ -105,12 +107,13 @@
 {
   if ([self serviceBrowser]) {
     DLog(@"service browser is not nil");
-    return; //Already in the middle of something
+    [[self serviceBrowser] setDelegate:nil];
+    [[self serviceBrowser] stop];
+    [self setServiceBrowser:nil];
   }
   
-  MYBonjourBrowser *browser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
-  [self setServiceBrowser:browser];
-  [browser release], browser = nil;
+  _serviceBrowser = [[ServerBrowser alloc] init];
+  _serviceBrowser.delegate = self;
   
   Reachability *reachability = [Reachability reachabilityForLocalWiFi];
   if ([reachability currentReachabilityStatus] == NotReachable) {
@@ -133,10 +136,7 @@
   } else {
     DLog(@"starting browser");
     [[self serviceBrowser] start];
-    /// !!!: Temporary test to see if a timeout is the issue
-    findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:300.0f];
   }
-  [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
 }
 
 - (void)requestSync;
@@ -148,6 +148,13 @@
   } else {
     [self startServerSearch];
   }
+}
+
+- (void)stopRequestingSync
+{
+  [[self serviceBrowser] setDelegate:nil];
+  [[self serviceBrowser] stop];
+  [self setServerAction:ZSyncServerActionNoActivity];
 }
 
 - (void)deregister;
@@ -220,8 +227,8 @@
 
 - (void)requestPairing:(ZSyncService*)server;
 {
-  MYBonjourService *service = [server service];
-  BLIPConnection *conn = [[BLIPConnection alloc] initToBonjourService:service];
+  NSNetService *service = [server service];
+  BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
   [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
@@ -249,34 +256,19 @@
   [[self connection] sendRequest:request];
 }
 
-- (void)beginSyncWithService:(MYBonjourService*)service
+- (void)beginSyncWithService:(NSNetService*)service
 {
-  BLIPConnection *conn = [[BLIPConnection alloc] initToBonjourService:service];
+  BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
   [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
   [conn release], conn = nil;
 }
 
-- (void)services:(NSTimer*)timer
+#pragma mark -
+#pragma mark ServerBrowserDelegate methods
+- (void)updateServerList
 {
-  if (![[_serviceBrowser services] count]) {
-    if ([findServerTimeoutDate earlierDate:[NSDate date]] == findServerTimeoutDate) {
-      [findServerTimeoutDate release], findServerTimeoutDate = nil;
-      [timer invalidate];
-      [[self delegate] zSyncServerUnavailable:self];
-      [self setServerAction:ZSyncServerActionNoActivity];
-      [_serviceBrowser stop];
-      [_serviceBrowser release], _serviceBrowser = nil;
-    }
-    return;
-  }
-  
-  DLog(@"server list found");
-
-  [timer invalidate];
-  [findServerTimeoutDate release], findServerTimeoutDate = nil;
-  
   NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   
   @try {
@@ -285,7 +277,7 @@
       return;
     }
     
-    for (MYBonjourService *service in [_serviceBrowser services]) {
+    for (NSNetService *service in [_serviceBrowser servers]) {
       NSString *serverName = [service name];
       NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
       ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
@@ -302,10 +294,11 @@
     [[self delegate] zSyncServerUnavailable:self];
     [self setServerAction:ZSyncServerActionNoActivity];
   } @finally {
-    [_serviceBrowser stop];
-    [_serviceBrowser release], _serviceBrowser = nil;
+    // Not sure what to put in here, we don't need to stop the service browser each time anymore.
   }
 }
+
+#pragma mark -
 
 - (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 {
@@ -434,24 +427,23 @@
 - (void)startBrowser;
 {
   if (_serviceBrowser) return;
-  _serviceBrowser = [[MYBonjourBrowser alloc] initWithServiceType:zsServiceName];
-  [_serviceBrowser start];
-  
-  [NSTimer scheduledTimerWithTimeInterval:0.10 target:self selector:@selector(services:) userInfo:nil repeats:YES];
+  _serviceBrowser = [[ServerBrowser alloc] init];
+  _serviceBrowser.delegate = self;
+ [_serviceBrowser start];
 }
 
 - (NSArray*)availableServers;
 {
   NSMutableSet *set = [NSMutableSet set];
-  for (MYBonjourService *bonjourService in [_serviceBrowser services]) {
+  for (NSNetService *bonjourService in [_serviceBrowser servers]) {
     NSString *serverName = [bonjourService name];
     NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
-	if (!components || [components count] != 2) {
-		NSLog(@"Wrong number of components: %i\n%@", [components count], serverName);
-		continue;
-	}
+    if (!components || [components count] != 2) {
+      NSLog(@"Wrong number of components: %i\n%@", [components count], serverName);
+      continue;
+    }
 
-	ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
+    ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
     NSString *serverUUID = [components objectAtIndex:1];
     serverName = [components objectAtIndex:0];
     
@@ -484,6 +476,7 @@
 
 - (void)uploadDataToServer;
 {
+  [[self serviceBrowser] setDelegate:nil];
   [[self serviceBrowser] stop];
   [self setServiceBrowser:nil];
   
