@@ -33,7 +33,7 @@
 #define zsDeviceGUID @"zsDeviceGUID"
 #define zsSchemaIdentifier @"ZSyncSchemaIdentifier"
 
-#define zsServerNameSeperator @"**/**"
+#define zsServerNameSeperator @"ZSyncServerNameSeparator"
 
 #define zsActID(__ENUM__) [NSString stringWithFormat:@"%i", __ENUM__]
 

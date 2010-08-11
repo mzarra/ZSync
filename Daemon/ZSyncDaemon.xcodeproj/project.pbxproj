@@ -45,6 +45,9 @@
 
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13337CFE121255150040AF6A /* ServerBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerBrowser.h; sourceTree = "<group>"; };
+		13337CFF121255150040AF6A /* ServerBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerBrowser.m; sourceTree = "<group>"; };
+		13337D00121255150040AF6A /* ServerBrowserDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerBrowserDelegate.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* ZSyncDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZSyncDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -250,6 +253,9 @@
 		B691FB9810ED879D00207210 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
+				13337CFE121255150040AF6A /* ServerBrowser.h */,
+				13337CFF121255150040AF6A /* ServerBrowser.m */,
+				13337D00121255150040AF6A /* ServerBrowserDelegate.h */,
 				B691FB9910ED879D00207210 /* BLIP.h */,
 				B691FB9A10ED879D00207210 /* BLIPConnection.h */,
 				B691FB9B10ED879D00207210 /* BLIPDispatcher.h */,
