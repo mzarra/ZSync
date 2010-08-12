@@ -124,13 +124,14 @@ typedef enum {
   ZSyncServerActionDeregister
 } ZSyncServerAction;
 
-@interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate, ServerBrowserDelegate>
+@interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate, ServerBrowserDelegate, NSNetServiceDelegate>
 {
   NSTimer *networkTimer;
   NSDate *findServerTimeoutDate;
   
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
+  NSMutableArray *discoveredServers;
   ServerBrowser *_serviceBrowser;
   BLIPConnection *_connection;
   
@@ -150,6 +151,8 @@ typedef enum {
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
   
   ZSyncServerAction serverAction;
+  
+  NSLock *lock;
 }
 
 @property (nonatomic, assign) ZSyncServerAction serverAction;
@@ -158,6 +161,9 @@ typedef enum {
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
 @property (nonatomic, copy) NSString *passcode;
+@property (retain) NSMutableArray *availableServers;
+@property (retain) NSMutableArray *discoveredServers;
+@property (retain) NSLock *lock;
 
 /* This shared singleton design should probably go away.  We cannot assume
  * that the parent app will want to keep us around all of the time and may
@@ -181,6 +187,6 @@ typedef enum {
 - (void)deregister;
 
 - (NSString*)serverName;
-- (NSArray*)availableServers;
+//- (NSArray*)availableServers;
 
 @end

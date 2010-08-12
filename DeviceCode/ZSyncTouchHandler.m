@@ -86,6 +86,7 @@
 {
   DLog(@"timeout on local network");
   networkTimer = nil;
+  [self setServerAction:ZSyncServerActionNoActivity];
   if ([[self delegate] respondsToSelector:@selector(zSyncServerUnavailable:)]) {
     [[self delegate] zSyncServerUnavailable:self];
   }
@@ -99,8 +100,16 @@
   DLog(@"local network now available");
   [reachability stopNotifer];
   [networkTimer invalidate], networkTimer = nil;
+  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+  if (serverUUID) {
+    networkTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 
+                            target:self 
+                            selector:@selector(networkTimeout:) 
+                            userInfo:nil
+                             repeats:NO];
+  }
+  [serverUUID release], serverUUID = nil;
   [[self serviceBrowser] start];
-  findServerTimeoutDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0f];
 }
 
 - (void)startServerSearch
@@ -134,7 +143,15 @@
     
     return;
   } else {
-    DLog(@"starting browser");
+    NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+    if (serverUUID) {
+      networkTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 
+                              target:self 
+                            selector:@selector(networkTimeout:) 
+                            userInfo:reachability
+                             repeats:NO];
+    }
+    [serverUUID release], serverUUID = nil;
     [[self serviceBrowser] start];
   }
 }
@@ -266,36 +283,184 @@
 }
 
 #pragma mark -
+#pragma mark Overridden getters/setter
+
+- (NSMutableArray *)availableServers
+{
+  if (!availableServers) {
+    availableServers = [[NSMutableArray alloc] init];
+  }
+  
+  return availableServers;
+}
+
+- (NSMutableArray *)discoveredServers
+{
+  if (!discoveredServers) {
+    discoveredServers = [[NSMutableArray alloc] init];
+  }
+  
+  return discoveredServers;
+}
+
+- (NSObject *)lock
+{
+  if (!lock) {
+    lock = [[NSObject alloc] init];
+  }
+  
+  return lock;
+}
+
+#pragma mark -
 #pragma mark ServerBrowserDelegate methods
+
 - (void)updateServerList
 {
+  [lock lock];
+  NSLog(@"START %s", __PRETTY_FUNCTION__);
+  [networkTimer invalidate], networkTimer = nil;
+  [[self availableServers] removeAllObjects];
+    for (NSNetService *service in [self discoveredServers]) {
+    [service setDelegate:nil];
+    [service stop];
+  }
+  [[self discoveredServers] removeAllObjects];
+
+  [[self discoveredServers] addObjectsFromArray:[_serviceBrowser servers]];
+    for (NSNetService *service in [self discoveredServers]) {
+    NSLog(@"%@", [service name]);
+    [service setDelegate:self];
+    [service resolveWithTimeout:15.0];
+  }
+  
+  if (![self discoveredServers] || [[self discoveredServers] count] == 0) {
+    NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+    if (!serverUUID) {
+      [[self delegate] zSyncNoServerPaired:[self availableServers]];
+    }
+  } else {
+    NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+    if (serverUUID) {
+      networkTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 
+                              target:self 
+                              selector:@selector(networkTimeout:) 
+                              userInfo:nil
+                               repeats:NO];
+    }
+    
+  }
+
+  NSLog(@"END   %s", __PRETTY_FUNCTION__);
+  [lock unlock];
+}
+
+#pragma mark -
+#pragma mark NSNetServiceDelegate methods
+
+/* Sent to the NSNetService instance's delegate prior to resolving a service on the network. If for some reason the resolution cannot occur, the delegate will not receive this message, and an error will be delivered to the delegate via the delegate's -netService:didNotResolve: method.
+ */
+- (void)netServiceWillResolve:(NSNetService *)sender
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+/* Sent to the NSNetService instance's delegate when one or more addresses have been resolved for an NSNetService instance. Some NSNetService methods will return different results before and after a successful resolution. An NSNetService instance may get resolved more than once; truly robust clients may wish to resolve again after an error, or to resolve more than once.
+ */
+- (void)netServiceDidResolveAddress:(NSNetService *)bonjourService
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+  
   NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   
   @try {
     if (!serverUUID) { //See if the server is in this list
+      NSString *serverName = [bonjourService name];
+      DLog(@"[bonjourService TXTRecordData] %@", [bonjourService TXTRecordData]);
+      NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
+      if (!txtRecordDictionary) {
+        DLog(@"The NSNetService named %@ did not contain a TXT record", [bonjourService name]);
+        return;
+      }
+      
+      NSData *serverUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
+      NSString *serverUUID = [[NSString alloc] initWithData:serverUUIDData encoding:NSUTF8StringEncoding];
+      if (!serverUUID || [serverUUID length] == 0) {
+        DLog(@"The TXT record did not contain a UUID.");
+        [serverUUID release], serverUUID = nil;
+        return;
+      }
+      
+      ZSyncService *zSyncService = [[ZSyncService alloc] init];
+      [zSyncService setService:bonjourService];
+      [zSyncService setName:serverName];
+      [zSyncService setUuid:serverUUID];
+      [[self availableServers] addObject:zSyncService];
+      [zSyncService release], zSyncService = nil;
+      
       [[self delegate] zSyncNoServerPaired:[self availableServers]];
+      
+      [serverUUID release], serverUUID = nil;
+      
       return;
     }
     
-    for (NSNetService *service in [_serviceBrowser servers]) {
-      NSString *serverName = [service name];
-      NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
-      ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
-      NSString *incomingServerUUID = [components objectAtIndex:1];
-      if (!incomingServerUUID) continue;
-      if (![incomingServerUUID isEqualToString:serverUUID]) continue;
-      
-      DLog(@"our server found");
-      //Found our server, start the sync
-      [self beginSyncWithService:service];
+    NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
+    if (!txtRecordDictionary) {
+      DLog(@"Found a serverUUID, but the NSNetService named %@ did not contain a TXT record", [bonjourService name]);
       return;
     }
-    //Did not find our registered server.  Fail
-    [[self delegate] zSyncServerUnavailable:self];
-    [self setServerAction:ZSyncServerActionNoActivity];
+    
+    NSData *incomingServerUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
+    if (!incomingServerUUIDData) return;
+
+    NSString *incomingServerUUID = [[NSString alloc] initWithData:incomingServerUUIDData encoding:NSUTF8StringEncoding];
+    //    NSString *incomingServerUUID = [components objectAtIndex:1];
+    if (![incomingServerUUID isEqualToString:serverUUID]) {
+      [incomingServerUUID release], incomingServerUUID = nil;
+      return;
+    }
+    
+    [networkTimer invalidate], networkTimer = nil;
+    DLog(@"our server found");
+    //Found our server, start the sync
+    [self beginSyncWithService:bonjourService];
+    return;
   } @finally {
     // Not sure what to put in here, we don't need to stop the service browser each time anymore.
   }
+}
+
+/* Sent to the NSNetService instance's delegate when an error in resolving the instance occurs. The error dictionary will contain two key/value pairs representing the error domain and code (see the NSNetServicesError enumeration above for error code constants).
+ */
+- (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary *)errorDict
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+  [[self discoveredServers] removeObject:sender];
+
+  //Did not find our registered server.  Fail
+  if ([[self discoveredServers] count] == 0) {
+    [[self delegate] zSyncServerUnavailable:self];
+    [self setServerAction:ZSyncServerActionNoActivity];
+  }
+}
+
+/* Sent to the NSNetService instance's delegate when the instance's previously running publication or resolution request has stopped.
+ */
+- (void)netServiceDidStop:(NSNetService *)sender
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+//  if ([[self discoveredServers] count] == 0) {
+//    [[self delegate] zSyncServerUnavailable:self];
+//    [self setServerAction:ZSyncServerActionNoActivity];
+//  }
+}
+
+/* Sent to the NSNetService instance's delegate when the instance is being monitored and the instance's TXT record has been updated. The new record is contained in the data parameter.
+ */
+- (void)netService:(NSNetService *)sender didUpdateTXTRecordData:(NSData *)data
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 #pragma mark -
@@ -432,36 +597,55 @@
  [_serviceBrowser start];
 }
 
-- (NSArray*)availableServers;
-{
-  NSMutableSet *set = [NSMutableSet set];
-  for (NSNetService *bonjourService in [_serviceBrowser servers]) {
-    NSString *serverName = [bonjourService name];
-    NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
-    if (!components || [components count] != 2) {
-      NSLog(@"Wrong number of components: %i\n%@", [components count], serverName);
-      continue;
-    }
-
-    ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
-    NSString *serverUUID = [components objectAtIndex:1];
-    serverName = [components objectAtIndex:0];
-    
-    ZSyncService *zSyncService = [[ZSyncService alloc] init];
-    [zSyncService setService:bonjourService];
-    [zSyncService setName:serverName];
-    [zSyncService setUuid:serverUUID];
-    [set addObject:zSyncService];
-    [zSyncService release], zSyncService = nil;
-  }
-  
-  NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-  NSArray *result = [set allObjects];
-  result = [result sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
-  [sort release], sort = nil;
-  
-  return result;
-}
+//- (NSArray*)availableServers;
+//{
+//  NSMutableSet *set = [NSMutableSet set];
+//  for (NSNetService *bonjourService in [_serviceBrowser servers]) {
+//    [bonjourService setDelegate:self];
+//    [bonjourService resolveWithTimeout:3.0];
+//    NSString *serverName = [bonjourService name];
+////    NSArray *components = [serverName componentsSeparatedByString:zsServerNameSeperator];
+////    if (!components || [components count] != 2) {
+////      NSLog(@"Wrong number of components: %i\n%@", [components count], serverName);
+////      continue;
+////    }
+////
+////    ZAssert([components count] == 2,@"Wrong number of components: %i\n%@", [components count], serverName);
+////    NSString *serverUUID = [components objectAtIndex:1];
+//    DLog(@"[bonjourService TXTRecordData] %@", [bonjourService TXTRecordData]);
+//    NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
+//    if (!txtRecordDictionary) {
+//      DLog(@"The NSNetService named %@ did not contain a TXT record", [bonjourService name]);
+//      continue;
+//    }
+//    
+//    for (NSString *key in [txtRecordDictionary allKeys]) {
+//      DLog(@"key: %@ object: %@", key, [txtRecordDictionary objectForKey:key]);
+//    }
+//    
+//    NSLog(@"zsServerUUID: %@ zsServerName: %@", zsServerUUID, zsServerName);
+//    
+//    NSString *serverUUID = [txtRecordDictionary objectForKey:zsServerUUID];
+//    if (!serverUUID || [serverUUID length] == 0) {
+//      DLog(@"The TXT record did not contain a UUID.");
+//    }
+//    //    serverName = [components objectAtIndex:0];
+//    
+//    ZSyncService *zSyncService = [[ZSyncService alloc] init];
+//    [zSyncService setService:bonjourService];
+//    [zSyncService setName:serverName];
+//    [zSyncService setUuid:serverUUID];
+//    [set addObject:zSyncService];
+//    [zSyncService release], zSyncService = nil;
+//  }
+//  
+//  NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+//  NSArray *result = [set allObjects];
+//  result = [result sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+//  [sort release], sort = nil;
+//  
+//  return result;
+//}
 
 - (void)sendUploadComplete
 {
@@ -773,6 +957,9 @@
 @synthesize minorVersionNumber;
 @synthesize passcode;
 @synthesize serverAction;
+@synthesize availableServers;
+@synthesize discoveredServers;
+@synthesize lock;
 
 @end
 
