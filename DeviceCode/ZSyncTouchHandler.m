@@ -108,7 +108,6 @@
                             userInfo:nil
                              repeats:NO];
   }
-  [serverUUID release], serverUUID = nil;
   [[self serviceBrowser] start];
 }
 
@@ -151,7 +150,6 @@
                             userInfo:reachability
                              repeats:NO];
     }
-    [serverUUID release], serverUUID = nil;
     [[self serviceBrowser] start];
   }
 }
@@ -369,66 +367,97 @@
  */
 - (void)netServiceDidResolveAddress:(NSNetService *)bonjourService
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
-  
-  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
-  
-  @try {
-    if (!serverUUID) { //See if the server is in this list
-      NSString *serverName = [bonjourService name];
-      DLog(@"[bonjourService TXTRecordData] %@", [bonjourService TXTRecordData]);
-      NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
-      if (!txtRecordDictionary) {
-        DLog(@"The NSNetService named %@ did not contain a TXT record", [bonjourService name]);
-        return;
-      }
-      
-      NSData *serverUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
-      NSString *serverUUID = [[NSString alloc] initWithData:serverUUIDData encoding:NSUTF8StringEncoding];
-      if (!serverUUID || [serverUUID length] == 0) {
-        DLog(@"The TXT record did not contain a UUID.");
-        [serverUUID release], serverUUID = nil;
-        return;
-      }
-      
-      ZSyncService *zSyncService = [[ZSyncService alloc] init];
-      [zSyncService setService:bonjourService];
-      [zSyncService setName:serverName];
-      [zSyncService setUuid:serverUUID];
-      [[self availableServers] addObject:zSyncService];
-      [zSyncService release], zSyncService = nil;
-      
-      [[self delegate] zSyncNoServerPaired:[self availableServers]];
-      
-      [serverUUID release], serverUUID = nil;
-      
-      return;
-    }
-    
-    NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
-    if (!txtRecordDictionary) {
-      DLog(@"Found a serverUUID, but the NSNetService named %@ did not contain a TXT record", [bonjourService name]);
-      return;
-    }
-    
-    NSData *incomingServerUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
-    if (!incomingServerUUIDData) return;
-
-    NSString *incomingServerUUID = [[NSString alloc] initWithData:incomingServerUUIDData encoding:NSUTF8StringEncoding];
-    //    NSString *incomingServerUUID = [components objectAtIndex:1];
-    if (![incomingServerUUID isEqualToString:serverUUID]) {
-      [incomingServerUUID release], incomingServerUUID = nil;
-      return;
-    }
-    
-    [networkTimer invalidate], networkTimer = nil;
-    DLog(@"our server found");
-    //Found our server, start the sync
-    [self beginSyncWithService:bonjourService];
-    return;
-  } @finally {
-    // Not sure what to put in here, we don't need to stop the service browser each time anymore.
-  }
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	NSString *registeredServerUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+	NSString *registeredServerName = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerName];
+	
+	@try {
+		if (!registeredServerUUID) { //See if the server is in this list
+			NSString *incomingServerName = [bonjourService name];
+			DLog(@"[bonjourService TXTRecordData] %@", [bonjourService TXTRecordData]);
+			NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
+			if (!txtRecordDictionary) {
+				DLog(@"The NSNetService named %@ did not contain a TXT record", incomingServerName);
+				return;
+			}
+			
+			NSData *serverUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
+			if (!serverUUIDData) {
+				DLog(@"The TXT record did not contain a UUID.");
+				return;
+			}
+			NSString *incomingServerUUID = [[NSString alloc] initWithData:serverUUIDData encoding:NSUTF8StringEncoding];
+			if (!incomingServerUUID || [incomingServerUUID length] == 0) {
+				DLog(@"The TXT record UUID was zero length.");
+				[incomingServerUUID release], incomingServerUUID = nil;
+				return;
+			}
+			
+			ZSyncService *zSyncService = [[ZSyncService alloc] init];
+			[zSyncService setService:bonjourService];
+			[zSyncService setName:incomingServerName];
+			[zSyncService setUuid:incomingServerUUID];
+			[[self availableServers] addObject:zSyncService];
+			[zSyncService release], zSyncService = nil;
+			
+			[[self delegate] zSyncNoServerPaired:[self availableServers]];
+			
+			[incomingServerUUID release], incomingServerUUID = nil;
+			
+			return;
+		}
+		
+		NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
+		if (!txtRecordDictionary) {
+			DLog(@"Found a serverUUID, but the NSNetService named %@ did not contain a TXT record", [bonjourService name]);
+			return;
+		}
+		
+		NSData *incomingServerUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
+		if (!incomingServerUUIDData) {
+			DLog(@"TXT record did not contain server UUID data");
+			return;
+		}
+		
+		NSString *incomingServerUUID = [[NSString alloc] initWithData:incomingServerUUIDData encoding:NSUTF8StringEncoding];
+		if (![incomingServerUUID isEqualToString:registeredServerUUID]) {
+			NSData *incomingServerNameData = [txtRecordDictionary objectForKey:zsServerName];
+			if (!incomingServerNameData) {
+				DLog(@"TXT record did not contain server name data");
+				[incomingServerUUID release], incomingServerUUID = nil;
+				return;	
+			}
+			NSString *incomingServerName = [[NSString alloc] initWithData:incomingServerNameData encoding:NSUTF8StringEncoding];
+			if (![incomingServerName isEqualToString:registeredServerName]) {
+				DLog(@"Incoming server name did not match registered server name, %@ != %@", incomingServerName, registeredServerName);
+				[incomingServerUUID release], incomingServerUUID = nil;
+				[incomingServerName release], incomingServerName = nil;
+				return;
+			}
+			
+			if ([incomingServerUUID hasPrefix:registeredServerUUID]) {
+				DLog(@"Found an instance of an old UUID that we will upgrade");
+				[[NSUserDefaults standardUserDefaults] setValue:incomingServerName forKey:zsServerUUID];
+				[incomingServerUUID release], incomingServerUUID = nil;
+				[incomingServerName release], incomingServerName = nil;
+			} else {
+				DLog(@"Incoming server UUID did not have a prefix of the registered server UUID, %@ does not start with %@", incomingServerUUID, registeredServerUUID);
+				[incomingServerUUID release], incomingServerUUID = nil;
+				[incomingServerName release], incomingServerName = nil;
+				
+				return;
+			}
+		}
+		
+		[networkTimer invalidate], networkTimer = nil;
+		DLog(@"our server found");
+		//Found our server, start the sync
+		[self beginSyncWithService:bonjourService];
+		return;
+	} @finally {
+		// Not sure what to put in here, we don't need to stop the service browser each time anymore.
+	}
 }
 
 /* Sent to the NSNetService instance's delegate when an error in resolving the instance occurs. The error dictionary will contain two key/value pairs representing the error domain and code (see the NSNetServicesError enumeration above for error code constants).
