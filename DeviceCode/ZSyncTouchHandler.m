@@ -438,7 +438,7 @@
 			
 			if ([incomingServerUUID hasPrefix:registeredServerUUID]) {
 				DLog(@"Found an instance of an old UUID that we will upgrade");
-				[[NSUserDefaults standardUserDefaults] setValue:incomingServerName forKey:zsServerUUID];
+				[[NSUserDefaults standardUserDefaults] setValue:incomingServerUUID forKey:zsServerUUID];
 				[incomingServerUUID release], incomingServerUUID = nil;
 				[incomingServerName release], incomingServerName = nil;
 			} else {
