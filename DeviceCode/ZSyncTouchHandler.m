@@ -316,7 +316,7 @@
 - (void)updateServerList
 {
   [lock lock];
-  NSLog(@"START %s", __PRETTY_FUNCTION__);
+//  NSLog(@"START %s", __PRETTY_FUNCTION__);
   [networkTimer invalidate], networkTimer = nil;
   [[self availableServers] removeAllObjects];
     for (NSNetService *service in [self discoveredServers]) {
@@ -327,7 +327,7 @@
 
   [[self discoveredServers] addObjectsFromArray:[_serviceBrowser servers]];
     for (NSNetService *service in [self discoveredServers]) {
-    NSLog(@"%@", [service name]);
+//    NSLog(@"%@", [service name]);
     [service setDelegate:self];
     [service resolveWithTimeout:15.0];
   }
@@ -349,7 +349,7 @@
     
   }
 
-  NSLog(@"END   %s", __PRETTY_FUNCTION__);
+//  NSLog(@"END   %s", __PRETTY_FUNCTION__);
   [lock unlock];
 }
 
@@ -360,14 +360,14 @@
  */
 - (void)netServiceWillResolve:(NSNetService *)sender
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+//  NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 /* Sent to the NSNetService instance's delegate when one or more addresses have been resolved for an NSNetService instance. Some NSNetService methods will return different results before and after a successful resolution. An NSNetService instance may get resolved more than once; truly robust clients may wish to resolve again after an error, or to resolve more than once.
  */
 - (void)netServiceDidResolveAddress:(NSNetService *)bonjourService
 {
-	NSLog(@"%s", __PRETTY_FUNCTION__);
+//	NSLog(@"%s", __PRETTY_FUNCTION__);
 	
 	NSString *registeredServerUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
 	NSString *registeredServerName = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerName];
@@ -464,7 +464,7 @@
  */
 - (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary *)errorDict
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+//  NSLog(@"%s", __PRETTY_FUNCTION__);
   [[self discoveredServers] removeObject:sender];
 
   //Did not find our registered server.  Fail
@@ -478,7 +478,7 @@
  */
 - (void)netServiceDidStop:(NSNetService *)sender
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+//  NSLog(@"%s", __PRETTY_FUNCTION__);
 //  if ([[self discoveredServers] count] == 0) {
 //    [[self delegate] zSyncServerUnavailable:self];
 //    [self setServerAction:ZSyncServerActionNoActivity];
@@ -489,7 +489,7 @@
  */
 - (void)netService:(NSNetService *)sender didUpdateTXTRecordData:(NSData *)data
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+//  NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 #pragma mark -
