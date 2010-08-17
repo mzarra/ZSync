@@ -174,11 +174,11 @@ typedef enum {
 - (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
 
 - (void)requestSync;
+- (void)stopRequestingSync;
 - (void)requestPairing:(ZSyncService*)server;
 - (void)authenticatePairing:(NSString*)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
-- (void)stopRequestingSync;
 
 /*
  * When this is called the client will attempt to connect to the server and deregister any sync data.
@@ -187,6 +187,5 @@ typedef enum {
 - (void)deregister;
 
 - (NSString*)serverName;
-//- (NSArray*)availableServers;
 
 @end
