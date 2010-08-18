@@ -30,19 +30,25 @@
 
 @protocol PairingCodeDelegate
 
-- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString*)code;
-- (void)pairingCodeWindowControllerCancelled:(PairingCodeWindowController*)controller;
+- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString *)code;
+- (void)pairingCodeWindowControllerCancelled:(PairingCodeWindowController *)controller;
 
 @end
 
 @interface PairingCodeWindowController : NSWindowController
 {
-  NSTextField *textField;
+  NSTextField *textField1;
+  NSTextField *textField2;
+  NSTextField *textField3;
+  NSTextField *textField4;
   
   id<PairingCodeDelegate> delegate;
 }
 
-@property (assign) IBOutlet NSTextField *textField;
+@property (retain) IBOutlet NSTextField *textField1;
+@property (retain) IBOutlet NSTextField *textField2;
+@property (retain) IBOutlet NSTextField *textField3;
+@property (retain) IBOutlet NSTextField *textField4;
 @property (assign) id<PairingCodeDelegate> delegate;
 
 - (id)initWithDelegate:(id<PairingCodeDelegate>)delegate;

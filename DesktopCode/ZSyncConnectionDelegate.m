@@ -503,6 +503,13 @@
       [self performSelector:@selector(performSync) withObject:nil afterDelay:0.01];
       return YES;
       
+    case zsActionCancelPairing:
+      DLog(@"%s zsActionCancelPairing", __PRETTY_FUNCTION__);
+      if (codeController) {
+        [[codeController window] orderOut:nil];
+      }
+      return YES;
+      
     default:
       DLog(@"%s default", __PRETTY_FUNCTION__);
       ALog(@"Unknown action received: %i", action);

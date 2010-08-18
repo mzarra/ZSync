@@ -258,8 +258,8 @@
       [[NSUserDefaults standardUserDefaults] setObject:deregisteredServers forKey:zsDeregisteredServersKey];
     }
     
-    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:zsServerUUID];
-    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:zsServerName];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     [deregisteredServers release], deregisteredServers = nil;
@@ -980,7 +980,7 @@
       
       NSMutableArray *deregisteredServers = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:zsDeregisteredServersKey]];
       if (!deregisteredServers) {
-        return;           // Shouldn't really happen...
+        return;   // Shouldn't really happen...
       }
       
       if (registeredServerUUID) {

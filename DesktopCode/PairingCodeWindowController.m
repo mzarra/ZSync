@@ -37,7 +37,9 @@ static float vigourOfShake = 0.02f;
 
 - (id)initWithDelegate:(id<PairingCodeDelegate>)aDelegate;
 {
-  if (![super initWithWindowNibName:@"PairingWindow"]) return nil;
+  if (![super initWithWindowNibName:@"PairingWindow"]) {
+    return nil;
+  }
   
   [self setDelegate:aDelegate];
   
@@ -51,20 +53,61 @@ static float vigourOfShake = 0.02f;
   [NSApp activateIgnoringOtherApps:YES];
   
   [[self window] center];
-  [[self textField] setStringValue:@""];
+  [[self textField1] setStringValue:@""];
+  [[self textField2] setStringValue:@""];
+  [[self textField3] setStringValue:@""];
+  [[self textField4] setStringValue:@""];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name:NSControlTextDidChangeNotification object:[self textField1]];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name:NSControlTextDidChangeNotification object:[self textField2]];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name:NSControlTextDidChangeNotification object:[self textField3]];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name:NSControlTextDidChangeNotification object:[self textField4]];
+  
   [[self window] makeKeyAndOrderFront:self];
-  [[self textField] becomeFirstResponder];
+  [[self textField1] becomeFirstResponder];
 }
 
-- (void) dealloc
+- (void)textDidChange:(NSNotification *)aNotification
 {
+  NSTextField *textField = [aNotification object];
+  if ([textField isEqual:[self textField1]]) {
+    if ([[textField stringValue] length] > 0) {
+      [[textField nextKeyView] becomeFirstResponder];
+    }
+  } else if ([textField isEqual:[self textField2]]) {
+    if ([[textField stringValue] length] > 0) {
+      [[textField nextKeyView] becomeFirstResponder];
+    } else {
+      [[self textField1] becomeFirstResponder];
+    }
+  } else if ([textField isEqual:[self textField3]]) {
+    if ([[textField stringValue] length] > 0) {
+      [[textField nextKeyView] becomeFirstResponder];
+    } else {
+      [[self textField2] becomeFirstResponder];
+    }
+  } else if ([textField isEqual:[self textField4]]) {
+    if ([[textField stringValue] length] == 0) {
+      [[self textField3] becomeFirstResponder];
+    }
+  }
+}
+
+- (void)dealloc
+{
+  [textField1 release], textField1 = nil;
+  [textField2 release], textField2 = nil;
+  [textField3 release], textField3 = nil;
+  [textField4 release], textField4 = nil;
+  
   DLog(@"window released cleanly");
   [super dealloc];
 }
 
 - (IBAction)enterCode:(id)sender;
 {
-  [[self delegate] pairingCodeWindowController:self codeEntered:[[self textField] stringValue]];
+  NSString *pairingCode = [[[self textField1] stringValue] stringByAppendingFormat:@"%@%@%@", [[self textField2] stringValue], [[self textField3] stringValue], [[self textField4] stringValue]];
+  [[self delegate] pairingCodeWindowController:self codeEntered:pairingCode];
 }
 
 - (IBAction)cancel:(id)sender;
@@ -73,7 +116,7 @@ static float vigourOfShake = 0.02f;
   [NSApp hide:self];
 }
 
-- (CAKeyframeAnimation*)shakeAnimation:(NSRect)frame
+- (CAKeyframeAnimation *)shakeAnimation:(NSRect)frame
 {
   CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"frame"];
   
@@ -93,11 +136,17 @@ static float vigourOfShake = 0.02f;
   NSRect frame = [[self window] frame];
   [[self window] setAnimations:[NSDictionary dictionaryWithObject:[self shakeAnimation:frame] forKey:@"frame"]];
   [[[self window] animator] setFrame:frame display:NO];
-  [[self textField] setStringValue:@""];
-  [[self textField] becomeFirstResponder];
+  [[self textField1] setStringValue:@""];
+  [[self textField2] setStringValue:@""];
+  [[self textField3] setStringValue:@""];
+  [[self textField4] setStringValue:@""];
+  [[self textField1] becomeFirstResponder];
 }
 
-@synthesize textField;
+@synthesize textField1;
+@synthesize textField2;
+@synthesize textField3;
+@synthesize textField4;
 @synthesize delegate;
 
 @end
