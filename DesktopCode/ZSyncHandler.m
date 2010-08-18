@@ -27,9 +27,9 @@
  *  OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#import "ZSyncDaemon.h"
 #import "ZSyncHandler.h"
 #import "ZSyncShared.h"
-#import "ZSyncDaemon.h"
 
 #define kRegisteredDeviceArray @"kRegisteredDeviceArray"
 
@@ -45,27 +45,37 @@
 + (id)shared;
 {
   static ZSyncHandler *zsSharedSyncHandler;
-  @synchronized(zsSharedSyncHandler) {
+  @synchronized(zsSharedSyncHandler)
+  {
     if (!zsSharedSyncHandler) {
       zsSharedSyncHandler = [[ZSyncHandler alloc] init];
     }
   }
+  
   return zsSharedSyncHandler;
 }
 
 #pragma mark -
 #pragma mark Overridden getters/setters
 
-- (NSMutableArray*)connections
+- (NSMutableArray *)connections
 {
-  if (_connections) return _connections;
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  if (_connections) {
+    return _connections;
+  }
+  
   _connections = [[NSMutableArray alloc] init];
+  
   return _connections;
 }
 
-- (NSManagedObjectContext*)managedObjectContext
+- (NSManagedObjectContext *)managedObjectContext
 {
-  if (managedObjectContext) return managedObjectContext;
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  if (managedObjectContext) {
+    return managedObjectContext;
+  }
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncModel" ofType:@"mom"];
   NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];
@@ -95,7 +105,8 @@
 
 - (void)startBroadcasting;
 {
-  _listener = [[BLIPListener alloc] initWithPort: 1123];
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  _listener = [[BLIPListener alloc] initWithPort:1123];
   [_listener setDelegate:self];
   [_listener setPickAvailablePort:YES];
   [_listener setBonjourServiceType:zsServiceName];
@@ -108,34 +119,36 @@
     uuid = [[NSProcessInfo processInfo] globallyUniqueString];
     [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
   }
-//  NSString *broadcastName = [[self serverName] stringByAppendingFormat:@"%@%@", zsServerNameSeperator, uuid];
   
   [_listener setBonjourServiceName:@""];
-
-//  [_listener setBonjourServiceName:broadcastName];
   [_listener open];
+  
   NSDictionary *txtRecordDictionary = [NSDictionary dictionaryWithObjectsAndKeys:uuid, zsServerUUID, [self serverName], zsServerName, nil];
   [_listener setBonjourTXTRecord:txtRecordDictionary];
 }
 
 - (void)stopBroadcasting;
 {
+  DLog(@"%s", __PRETTY_FUNCTION__);
   [_listener close];
   [_listener release], _listener = nil;
 }
 
-- (void)connectionClosed:(ZSyncConnectionDelegate*)delegate;
+- (void)connectionClosed:(ZSyncConnectionDelegate *)delegate;
 {
+  DLog(@"%s", __PRETTY_FUNCTION__);
   [[self connections] removeObject:delegate];
 }
 
-- (void)unregisterApplication:(NSManagedObject*)applicationObject;
+- (void)unregisterApplication:(NSManagedObject *)applicationObject;
 {
+  DLog(@"%s", __PRETTY_FUNCTION__);
   [[self managedObjectContext] deleteObject:applicationObject];
 }
 
-- (NSManagedObject*)registerDevice:(NSString*)deviceUUID withName:(NSString*)deviceName;
+- (NSManagedObject *)registerDevice:(NSString *)deviceUUID withName:(NSString *)deviceName;
 {
+  DLog(@"%s", __PRETTY_FUNCTION__);
   NSManagedObjectContext *moc = [self managedObjectContext];
   NSFetchRequest *request = [[NSFetchRequest alloc] init];
   
@@ -156,9 +169,10 @@
   return device;
 }
 
-- (NSManagedObject*)registerApplication:(NSString*)schema withClient:(NSString*)clientUUID withDevice:(NSManagedObject*)device;
+- (NSManagedObject *)registerApplication:(NSString *)schema withClient:(NSString *)clientUUID withDevice:(NSManagedObject *)device;
 {
-  //Find any other clients registered for this device with this schema and remove them
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  // Find any other clients registered for this device with this schema and remove them
   NSSet *clients = [[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid != %@", clientUUID]];
   for (NSManagedObject *client in clients) {
     ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:[client valueForKey:@"uuid"]];
@@ -170,7 +184,9 @@
   
   id client = [[[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@", clientUUID]] anyObject];
   
-  if (client) return client;
+  if (client) {
+    return client;
+  }
   
   client = [NSEntityDescription insertNewObjectForEntityForName:@"Application" inManagedObjectContext:[self managedObjectContext]];
   [client setValue:device forKey:@"device"];
@@ -183,8 +199,9 @@
   return client;
 }
 
-- (NSBundle*)pluginForSchema:(NSString*)schema;
+- (NSBundle *)pluginForSchema:(NSString *)schema;
 {
+  DLog(@"%s", __PRETTY_FUNCTION__);
   NSString *pluginPath = [ZSyncDaemon pluginPath];
   DLog(@"pluginPath %@", pluginPath);
   
@@ -195,7 +212,9 @@
   
   for (NSString *filename in pluginArray) {
     DLog(@"item found in plugin directory: '%@'", filename);
-    if (![filename hasSuffix:@"zsyncPlugin"]) continue;
+    if (![filename hasSuffix:@"zsyncPlugin"]) {
+      continue;
+    }
     NSString *pluginResourcePath = [pluginPath stringByAppendingPathComponent:filename];
     NSBundle *bundle = [NSBundle bundleWithPath:pluginResourcePath];
     NSString *schemaID = [[bundle infoDictionary] objectForKey:zsSchemaIdentifier];
@@ -212,9 +231,9 @@
 #pragma mark -
 #pragma mark TCPListenerDelegate methods
 
-- (void)listener:(TCPListener*)listener didAcceptConnection:(BLIPConnection*)connection
+- (void)listener:(TCPListener *)listener didAcceptConnection:(BLIPConnection *)connection
 {
-  DLog(@"fired");
+  DLog(@"%s fired", __PRETTY_FUNCTION__);
   ZSyncConnectionDelegate *delegate = [[ZSyncConnectionDelegate alloc] init];
   [delegate setConnection:connection];
   [connection setDelegate:delegate];
@@ -225,9 +244,9 @@
 #pragma mark -
 #pragma mark BLIPConnectionDelegate methods
 
-- (void)connection:(TCPConnection*)connection failedToOpen:(NSError*)error
+- (void)connection:(TCPConnection *)connection failedToOpen:(NSError *)error
 {
-  DLog(@"entered");
+  DLog(@"%s entered", __PRETTY_FUNCTION__);
 }
 
 #pragma mark -
