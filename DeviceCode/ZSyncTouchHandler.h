@@ -26,8 +26,8 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
-#import "ZSyncShared.h"
 #import "ServerBrowserDelegate.h"
+#import "ZSyncShared.h"
 
 @class ZSyncTouchHandler;
 @class ServerBrowser;
@@ -45,7 +45,7 @@
 
 @end
 
-@protocol ZSyncDelegate 
+@protocol ZSyncDelegate
 
 @required
 
@@ -53,75 +53,76 @@
  * a pairing code to be sent back.  The pairing code will be displayed
  * on the server.
  */
-- (void)zSyncHandler:(ZSyncTouchHandler*)handler displayPairingCode:(NSString*)passcode;
+- (void)zSyncHandler:(ZSyncTouchHandler *)handler displayPairingCode:(NSString *)passcode;
 
 /* The pairing code has been entered correctly on the server. The client should
  * dismiss the code display at this time.
  */
-- (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler*)handler;
+- (void)zSyncPairingCodeCompleted:(ZSyncTouchHandler *)handler;
 
 /* The pairing code was entered incorrectly too many times so everything resets.
  * The user can select the server again or try another server.
  */
-- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler*)handler;
+- (void)zSyncPairingCodeRejected:(ZSyncTouchHandler *)handler;
 
-/* The pairing code window was cancelled on the server or the connection to the 
- * server was severed. The client should dismiss the code display at this time. 
+/* The pairing code window was cancelled on the server or the connection to the
+ * server was severed. The client should dismiss the code display at this time.
  */
-- (void)zSyncPairingCodeCancelled:(ZSyncTouchHandler*)handler;
+- (void)zSyncPairingCodeCancelled:(ZSyncTouchHandler *)handler;
 
 /* This is an information message to indicate that a sync has finished.
  * The application should at this point refresh all displays from the NSManagedObjectContext
  */
-- (void)zSyncFinished:(ZSyncTouchHandler*)handler;
+- (void)zSyncFinished:(ZSyncTouchHandler *)handler;
 
 /* This is an information message to indicate that a sync has begun.
  * This is a good place to presenta  dialog and pop the UI back to its root
  */
-- (void)zSyncStarted:(ZSyncTouchHandler*)handler;
+- (void)zSyncStarted:(ZSyncTouchHandler *)handler;
 
 /* This message is sent when a list of servers has been created and there is
- * no server currently paired.  It is expected that the app will present a 
+ * no server currently paired.  It is expected that the app will present a
  * list of servers or optionally request pairing automatically
  */
-- (void)zSyncNoServerPaired:(NSArray*)availableServers;
+- (void)zSyncNoServerPaired:(NSArray *)availableServers;
 
 @optional
 
 /* This message will be sent after a successful deregister.
  * ZSync will not remove the data local to the device.
  */
-- (void)zSyncDeregisterComplete:(ZSyncTouchHandler*)handler;
+- (void)zSyncDeregisterComplete:(ZSyncTouchHandler *)handler;
 
 /* This message can be sent at any time when an error occurred.  The description
  * will be populated with information about the failure.
  */
-- (void)zSync:(ZSyncTouchHandler*)handler errorOccurred:(NSError*)error;
+- (void)zSync:(ZSyncTouchHandler *)handler errorOccurred:(NSError *)error;
 
 /* This is an information message letting the application know that the server
  * either selected or previously paired with can no longer talk to this version
  * of the touch code.  The user should be notified of this and know that syncing
  * is currently unavailable
  */
-- (void)zSync:(ZSyncTouchHandler*)handler serverVersionUnsupported:(NSError*)error;
+- (void)zSync:(ZSyncTouchHandler *)handler serverVersionUnsupported:(NSError *)error;
 
-/* The data file transfer (from the server) has started.  This is for 
+/* The data file transfer (from the server) has started.  This is for
  * information purposes only and does not require any action by the app.
  */
-- (void)zSyncFileDownloadStarted:(ZSyncTouchHandler*)handler;
+- (void)zSyncFileDownloadStarted:(ZSyncTouchHandler *)handler;
 
 /* This is a information message indicating that the previously paired
  * server cannot be located.  The app can now request a list of other servers
  * to let the user change what server is paird.
  */
-- (void)zSyncServerUnavailable:(ZSyncTouchHandler*)handler;
+- (void)zSyncServerUnavailable:(ZSyncTouchHandler *)handler;
 
 @end
 
 typedef enum {
   ZSyncServerActionNoActivity = 0,
   ZSyncServerActionSync,
-  ZSyncServerActionDeregister
+  ZSyncServerActionDeregister,
+  ZSyncServerActionLatentDeregistration
 } ZSyncServerAction;
 
 @interface ZSyncTouchHandler : NSObject <BLIPConnectionDelegate, ServerBrowserDelegate, NSNetServiceDelegate>
@@ -145,7 +146,7 @@ typedef enum {
   id _delegate;
   
   /* We are going to start off by trying to swap out the persistent stores
-   * internally.  If this goes badly then we can had it back out to the 
+   * internally.  If this goes badly then we can had it back out to the
    * application instead.
    */
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
@@ -171,12 +172,12 @@ typedef enum {
  */
 + (id)shared;
 
-- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+- (void)registerDelegate:(id<ZSyncDelegate>)delegate withPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 
 - (void)requestSync;
 - (void)stopRequestingSync;
-- (void)requestPairing:(ZSyncService*)server;
-- (void)authenticatePairing:(NSString*)code;
+- (void)requestPairing:(ZSyncService *)server;
+- (void)authenticatePairing:(NSString *)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
 
@@ -186,6 +187,6 @@ typedef enum {
  */
 - (void)deregister;
 
-- (NSString*)serverName;
+- (NSString *)serverName;
 
 @end

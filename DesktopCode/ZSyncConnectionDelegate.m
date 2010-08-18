@@ -201,6 +201,26 @@
   [response send];
 }
 
+- (void)deregisterLatentSyncClient:(BLIPRequest *)request
+{
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  NSString *clientID = [request bodyString];
+  DLog(@"%s clientID %@", __PRETTY_FUNCTION__, clientID);
+  // TODO: Compare version numbers
+  ZAssert(clientID != nil, @"Body string is nil in request\n%@", [[request properties] allProperties]);
+  
+  BLIPResponse *response = [request response];
+  [response setValue:zsActID(zsActionLatentDeregisterClient) ofProperty:zsAction];
+  [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
+  
+  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientID];
+  if (syncClient) {
+    [[ISyncManager sharedManager] unregisterClient:syncClient];
+  }
+  
+  [response send];
+}
+
 - (BOOL)verifySchema:(BLIPRequest *)request
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
@@ -428,6 +448,11 @@
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   BLIPResponse *response = [request response];
   switch (action) {
+    case zsActionLatentDeregisterClient:
+      DLog(@"%s zsActionLatentDeregisterClient", __PRETTY_FUNCTION__);
+      [self deregisterLatentSyncClient:request];
+      return YES;
+      
     case zsActionDeregisterClient:
       DLog(@"%s zsActionDeregisterClient", __PRETTY_FUNCTION__);
       [self deregisterSyncClient:request];

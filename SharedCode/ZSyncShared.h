@@ -33,7 +33,7 @@
 #define zsDeviceGUID @"zsDeviceGUID"
 #define zsSchemaIdentifier @"ZSyncSchemaIdentifier"
 
-#define zsServerNameSeperator @"ZSyncServerNameSeparator"
+#define zsDeregisteredServersKey @"zsDeregisteredServersKey"
 
 #define zsActID(__ENUM__) [NSString stringWithFormat:@"%i", __ENUM__]
 
@@ -51,7 +51,8 @@ enum {
   zsActionSchemaUnsupported,
   zsActionFileReceived,
   zsActionTestFileTransfer,
-  zsActionDeregisterClient
+  zsActionDeregisterClient,
+  zsActionLatentDeregisterClient
 };
 
 typedef enum {
