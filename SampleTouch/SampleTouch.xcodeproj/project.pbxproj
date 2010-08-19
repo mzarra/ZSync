@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		13A6E6ED121AE139003F70FE /* ServerBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A6E6EB121AE139003F70FE /* ServerBrowser.m */; };
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -33,6 +34,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		13A6E6EA121AE139003F70FE /* ServerBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerBrowser.h; path = ../SharedCode/ServerBrowser.h; sourceTree = SOURCE_ROOT; };
+		13A6E6EB121AE139003F70FE /* ServerBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ServerBrowser.m; path = ../SharedCode/ServerBrowser.m; sourceTree = SOURCE_ROOT; };
+		13A6E6EC121AE139003F70FE /* ServerBrowserDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerBrowserDelegate.h; path = ../SharedCode/ServerBrowserDelegate.h; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -185,6 +189,9 @@
 		B6457FEB10B0A93D00A96714 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
+				13A6E6EA121AE139003F70FE /* ServerBrowser.h */,
+				13A6E6EB121AE139003F70FE /* ServerBrowser.m */,
+				13A6E6EC121AE139003F70FE /* ServerBrowserDelegate.h */,
 				B640DC6811C9EF18007880F4 /* libMYNetwork.a */,
 				B6457FED10B0A94E00A96714 /* ZSyncShared.h */,
 			);
@@ -285,6 +292,7 @@
 				B6EC175810F503360051FD2E /* GTMNSData+zlib.m in Sources */,
 				B600B87011519EB80080DEB4 /* PairingDisplayController.m in Sources */,
 				B60BDD83116D9D4D006ABE03 /* Reachability.m in Sources */,
+				13A6E6ED121AE139003F70FE /* ServerBrowser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

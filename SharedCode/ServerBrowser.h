@@ -1,9 +1,8 @@
 //
-//  PairingCodeWindowController.h
-//  SampleDesktop
+//  ServerBrowser.h
+//  Chatty
 //
-//  Created by Marcus S. Zarra on 11/25/09.
-//  Copyright 2009 Zarra Studios, LLC. All rights reserved.
+//  Copyright (c) 2009 Peter Bakhyryev <peter@byteclub.com>, ByteClub LLC
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -13,10 +12,10 @@
 //  copies of the Software, and to permit persons to whom the
 //  Software is furnished to do so, subject to the following
 //  conditions:
-//
+//  
 //  The above copyright notice and this permission notice shall be
 //  included in all copies or substantial portions of the Software.
-//
+//  
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 //  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 //  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,36 +25,23 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 //  OTHER DEALINGS IN THE SOFTWARE.
 
-@class PairingCodeWindowController;
+#import <Foundation/Foundation.h>
 
-@protocol PairingCodeDelegate
+@class ServerBrowserDelegate;
 
-- (void)pairingCodeWindowController:(id)controller codeEntered:(NSString *)code;
-- (void)pairingCodeWindowControllerCancelled:(PairingCodeWindowController *)controller;
-
-@end
-
-@interface PairingCodeWindowController : NSWindowController
-{
-  NSTextField *textField1;
-  NSTextField *textField2;
-  NSTextField *textField3;
-  NSTextField *textField4;
-  
-  id<PairingCodeDelegate> delegate;
+@interface ServerBrowser : NSObject <NSNetServiceBrowserDelegate> {
+  NSNetServiceBrowser* netServiceBrowser;
+  NSMutableArray* servers;
+  id<ServerBrowserDelegate> delegate;
 }
 
-@property (retain) IBOutlet NSTextField *textField1;
-@property (retain) IBOutlet NSTextField *textField2;
-@property (retain) IBOutlet NSTextField *textField3;
-@property (retain) IBOutlet NSTextField *textField4;
-@property (assign) id<PairingCodeDelegate> delegate;
+@property(nonatomic,readonly) NSArray* servers;
+@property(nonatomic,retain) id<ServerBrowserDelegate> delegate;
 
-- (id)initWithDelegate:(id<PairingCodeDelegate>)delegate;
+// Start browsing for Bonjour services
+- (BOOL)start;
 
-- (IBAction)enterCode:(id)sender;
-- (IBAction)cancel:(id)sender;
-
-- (void)refuseCode;
+// Stop everything
+- (void)stop;
 
 @end

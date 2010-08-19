@@ -48,8 +48,6 @@
 
 + (id)shared;
 
-
-
 - (void)startBroadcasting;
 - (void)stopBroadcasting;
 

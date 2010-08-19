@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1330480E121C7E98007A3AAE /* PairingCodeFieldBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 1330480C121C7E98007A3AAE /* PairingCodeFieldBackground.png */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B6345A9711D458B4005D1A9A /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B691FB5E10ED867C00207210 /* CoreData.framework */; };
 		B6345A9811D458BA005D1A9A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6345A4E11D4580D005D1A9A /* QuartzCore.framework */; };
@@ -45,6 +46,10 @@
 
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1330480C121C7E98007A3AAE /* PairingCodeFieldBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PairingCodeFieldBackground.png; sourceTree = "<group>"; };
+		13337CFE121255150040AF6A /* ServerBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerBrowser.h; sourceTree = "<group>"; };
+		13337CFF121255150040AF6A /* ServerBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerBrowser.m; sourceTree = "<group>"; };
+		13337D00121255150040AF6A /* ServerBrowserDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerBrowserDelegate.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* ZSyncDaemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZSyncDaemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +189,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1330480C121C7E98007A3AAE /* PairingCodeFieldBackground.png */,
 				B691FB3E10ED855F00207210 /* InfoPlist.strings */,
 				B691FB4010ED855F00207210 /* MainMenu.xib */,
 			);
@@ -250,6 +256,9 @@
 		B691FB9810ED879D00207210 /* SharedCode */ = {
 			isa = PBXGroup;
 			children = (
+				13337CFE121255150040AF6A /* ServerBrowser.h */,
+				13337CFF121255150040AF6A /* ServerBrowser.m */,
+				13337D00121255150040AF6A /* ServerBrowserDelegate.h */,
 				B691FB9910ED879D00207210 /* BLIP.h */,
 				B691FB9A10ED879D00207210 /* BLIPConnection.h */,
 				B691FB9B10ED879D00207210 /* BLIPDispatcher.h */,
@@ -355,6 +364,7 @@
 				B691FB8C10ED875800207210 /* PairingWindow.xib in Resources */,
 				B63F9C2211B2EA2800811EB1 /* menubar.png in Resources */,
 				B6DEEC0611BA16A90036A137 /* icon.icns in Resources */,
+				1330480E121C7E98007A3AAE /* PairingCodeFieldBackground.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,7 +547,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
 			};
