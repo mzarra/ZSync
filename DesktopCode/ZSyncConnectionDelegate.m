@@ -333,12 +333,6 @@
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:zsActID(zsActionCancelPairing) forKey:zsAction];
   
-  NSString *clientIdentifier = [syncApplication valueForKey:@"uuid"];
-  DLog(@"%s clientID %@", __PRETTY_FUNCTION__, clientIdentifier);
-  ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:clientIdentifier];
-  ZAssert(syncClient != nil, @"Sync Client not found");
-  [[ISyncManager sharedManager] unregisterClient:syncClient];
-  
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:dictionary];
   [[self connection] sendRequest:request];
   [[codeController window] orderOut:nil];
