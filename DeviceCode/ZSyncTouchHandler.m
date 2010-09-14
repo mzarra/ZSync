@@ -685,6 +685,7 @@
         NSData *data = [[self passcode] dataUsingEncoding:NSUTF8StringEncoding];
         BLIPRequest *request = [[self connection] requestWithBody:data properties:dict];
         [request send];
+        [dict release], dict = nil;
         
         [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
       }
