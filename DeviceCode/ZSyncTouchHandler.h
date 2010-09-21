@@ -129,30 +129,30 @@ typedef enum {
 {
   NSTimer *networkTimer;
   NSDate *findServerTimeoutDate;
-  
+
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
   NSMutableArray *discoveredServers;
   ServerBrowser *_serviceBrowser;
   BLIPConnection *_connection;
-  
+
   NSInteger majorVersionNumber;
   NSInteger minorVersionNumber;
-  
+
   NSMutableDictionary *receivedFileLookupDictionary;
-  
+
   NSString *passcode;
-  
+
   id _delegate;
-  
+
   /* We are going to start off by trying to swap out the persistent stores
    * internally.  If this goes badly then we can had it back out to the
    * application instead.
    */
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
-  
+
   ZSyncServerAction serverAction;
-  
+
   NSLock *lock;
 }
 
@@ -165,6 +165,8 @@ typedef enum {
 @property (retain) NSMutableArray *availableServers;
 @property (retain) NSMutableArray *discoveredServers;
 @property (retain) NSLock *lock;
+@property (nonatomic, retain) NSMutableArray *storeFileIdentifiers;
+@property (nonatomic, retain) NSMutableDictionary *receivedFileLookupDictionary;
 
 /* This shared singleton design should probably go away.  We cannot assume
  * that the parent app will want to keep us around all of the time and may

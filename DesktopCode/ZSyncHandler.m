@@ -38,6 +38,7 @@
 @synthesize delegate = _delegate;
 @synthesize connections = _connections;
 @synthesize serverName = _serverName;
+@synthesize listener = _listener;
 
 #pragma mark -
 #pragma mark Class methods
@@ -51,7 +52,7 @@
       zsSharedSyncHandler = [[ZSyncHandler alloc] init];
     }
   }
-  
+
   return zsSharedSyncHandler;
 }
 
@@ -64,9 +65,9 @@
   if (_connections) {
     return _connections;
   }
-  
+
   _connections = [[NSMutableArray alloc] init];
-  
+
   return _connections;
 }
 
@@ -76,28 +77,41 @@
   if (managedObjectContext) {
     return managedObjectContext;
   }
-  
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"ZSyncModel" ofType:@"mom"];
-  NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];
-  
-  ZAssert(model != nil, @"Failed to find model at path: %@", path);
-  
+
+  NSString *managedObjectModelPath = [[NSBundle mainBundle] pathForResource:@"ZSyncModel" ofType:@"mom"];
+  NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:managedObjectModelPath]];
+
+  ZAssert(managedObjectModel != nil, @"Failed to find model at path: %@", managedObjectModelPath);
+
   NSString *basePath = [ZSyncDaemon basePath];
   NSError *error = nil;
   ZAssert([ZSyncDaemon checkBasePath:basePath error:&error], @"Failed to check base path: %@", error);
-  
+
   NSString *filePath = [basePath stringByAppendingPathComponent:@"SyncHistory.sqlite"];
-  
-  NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
-  ZAssert(psc != nil, @"Failed to initialize NSPersistentStoreCoordinator");
-  
-  ZAssert([psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[NSURL fileURLWithPath:filePath] options:nil error:&error], @"Error adding persistent store: %@\n%@", [error localizedDescription], [error userInfo]);
-  
+
+  NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+  ZAssert(persistentStoreCoordinator != nil, @"Failed to initialize NSPersistentStoreCoordinator");
+
+  ZAssert([persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[NSURL fileURLWithPath:filePath] options:nil error:&error], @"Error adding persistent store: %@\n%@", [error localizedDescription], [error userInfo]);
+
   managedObjectContext = [[NSManagedObjectContext alloc] init];
-  [managedObjectContext setPersistentStoreCoordinator:psc];
-  [psc release], psc = nil;
-  [model release], model = nil;
+  [managedObjectContext setPersistentStoreCoordinator:persistentStoreCoordinator];
+  [persistentStoreCoordinator release], persistentStoreCoordinator = nil;
+  [managedObjectModel release], managedObjectModel = nil;
+
   return managedObjectContext;
+}
+
+- (BLIPListener *)listener
+{
+  if (!_listener) {
+    _listener = [[BLIPListener alloc] initWithPort:1123];
+    [_listener setDelegate:self];
+    [_listener setPickAvailablePort:YES];
+    [_listener setBonjourServiceType:zsServiceName];
+  }
+
+  return _listener;
 }
 
 #pragma mark -
@@ -106,38 +120,34 @@
 - (void)startBroadcasting;
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  _listener = [[BLIPListener alloc] initWithPort:1123];
-  [_listener setDelegate:self];
-  [_listener setPickAvailablePort:YES];
-  [_listener setBonjourServiceType:zsServiceName];
-  
+
   NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/Library/Preferences/SystemConfiguration/preferences.plist"];
   [self setServerName:[dict valueForKeyPath:@"System.System.ComputerName"]];
-  
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
-  if (!uuid) {
-    uuid = [[NSProcessInfo processInfo] globallyUniqueString];
-    [[NSUserDefaults standardUserDefaults] setValue:uuid forKey:zsServerUUID];
+
+  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+  if (!serverUUID) {
+    serverUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+    [[NSUserDefaults standardUserDefaults] setValue:serverUUID forKey:zsServerUUID];
   }
-  
-  [_listener setBonjourServiceName:@""];
-  [_listener open];
-  
-  NSDictionary *txtRecordDictionary = [NSDictionary dictionaryWithObjectsAndKeys:uuid, zsServerUUID, [self serverName], zsServerName, nil];
-  [_listener setBonjourTXTRecord:txtRecordDictionary];
+
+  [[self listener] setBonjourServiceName:@""];
+  [[self listener] open];
+
+  NSDictionary *txtRecordDictionary = [NSDictionary dictionaryWithObjectsAndKeys:serverUUID, zsServerUUID, [self serverName], zsServerName, nil];
+  [[self listener] setBonjourTXTRecord:txtRecordDictionary];
 }
 
 - (void)stopBroadcasting;
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  [_listener close];
-  [_listener release], _listener = nil;
+  [[self listener] close];
+  [self setListener:nil];
 }
 
-- (void)connectionClosed:(ZSyncConnectionDelegate *)delegate;
+- (void)connectionClosed:(ZSyncConnectionDelegate *)connectionDelegate;
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  [[self connections] removeObject:delegate];
+  [[self connections] removeObject:connectionDelegate];
 }
 
 - (void)unregisterApplication:(NSManagedObject *)applicationObject;
@@ -150,21 +160,21 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   NSManagedObjectContext *moc = [self managedObjectContext];
-  NSFetchRequest *request = [[NSFetchRequest alloc] init];
-  
-  [request setEntity:[NSEntityDescription entityForName:@"Device" inManagedObjectContext:moc]];
-  [request setPredicate:[NSPredicate predicateWithFormat:@"uuid == %@", deviceUUID]];
-  
+  NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+
+  [fetchRequest setEntity:[NSEntityDescription entityForName:@"Device" inManagedObjectContext:moc]];
+  [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"uuid == %@", deviceUUID]];
+
   NSError *error = nil;
-  id device = [[moc executeFetchRequest:request error:&error] lastObject];
-  [request release], request = nil;
+  id device = [[moc executeFetchRequest:fetchRequest error:&error] lastObject];
+  [fetchRequest release], fetchRequest = nil;
   ZAssert(error == nil, @"Failed to retrieve device: %@\n%@", [error localizedDescription], [error userInfo]);
-  
+
   if (!device) {
     device = [NSEntityDescription insertNewObjectForEntityForName:@"Device" inManagedObjectContext:moc];
     [device setValue:deviceUUID forKey:@"uuid"];
   }
-  
+
   [device setValue:deviceName forKey:@"name"];
   return device;
 }
@@ -181,21 +191,21 @@
     }
     [[self managedObjectContext] deleteObject:client];
   }
-  
+
   id client = [[[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@", clientUUID]] anyObject];
-  
+
   if (client) {
     return client;
   }
-  
+
   client = [NSEntityDescription insertNewObjectForEntityForName:@"Application" inManagedObjectContext:[self managedObjectContext]];
   [client setValue:device forKey:@"device"];
   [client setValue:clientUUID forKey:@"uuid"];
   [client setValue:schema forKey:@"schema"];
-  
+
   NSError *error = nil;
   ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@\n%@", [error localizedDescription], [error userInfo]);
-  
+
   return client;
 }
 
@@ -204,12 +214,12 @@
   DLog(@"%s", __PRETTY_FUNCTION__);
   NSString *pluginPath = [ZSyncDaemon pluginPath];
   DLog(@"pluginPath %@", pluginPath);
-  
+
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSError *error = nil;
   NSArray *pluginArray = [fileManager contentsOfDirectoryAtPath:pluginPath error:&error];
   ZAssert(pluginArray != nil && error == nil, @"Error fetching plugins: %@\n%@", [error localizedDescription], [error userInfo]);
-  
+
   for (NSString *filename in pluginArray) {
     DLog(@"item found in plugin directory: '%@'", filename);
     if (![filename hasSuffix:@"zsyncPlugin"]) {
@@ -223,7 +233,7 @@
       return bundle;
     }
   }
-  
+
   DLog(@"failed to find plugin for schema '%@'", schema);
   return nil;
 }
@@ -234,11 +244,11 @@
 - (void)listener:(TCPListener *)listener didAcceptConnection:(BLIPConnection *)connection
 {
   DLog(@"%s fired", __PRETTY_FUNCTION__);
-  ZSyncConnectionDelegate *delegate = [[ZSyncConnectionDelegate alloc] init];
-  [delegate setConnection:connection];
-  [connection setDelegate:delegate];
-  [[self connections] addObject:delegate];
-  [delegate release], delegate = nil;
+  ZSyncConnectionDelegate *connectionDelegate = [[ZSyncConnectionDelegate alloc] init];
+  [connectionDelegate setConnection:connection];
+  [connection setDelegate:connectionDelegate];
+  [[self connections] addObject:connectionDelegate];
+  [connectionDelegate release], connectionDelegate = nil;
 }
 
 #pragma mark -

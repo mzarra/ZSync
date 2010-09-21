@@ -19,7 +19,6 @@
 #define zsErrorCode @"zsErrorCode"
 
 #define zsAction @"kZSyncAction"
-#define zsDeviceID @"kZSyncDeviceID"
 #define zsStoreIdentifier @"zsStoreIdentifier"
 #define zsStoreConfiguration @"zsStoreConfiguration"
 #define zsStoreType @"zsStoreType"
@@ -47,6 +46,7 @@ enum {
   zsActionPerformSync,
   zsActionCompleteSync,
   zsActionVerifySchema,
+  zsActionVerifyPairing,
   zsActionSchemaSupported,
   zsActionSchemaUnsupported,
   zsActionFileReceived,
