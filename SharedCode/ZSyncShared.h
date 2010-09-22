@@ -38,7 +38,7 @@
 
 enum {
   zsActionRequestPairing = 1123,
-  zsActionCancelPairing,
+  zsActionCancelPairing,	
   zsActionAuthenticatePairing,
   zsActionAuthenticateFailed,
   zsActionAuthenticatePassed,
@@ -46,13 +46,13 @@ enum {
   zsActionPerformSync,
   zsActionCompleteSync,
   zsActionVerifySchema,
-  zsActionVerifyPairing,
   zsActionSchemaSupported,
   zsActionSchemaUnsupported,
   zsActionFileReceived,
   zsActionTestFileTransfer,
   zsActionDeregisterClient,
-  zsActionLatentDeregisterClient
+  zsActionLatentDeregisterClient,
+  zsActionVerifyPairing
 };
 
 typedef enum {
