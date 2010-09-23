@@ -176,6 +176,10 @@
   }
 
   [device setValue:deviceName forKey:@"name"];
+
+  error = nil;
+  ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@\n%@", [error localizedDescription], [error userInfo]);
+
   return device;
 }
 
@@ -183,30 +187,30 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   // Find any other clients registered for this device with this schema and remove them
-  NSSet *clients = [[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid != %@", clientUUID]];
-  for (NSManagedObject *client in clients) {
-    ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:[client valueForKey:@"uuid"]];
+  NSSet *applications = [[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid != %@", clientUUID]];
+  for (NSManagedObject *application in applications) {
+    ISyncClient *syncClient = [[ISyncManager sharedManager] clientWithIdentifier:[application valueForKey:@"uuid"]];
     if (syncClient) {
       [[ISyncManager sharedManager] unregisterClient:syncClient];
     }
-    [[self managedObjectContext] deleteObject:client];
+    [[self managedObjectContext] deleteObject:application];
   }
 
-  id client = [[[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@", clientUUID]] anyObject];
+  id application = [[[device valueForKey:@"applications"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@", clientUUID]] anyObject];
 
-  if (client) {
-    return client;
+  if (application) {
+    return application;
   }
 
-  client = [NSEntityDescription insertNewObjectForEntityForName:@"Application" inManagedObjectContext:[self managedObjectContext]];
-  [client setValue:device forKey:@"device"];
-  [client setValue:clientUUID forKey:@"uuid"];
-  [client setValue:schema forKey:@"schema"];
+  application = [NSEntityDescription insertNewObjectForEntityForName:@"Application" inManagedObjectContext:[self managedObjectContext]];
+  [application setValue:device forKey:@"device"];
+  [application setValue:clientUUID forKey:@"uuid"];
+  [application setValue:schema forKey:@"schema"];
 
   NSError *error = nil;
   ZAssert([[self managedObjectContext] save:&error], @"Error saving context: %@\n%@", [error localizedDescription], [error userInfo]);
 
-  return client;
+  return application;
 }
 
 - (NSBundle *)pluginForSchema:(NSString *)schema;

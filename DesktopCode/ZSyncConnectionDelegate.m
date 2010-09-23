@@ -46,7 +46,7 @@
     NSArray *bundles = [NSArray arrayWithObject:pluginBundle];
     managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:bundles] retain];
   }
-  
+
   return managedObjectModel;
 }
 
@@ -55,7 +55,7 @@
   if (!persistentStoreCoordinator) {
     persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
   }
-  
+
   return persistentStoreCoordinator;
 }
 
@@ -66,7 +66,7 @@
     [managedObjectContext setPersistentStoreCoordinator:[self persistentStoreCoordinator]];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mocSaved:) name:NSManagedObjectContextDidSaveNotification object:managedObjectContext];
   }
-  
+
   return managedObjectContext;
 }
 
@@ -75,7 +75,7 @@
   if (!storeFileIdentifiers) {
     storeFileIdentifiers = [[NSMutableArray alloc] init];
   }
-  
+
   return storeFileIdentifiers;
 }
 
@@ -84,7 +84,7 @@
   if (!pairingCodeWindowController) {
     pairingCodeWindowController = [[PairingCodeWindowController alloc] initWithDelegate:self];
   }
-  
+
   return pairingCodeWindowController;
 }
 
@@ -135,10 +135,10 @@
   NSError *error = nil;
   NSPersistentStore *persistentStore = nil;
   persistentStore = [[self persistentStoreCoordinator] addPersistentStoreWithType:[request valueOfProperty:zsStoreType]
-                          configuration:[request valueOfProperty:zsStoreConfiguration]
-                              URL:[NSURL fileURLWithPath:filePath]
-                            options:nil
-                              error:&error];
+                                    configuration:[request valueOfProperty:zsStoreConfiguration]
+                                        URL:[NSURL fileURLWithPath:filePath]
+                                      options:nil
+                                        error:&error];
 
   ZAssert(persistentStore != nil, @"Error loading persistent store: %@", [error localizedDescription]);
 
@@ -173,7 +173,7 @@
     BLIPRequest *request = [BLIPRequest requestWithBody:data properties:requestPropertiesDictionary];
     [request setCompressed:YES];
     [[self connection] sendRequest:request];
-    
+
     [data release], data = nil;
     [requestPropertiesDictionary release], requestPropertiesDictionary = nil;
 
@@ -339,10 +339,10 @@
     [response send];
     return;
   }
-  
+
   NSString *deviceName = [request valueOfProperty:zsDeviceName];
   NSString *deviceUUID = [request valueOfProperty:zsDeviceGUID];
-  
+
   NSManagedObject *device = [[ZSyncHandler shared] registerDevice:deviceUUID withName:deviceName];
   [self setSyncApplication:[[ZSyncHandler shared] registerApplication:schemaIdentifier withClient:clientID withDevice:device]];
 }
@@ -507,28 +507,26 @@
       DLog(@"%s zsActionRequestPairing", __PRETTY_FUNCTION__);
       [self setPairingCode:[request bodyString]];
       [self showCodeWindow];
-      [response setValue:zsActID(zsActionRequestPairing) ofProperty:zsAction];
-      [response send];
       return YES;
 
-    case zsActionAuthenticatePairing:
-      DLog(@"%s zsActionAuthenticatePairing", __PRETTY_FUNCTION__);
-      ALog(@"Is this ever called?");
-      if ([[self pairingCode] isEqualToString:[request bodyString]]) {
-        DLog(@"%s passed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
-        // TODO: Register the unique ID of this service
-        [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
-        [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
-        [response setValue:[[ZSyncHandler shared] serverName] ofProperty:zsServerName];
-        [response send];
-        [[self pairingCodeWindowController] close];
-        [self setPairingCodeWindowController:nil];
-      } else {
-        DLog(@"%s failed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
-        [response setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
-        [response send];
-      }
-      return YES;
+//    case zsActionAuthenticatePairing:
+//      DLog(@"%s zsActionAuthenticatePairing", __PRETTY_FUNCTION__);
+//      ALog(@"Is this ever called?");
+//      if ([[self pairingCode] isEqualToString:[request bodyString]]) {
+//        DLog(@"%s passed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
+//        // TODO: Register the unique ID of this service
+//        [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
+//        [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
+//        [response setValue:[[ZSyncHandler shared] serverName] ofProperty:zsServerName];
+//        [response send];
+//        [[self pairingCodeWindowController] close];
+//        [self setPairingCodeWindowController:nil];
+//      } else {
+//        DLog(@"%s failed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
+//        [response setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
+//        [response send];
+//      }
+//      return YES;
 
     case zsActionVerifyPairing:
       // TODO: This method should verify that the client is paired properly, responding accordingly
@@ -547,7 +545,7 @@
 
     case zsActionCancelPairing:
       DLog(@"%s zsActionCancelPairing", __PRETTY_FUNCTION__);
-        [[self pairingCodeWindowController] close];
+      [[self pairingCodeWindowController] close];
       return YES;
 
     default:

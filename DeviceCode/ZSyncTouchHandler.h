@@ -158,7 +158,8 @@ typedef enum {
 
 @property (nonatomic, assign) ZSyncServerAction serverAction;
 @property (nonatomic, retain) ServerBrowser *serviceBrowser;
-@property (nonatomic, assign) BLIPConnection *connection;
+@property (nonatomic, retain) BLIPConnection *connection;
+//@property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
 @property (nonatomic, copy) NSString *passcode;
@@ -179,7 +180,7 @@ typedef enum {
 - (void)requestSync;
 - (void)stopRequestingSync;
 - (void)requestPairing:(ZSyncService *)server;
-- (void)authenticatePairing:(NSString *)code;
+//- (void)authenticatePairing:(NSString *)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
 
