@@ -133,8 +133,13 @@ typedef enum {
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
   NSMutableArray *discoveredServers;
+  NSMutableArray *resolvedServices;
+  NSMutableArray *openConnections;
+
+  NSNetService *registeredService;
+
   ServerBrowser *_serviceBrowser;
-  BLIPConnection *_connection;
+//  BLIPConnection *_connection;
 
   NSInteger majorVersionNumber;
   NSInteger minorVersionNumber;
@@ -154,18 +159,23 @@ typedef enum {
   ZSyncServerAction serverAction;
 
   NSLock *lock;
+  NSLock *serviceResolutionLock;
 }
 
 @property (nonatomic, assign) ZSyncServerAction serverAction;
 @property (nonatomic, retain) ServerBrowser *serviceBrowser;
-@property (nonatomic, retain) BLIPConnection *connection;
-//@property (nonatomic, assign) BLIPConnection *connection;
+@property (nonatomic, retain) NSMutableArray *openConnections;
+@property (nonatomic, retain) NSNetService *registeredService;
+// @property (nonatomic, retain) BLIPConnection *connection;
+// @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
 @property (nonatomic, copy) NSString *passcode;
 @property (retain) NSMutableArray *availableServers;
 @property (retain) NSMutableArray *discoveredServers;
+@property (retain) NSMutableArray *resolvedServices;
 @property (retain) NSLock *lock;
+@property (retain) NSLock *serviceResolutionLock;
 @property (nonatomic, retain) NSMutableArray *storeFileIdentifiers;
 @property (nonatomic, retain) NSMutableDictionary *receivedFileLookupDictionary;
 
@@ -180,7 +190,7 @@ typedef enum {
 - (void)requestSync;
 - (void)stopRequestingSync;
 - (void)requestPairing:(ZSyncService *)server;
-//- (void)authenticatePairing:(NSString *)code;
+// - (void)authenticatePairing:(NSString *)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
 

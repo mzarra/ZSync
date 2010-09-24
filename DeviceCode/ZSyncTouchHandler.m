@@ -37,11 +37,29 @@
 
 @interface ZSyncTouchHandler ()
 
-- (void)requestDeregistration;
-- (void)uploadDataToServer;
+- (void)beginSyncWithService:(NSNetService *)service;
+- (void)beginDeregistrationWithService:(NSNetService *)service;
+- (void)beginLatentDeregistrationWithService:(NSNetService *)service;
+- (void)requestDeregistrationUsingConnection:(BLIPConnection *)conn;
+- (void)requestLatentDeregistrationUsingConnection:(BLIPConnection *)conn;
+- (void)uploadDataToServerUsingConnection:(BLIPConnection *)conn;
+- (void)sendPairingRequestToServerUsingConnection:(BLIPConnection *)conn;
+- (void)completeSyncFromConnection:(BLIPConnection *)conn;
 - (void)startServerSearch;
+- (void)handleServerActionWithService:(NSNetService *)service;
+- (NSString *)generatePairingCode;
 - (NSString *)syncGUID;
 - (NSString *)schemaID;
+- (void)processLatentDeregisterResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn;
+- (void)processDeregisterResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn;
+- (void)processFileReceivedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn;
+- (void)processSchemaUnsupportedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn;
+- (void)processSchemaSupportedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn;
+- (void)processAuthenticationFailedRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn;
+- (void)processAuthenticatePairingRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn;
+- (void)processCompleteSyncRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn;
+- (void)processStoreUploadRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn;
+- (void)processCancelPairingRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn;
 
 @property (nonatomic, assign) id delegate;
 @property (nonatomic, retain) NSPersistentStoreCoordinator *persistentStoreCoordinator;
@@ -69,6 +87,10 @@
                          selector:@selector(applicationWillTerminate:)
                            name:UIApplicationWillTerminateNotification
                            object:nil];
+
+    // Initialize our lock objects
+    [sharedTouchHandler lock];
+    [sharedTouchHandler serviceResolutionLock];
   }
 
   return sharedTouchHandler;
@@ -88,14 +110,18 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   ZAssert([self serverAction] == ZSyncServerActionNoActivity, @"Attempt to sync while another action is active");
+  if ([self serverAction] != ZSyncServerActionNoActivity) {
+    if ([[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
+      NSString *errorString = [NSString stringWithFormat:@"Another activity in progress: %i", [self serverAction]];
+      NSDictionary *dict = [NSDictionary dictionaryWithObject:errorString forKey:NSLocalizedDescriptionKey];
+      NSError *error = [NSError errorWithDomain:zsErrorDomain code:zsErrorAnotherActivityInProgress userInfo:dict];
+      [[self delegate] zSync:self errorOccurred:error];
+      return;
+    }
+  }
 
   [self setServerAction:ZSyncServerActionSync];
-
-  if ([self connection]) {
-    [self uploadDataToServer];
-  } else {
-    [self startServerSearch];
-  }
+  [self startServerSearch];
 }
 
 - (void)stopRequestingSync
@@ -103,6 +129,8 @@
   DLog(@"%s", __PRETTY_FUNCTION__);
   [[self serviceBrowser] setDelegate:nil];
   [[self serviceBrowser] stop];
+  [[self resolvedServices] removeAllObjects];
+  [self setRegisteredService:nil];
   [self setServerAction:ZSyncServerActionNoActivity];
 }
 
@@ -115,38 +143,30 @@
   NSNetService *service = [server service];
 
   BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
+  [[self openConnections] addObject:conn];
+  //  [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
-  [self setConnection:conn];
   [conn release], conn = nil;
 }
-
-// - (void)authenticatePairing:(NSString *)pairingCode;
-// {
-//  DLog(@"%s", __PRETTY_FUNCTION__);
-//  if (![self connection]) {
-//    return;
-//  }
-//
-//  // Start a pairing request
-//  DLog(@"sending a pairing code");
-//  NSString *schemaID = [[[NSBundle mainBundle] infoDictionary] objectForKey:zsSchemaIdentifier];
-//
-//  NSMutableDictionary *requestPropertiesDictionary = [NSMutableDictionary dictionary];
-//  [requestPropertiesDictionary setValue:zsActID(zsActionAuthenticatePairing) forKey:zsAction];
-//  [requestPropertiesDictionary setValue:[[UIDevice currentDevice] uniqueIdentifier] forKey:zsDeviceGUID];
-//  [requestPropertiesDictionary setValue:schemaID forKey:zsSchemaIdentifier];
-//
-//  NSData *pairingCodeData = [pairingCode dataUsingEncoding:NSUTF8StringEncoding];
-//
-//  BLIPRequest *request = [BLIPRequest requestWithBody:pairingCodeData properties:requestPropertiesDictionary];
-//  [[self connection] sendRequest:request];
-// }
 
 - (void)cancelPairing;
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  if (![self connection]) {
+  if ([[self openConnections] count] == 0) {
+//    if (![self connection]) {
+    return;
+  }
+
+  BLIPConnection *openConnection = nil;
+  for (BLIPConnection *conn in [self openConnections]) {
+    if ([conn status] == kTCP_Open) {
+      openConnection = conn;
+      break;
+    }
+  }
+
+  if (!openConnection) {
     return;
   }
 
@@ -157,7 +177,7 @@
   [requestPropertiesDictionary setValue:[self schemaID] forKey:zsSchemaIdentifier];
 
   BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:requestPropertiesDictionary];
-  [[self connection] sendRequest:request];
+  [openConnection sendRequest:request];
 }
 
 - (void)disconnectPairing;
@@ -166,10 +186,19 @@
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
 
-  if ([self connection]) {
-    [[self connection] close];
-    [self setConnection:nil];
+  for (BLIPConnection *conn in [self openConnections]) {
+    [conn setDelegate:nil];
+    [conn close];
   }
+
+  [[self openConnections] removeAllObjects];
+
+  [self setRegisteredService:nil];
+//  if ([self connection]) {
+//    [[self connection] close];
+//    [[self openConnections] removeObject:conn];
+//    //  [self setConnection:nil];
+//  }
 
   [self setServerAction:ZSyncServerActionNoActivity];
 }
@@ -178,6 +207,8 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   DLog(@"deregister request received");
+
+  ZAssert([self serverAction] == ZSyncServerActionNoActivity, @"Attempt to sync while another action is active");
 
   if ([self serverAction] != ZSyncServerActionNoActivity) {
     if ([[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
@@ -200,13 +231,8 @@
   }
 
   [self setServerAction:ZSyncServerActionDeregister];
-  if ([self connection]) {
-    DLog(@"requesting deregister");
-    [self requestDeregistration];
-  } else {
-    DLog(@"searching for server");
-    [self startServerSearch];
-  }
+  DLog(@"searching for server");
+  [self startServerSearch];
 }
 
 - (NSString *)serverName
@@ -222,15 +248,26 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   DLog(@"closing connection");
-  if ([self connection]) {
-    [[self connection] close];
-    [self setConnection:nil];
+  for (BLIPConnection *conn in [self openConnections]) {
+    [conn setDelegate:nil];
+    [conn close];
   }
+
+  [[self openConnections] removeAllObjects];
+//  if ([self connection]) {
+//    [[self connection] close];
+//    [[self openConnections] removeObject:conn];
+//    //  [self setConnection:nil];
+//  }
 
   if ([self serviceBrowser]) {
     [[self serviceBrowser] setDelegate:nil];
     [[self serviceBrowser] stop];
     [self setServiceBrowser:nil];
+  }
+
+  if ([self registeredService]) {
+    [[self registeredService] stopMonitoring];
   }
 }
 
@@ -268,6 +305,13 @@
     return;
   }
 
+  NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+  if (serverUUID) {
+    [[self serviceBrowser] setDelegate:nil];
+    [[self serviceBrowser] stop];
+    [self setServiceBrowser:nil];
+  }
+
   networkTimer = nil;
   [self setServerAction:ZSyncServerActionNoActivity];
   if ([[self delegate] respondsToSelector:@selector(zSyncServerUnavailable:)]) {
@@ -297,11 +341,29 @@
                              repeats:NO];
   }
 
-  [[self serviceBrowser] start];
+  if ([self registeredService]) {
+    [self handleServerActionWithService:[self registeredService]];
+  } else {
+    NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
+    if (serverUUID) {
+      networkTimer = [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(networkTimeout:) userInfo:reachability repeats:NO];
+    }
+
+    [[self serviceBrowser] start];
+  }
 }
 
 #pragma mark -
 #pragma mark Local methods
+
+- (void)handleServerActionWithService:(NSNetService *)service
+{
+  if ([self serverAction] == ZSyncServerActionSync) {
+    [self beginSyncWithService:service];
+  } else if ([self serverAction] == ZSyncServerActionDeregister) {
+    [self beginDeregistrationWithService:service];
+  }
+}
 
 - (NSString *)cachePath
 {
@@ -316,39 +378,28 @@
 - (void)startServerSearch
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  if ([self serviceBrowser]) {
-    DLog(@"service browser is not nil");
-    [[self serviceBrowser] setDelegate:nil];
-    [[self serviceBrowser] stop];
-    [self setServiceBrowser:nil];
-  }
+  DLog(@"Resetting the service browser");
+  [[self serviceBrowser] setDelegate:nil];
+  [[self serviceBrowser] stop];
+  [self setServiceBrowser:nil];
 
   Reachability *reachability = [Reachability reachabilityForLocalWiFi];
   if ([reachability currentReachabilityStatus] == NotReachable) {
     DLog(@"local network not available");
-    // start notifying
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                         selector:@selector(reachabilityChanged:)
-                           name:kReachabilityChangedNotification
-                           object:nil];
-
+    // Subscribe to changes in reachability
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
     [reachability startNotifer];
-    networkTimer = [NSTimer scheduledTimerWithTimeInterval:15.0
-                            target:self
-                            selector:@selector(networkTimeout:)
-                            userInfo:reachability
-                             repeats:NO];
+    networkTimer = [NSTimer scheduledTimerWithTimeInterval:15.0     target:self selector:@selector(networkTimeout:) userInfo:reachability repeats:NO];
 
     return;
+  } else if ([self registeredService]) {
+    [self handleServerActionWithService:[self registeredService]];
   } else {
     NSString *serverUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
     if (serverUUID) {
-      networkTimer = [NSTimer scheduledTimerWithTimeInterval:15.0
-                              target:self
-                              selector:@selector(networkTimeout:)
-                              userInfo:reachability
-                               repeats:NO];
+      networkTimer = [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(networkTimeout:) userInfo:reachability repeats:NO];
     }
+
     [[self serviceBrowser] start];
   }
 }
@@ -357,41 +408,33 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
-  [self setConnection:conn];
+  [[self openConnections] addObject:conn];
+  //  [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
   [conn release], conn = nil;
 }
 
-- (void)receiveFile:(BLIPRequest *)request
+- (void)beginDeregistrationWithService:(NSNetService *)service
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  ZAssert([request complete], @"Message is incomplete");
+  BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
+  [[self openConnections] addObject:conn];
+  //  [self setConnection:conn];
+  [conn setDelegate:self];
+  [conn open];
+  [conn release], conn = nil;
+}
 
-  DLog(@"file received");
-
-  NSString *tempFilename = [[NSProcessInfo processInfo] globallyUniqueString];
-  NSString *tempPath = [[self cachePath] stringByAppendingPathComponent:tempFilename];
-  DLog(@"file written to \n%@", tempPath);
-
-  DLog(@"request length: %i", [[request body] length]);
-  [[request body] writeToFile:tempPath atomically:YES];
-
-  NSMutableDictionary *fileDict = [[NSMutableDictionary alloc] init];
-  [fileDict setValue:[request valueOfProperty:zsStoreIdentifier] forKey:zsStoreIdentifier];
-  if (![[request valueOfProperty:zsStoreConfiguration] isEqualToString:@"PF_DEFAULT_CONFIGURATION_NAME"]) {
-    [fileDict setValue:[request valueOfProperty:zsStoreConfiguration] forKey:zsStoreConfiguration];
-  }
-  [fileDict setValue:[request valueOfProperty:zsStoreType] forKey:zsStoreType];
-  [fileDict setValue:tempPath forKey:zsTempFilePath];
-
-  [[self receivedFileLookupDictionary] setValue:fileDict forKey:[request valueOfProperty:zsStoreIdentifier]];
-  [fileDict release], fileDict = nil;
-
-  BLIPResponse *response = [request response];
-  [response setValue:zsActID(zsActionFileReceived) ofProperty:zsAction];
-  [response setValue:[request valueOfProperty:zsStoreIdentifier] ofProperty:zsStoreIdentifier];
-  [response send];
+- (void)beginLatentDeregistrationWithService:(NSNetService *)service
+{
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
+  [[self openConnections] addObject:conn];
+  //  [self setConnection:conn];
+  [conn setDelegate:self];
+  [conn open];
+  [conn release], conn = nil;
 }
 
 - (BOOL)switchStore:(NSPersistentStore *)persistentStore withReplacement:(NSDictionary *)replacement error:(NSError **)error
@@ -399,7 +442,6 @@
   DLog(@"%s", __PRETTY_FUNCTION__);
   NSDictionary *storeOptions = [[[persistentStore options] copy] autorelease];
   NSFileManager *fileManager = [NSFileManager defaultManager];
-//  NSPersistentStoreCoordinator *psc = [self persistentStoreCoordinator];
 
   NSString *newFileTempPath = [replacement valueForKey:zsTempFilePath];
   NSString *originalFilePath = [[persistentStore URL] path];
@@ -435,7 +477,7 @@
   return YES;
 }
 
-- (void)completeSync
+- (void)completeSyncFromConnection:(BLIPConnection *)conn
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   [[self persistentStoreCoordinator] lock];
@@ -484,8 +526,11 @@
 
   [self setReceivedFileLookupDictionary:nil];
 
-  [[self connection] close];
-  [self setConnection:nil];
+  [conn setDelegate:nil];
+  [conn close];
+//  [[self connection] close];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
 
   if ([[self delegate] respondsToSelector:@selector(zSyncFinished:)]) {
     [[self delegate] zSyncFinished:self];
@@ -511,20 +556,9 @@
 - (void)sendUploadComplete
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  DLog(@"sending upload complete");
-
-  NSMutableDictionary *requestPropertiesDictionary = [[NSMutableDictionary alloc] init];
-  [requestPropertiesDictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
-  [requestPropertiesDictionary setValue:[self schemaID] forKey:zsSchemaIdentifier];
-
-  BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:requestPropertiesDictionary];
-  [request setNoReply:YES];
-  [[self connection] sendRequest:request];
-
-  [requestPropertiesDictionary release], requestPropertiesDictionary = nil;
 }
 
-- (void)uploadDataToServer
+- (void)uploadDataToServerUsingConnection:(BLIPConnection *)conn
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   [[self serviceBrowser] setDelegate:nil];
@@ -556,7 +590,7 @@
     BLIPRequest *request = [BLIPRequest requestWithBody:persistentStoreData properties:requestPropertiesDictionary];
     // TODO: Compression is not working.  Need to find out why
     [request setCompressed:YES];
-    [[self connection] sendRequest:request];
+    [conn sendRequest:request];
 
     [persistentStoreData release], persistentStoreData = nil;
     [requestPropertiesDictionary release], requestPropertiesDictionary = nil;
@@ -565,6 +599,27 @@
     [[self storeFileIdentifiers] addObject:[persistentStore identifier]];
   }
   DLog(@"finished");
+}
+
+- (void)sendPairingRequestToServerUsingConnection:(BLIPConnection *)conn
+{
+  [self setPasscode:[self generatePairingCode]];
+
+  NSMutableDictionary *requestPropertiesDictionary = [[NSMutableDictionary alloc] init];
+  [requestPropertiesDictionary setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
+  [requestPropertiesDictionary setValue:zsActID([self majorVersionNumber]) forKey:zsSchemaMajorVersion];
+  [requestPropertiesDictionary setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
+  [requestPropertiesDictionary setValue:[[UIDevice currentDevice] name] forKey:zsDeviceName];
+  [requestPropertiesDictionary setValue:[[UIDevice currentDevice] uniqueIdentifier] forKey:zsDeviceGUID];
+  [requestPropertiesDictionary setValue:[self schemaID] forKey:zsSchemaIdentifier];
+
+  NSData *data = [[self passcode] dataUsingEncoding:NSUTF8StringEncoding];
+  BLIPRequest *request = [conn requestWithBody:data properties:requestPropertiesDictionary];
+  [request send];
+
+  [requestPropertiesDictionary release], requestPropertiesDictionary = nil;
+
+  [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
 }
 
 - (NSString *)generatePairingCode
@@ -580,7 +635,7 @@
   return string;
 }
 
-- (void)requestDeregistration;
+- (void)requestDeregistrationUsingConnection:(BLIPConnection *)conn
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   DLog(@"issuing deregister command");
@@ -592,10 +647,10 @@
   NSData *body = [[self syncGUID] dataUsingEncoding:NSUTF8StringEncoding];
 
   BLIPRequest *request = [BLIPRequest requestWithBody:body properties:requestPropertiesDictionary];
-  [[self connection] sendRequest:request];
+  [conn sendRequest:request];
 }
 
-- (void)requestLatentDeregistration
+- (void)requestLatentDeregistrationUsingConnection:(BLIPConnection *)conn
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
@@ -605,47 +660,7 @@
   NSData *body = [[self syncGUID] dataUsingEncoding:NSUTF8StringEncoding];
 
   BLIPRequest *request = [BLIPRequest requestWithBody:body properties:dictionary];
-  [[self connection] sendRequest:request];
-}
-
-- (void)connectionEstablished
-{
-  DLog(@"%s", __PRETTY_FUNCTION__);
-  switch ([self serverAction]) {
-    case ZSyncServerActionLatentDeregistration:
-      [self requestLatentDeregistration];
-      break;
-    case ZSyncServerActionSync:
-      if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
-        // Start a sync by pushing the data file to the server
-        [self uploadDataToServer];
-      } else {
-        // We are not paired so we need to request a pairing session
-        [self setPasscode:[self generatePairingCode]];
-
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        [dict setValue:zsActID(zsActionRequestPairing) forKey:zsAction];
-        [dict setValue:zsActID([self majorVersionNumber]) forKey:zsSchemaMajorVersion];
-        [dict setValue:zsActID([self minorVersionNumber]) forKey:zsSchemaMinorVersion];
-        [dict setValue:[[UIDevice currentDevice] name] forKey:zsDeviceName];
-        [dict setValue:[[UIDevice currentDevice] uniqueIdentifier] forKey:zsDeviceGUID];
-        [dict setValue:[self schemaID] forKey:zsSchemaIdentifier];
-
-        NSData *data = [[self passcode] dataUsingEncoding:NSUTF8StringEncoding];
-        BLIPRequest *request = [[self connection] requestWithBody:data properties:dict];
-        [request send];
-
-        [dict release], dict = nil;
-
-        [[self delegate] zSyncHandler:self displayPairingCode:[self passcode]];
-      }
-      break;
-    case ZSyncServerActionDeregister:
-      [self requestDeregistration];
-      break;
-    default:
-      ALog(@"Unknown server action: %i", serverAction);
-  }
+  [conn sendRequest:request];
 }
 
 - (NSString *)syncGUID
@@ -663,6 +678,212 @@
 - (NSString *)schemaID
 {
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:zsSchemaIdentifier];
+}
+
+- (void)processLatentDeregisterResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
+{
+  DLog(@"%s", __PRETTY_FUNCTION__);
+
+  NSString *registeredServerUUID = [response valueOfProperty:zsServerUUID];
+  DLog(@"%s registeredServerUUID %@", __PRETTY_FUNCTION__, registeredServerUUID);
+
+  // TODO: Compare version numbers
+  ZAssert(registeredServerUUID != nil, @"Body string is nil in request\n%@", [[response properties] allProperties]);
+
+  NSMutableArray *deregisteredServers = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:zsDeregisteredServersKey]];
+
+  if (registeredServerUUID) {
+    [deregisteredServers removeObject:registeredServerUUID];
+    [[NSUserDefaults standardUserDefaults] setObject:deregisteredServers forKey:zsDeregisteredServersKey];
+  }
+
+  [[NSUserDefaults standardUserDefaults] synchronize];
+
+  [deregisteredServers release], deregisteredServers = nil;
+
+  [self setServerAction:ZSyncServerActionNoActivity];
+  [conn setDelegate:nil];
+  [conn close];
+//  [[self connection] close];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
+}
+
+- (void)processDeregisterResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+
+  if ([[self delegate] respondsToSelector:@selector(zSyncDeregisterComplete:)]) {
+    [[self delegate] zSyncDeregisterComplete:self];
+  }
+
+  [self setServerAction:ZSyncServerActionNoActivity];
+  [conn setDelegate:nil];
+  [conn close];
+  //  [[self connection] close];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
+
+  [self setRegisteredService:nil];
+}
+
+- (void)processFileReceivedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+
+  ZAssert([self storeFileIdentifiers] != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
+
+  [[self storeFileIdentifiers] removeObject:[[response properties] valueOfProperty:zsStoreIdentifier]];
+
+  if ([[self storeFileIdentifiers] count] == 0) {
+//    [self sendUploadComplete];
+    DLog(@"sending upload complete");
+
+    NSMutableDictionary *requestPropertiesDictionary = [[NSMutableDictionary alloc] init];
+    [requestPropertiesDictionary setValue:zsActID(zsActionPerformSync) forKey:zsAction];
+    [requestPropertiesDictionary setValue:[self schemaID] forKey:zsSchemaIdentifier];
+
+    BLIPRequest *request = [BLIPRequest requestWithBody:nil properties:requestPropertiesDictionary];
+    [request setNoReply:YES];
+    [conn sendRequest:request];
+
+    [requestPropertiesDictionary release], requestPropertiesDictionary = nil;
+
+    [self setStoreFileIdentifiers:nil];
+  }
+}
+
+- (void)processSchemaUnsupportedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+
+  if ([[self delegate] respondsToSelector:@selector(zSync:serverVersionUnsupported:)]) {
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[response bodyString] forKey:NSLocalizedDescriptionKey];
+    NSError *error = [NSError errorWithDomain:zsErrorDomain code:[[response valueOfProperty:zsErrorCode] integerValue] userInfo:userInfo];
+
+    [[self delegate] zSync:self serverVersionUnsupported:error];
+  }
+
+  [self setServerAction:ZSyncServerActionNoActivity];
+  [conn setDelegate:nil];
+  [conn close];
+  //  [[self connection] close];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
+  [self setRegisteredService:nil];
+}
+
+- (void)processSchemaSupportedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
+{
+  DLog(@"%s", __PRETTY_FUNCTION__);
+
+  switch ([self serverAction]) {
+    case ZSyncServerActionSync:
+      if ([[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID]) {
+        // Start a sync by pushing the data file to the server
+        [self uploadDataToServerUsingConnection:conn];
+      } else {
+        // We are not paired so we need to request a pairing session
+        [self sendPairingRequestToServerUsingConnection:conn];
+      }
+      break;
+    case ZSyncServerActionDeregister:
+      [self requestDeregistrationUsingConnection:conn];
+      break;
+    case ZSyncServerActionLatentDeregistration:
+      [self requestLatentDeregistrationUsingConnection:conn];
+      break;
+    default:
+      ALog(@"Unknown server action: %i", [self serverAction]);
+  }
+}
+
+- (void)processAuthenticationFailedRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+
+  /*
+   * The pairing code was not entered correctly so we reset back to a default state
+   * so that the user can start all over again.
+   */
+  [conn setDelegate:nil];
+  [conn close];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
+  if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
+    [[self delegate] zSyncPairingCodeRejected:self];
+  }
+  [self setServerAction:ZSyncServerActionNoActivity];
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
+}
+
+- (void)processAuthenticatePairingRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+
+  if ([[request bodyString] isEqualToString:[self passcode]]) {
+    [[NSUserDefaults standardUserDefaults] setValue:[request valueOfProperty:zsServerUUID] forKey:zsServerUUID];
+    [self performSelector:@selector(uploadDataToServerUsingConnection:) withObject:conn afterDelay:0.1];
+  }
+
+  [[self delegate] zSyncPairingCodeCompleted:self];
+}
+
+- (void)processCompleteSyncRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
+{
+  NSLog(@"%s", __PRETTY_FUNCTION__);
+
+  [self performSelector:@selector(completeSyncFromConnection:) withObject:conn afterDelay:0.01];
+}
+
+- (void)processStoreUploadRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
+{
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  ZAssert([request complete], @"Message is incomplete");
+
+  DLog(@"file received");
+
+  NSString *tempFilename = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString *tempPath = [[self cachePath] stringByAppendingPathComponent:tempFilename];
+  DLog(@"file written to \n%@", tempPath);
+
+  DLog(@"request length: %i", [[request body] length]);
+  [[request body] writeToFile:tempPath atomically:YES];
+
+  NSMutableDictionary *fileDict = [[NSMutableDictionary alloc] init];
+  [fileDict setValue:[request valueOfProperty:zsStoreIdentifier] forKey:zsStoreIdentifier];
+  if (![[request valueOfProperty:zsStoreConfiguration] isEqualToString:@"PF_DEFAULT_CONFIGURATION_NAME"]) {
+    [fileDict setValue:[request valueOfProperty:zsStoreConfiguration] forKey:zsStoreConfiguration];
+  }
+  [fileDict setValue:[request valueOfProperty:zsStoreType] forKey:zsStoreType];
+  [fileDict setValue:tempPath forKey:zsTempFilePath];
+
+  [[self receivedFileLookupDictionary] setValue:fileDict forKey:[request valueOfProperty:zsStoreIdentifier]];
+  [fileDict release], fileDict = nil;
+
+  BLIPResponse *response = [request response];
+  [response setValue:zsActID(zsActionFileReceived) ofProperty:zsAction];
+  [response setValue:[request valueOfProperty:zsStoreIdentifier] ofProperty:zsStoreIdentifier];
+  [response send];
+}
+
+- (void)processCancelPairingRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
+{
+  DLog(@"%s zsActionCancelPairing", __PRETTY_FUNCTION__);
+  [conn setDelegate:nil];
+  [conn close];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
+  if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeCancelled:)]) {
+    [[self delegate] zSyncPairingCodeCancelled:self];
+  }
+
+  [self setServerAction:ZSyncServerActionNoActivity];
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
+
+  [self setRegisteredService:nil];
 }
 
 #pragma mark -
@@ -696,13 +917,31 @@
   return discoveredServers;
 }
 
-- (NSObject *)lock
+- (NSMutableArray *)openConnections
+{
+  if (!openConnections) {
+    openConnections = [[NSMutableArray alloc] init];
+  }
+
+  return openConnections;
+}
+
+- (NSLock *)lock
 {
   if (!lock) {
-    lock = [[NSObject alloc] init];
+    lock = [[NSLock alloc] init];
   }
 
   return lock;
+}
+
+- (NSLock *)serviceResolutionLock
+{
+  if (!serviceResolutionLock) {
+    serviceResolutionLock = [[NSLock alloc] init];
+  }
+
+  return serviceResolutionLock;
 }
 
 - (NSMutableDictionary *)receivedFileLookupDictionary
@@ -723,28 +962,28 @@
   return storeFileIdentifiers;
 }
 
-- (void)setConnection:(BLIPConnection *)conn
-{
-  if ([conn isEqual:[self connection]]) {
-    return;
-  }
-
-  if ([self connection]) {
-    [[self connection] close];
-    [[self connection] setDelegate:nil];
-  }
-
-  BLIPConnection *tmp = [conn retain];
-  [_connection release], _connection = nil;
-  _connection = tmp;
-}
+// - (void)setConnection:(BLIPConnection *)conn
+// {
+//  if ([conn isEqual:[self connection]]) {
+//    return;
+//  }
+//
+//  if ([self connection]) {
+//    [[self connection] close];
+//    [[self connection] setDelegate:nil];
+//  }
+//
+//  BLIPConnection *tmp = [conn retain];
+//  [_connection release], _connection = nil;
+//  _connection = tmp;
+// }
 
 #pragma mark -
 #pragma mark ServerBrowserDelegate methods
 
 - (void)updateServerList
 {
-  [lock lock];
+  [serviceResolutionLock lock];
   DLog(@"%s", __PRETTY_FUNCTION__);
   [networkTimer invalidate], networkTimer = nil;
 
@@ -778,7 +1017,7 @@
     }
   }
 
-  [lock unlock];
+  [serviceResolutionLock unlock];
 }
 
 #pragma mark -
@@ -792,43 +1031,51 @@
  */
 - (void)netServiceDidResolveAddress:(NSNetService *)bonjourService
 {
-  DLog(@"%s", __PRETTY_FUNCTION__);
+  [serviceResolutionLock lock];
 
   NSString *incomingServerName = [bonjourService name];
+
+  if ([bonjourService isEqual:[self registeredService]]) {
+//  if ([[self resolvedServices] containsObject:bonjourService]) {
+    NSLog(@"%s We've already resolved our service, bailing out before we start a sync. Service Name:%@", __PRETTY_FUNCTION__, incomingServerName);
+    [serviceResolutionLock unlock];
+    return;
+  }
+
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
   if (!txtRecordDictionary) {
     DLog(@"The NSNetService named %@ did not contain a TXT record", incomingServerName);
+    [serviceResolutionLock unlock];
     return;
   }
-  
+
   NSData *incomingServerUUIDData = [txtRecordDictionary objectForKey:zsServerUUID];
   if (!incomingServerUUIDData) {
     DLog(@"The TXT record did not contain a server UUID.");
+    [serviceResolutionLock unlock];
     return;
   }
-  
+
   NSString *incomingServerUUID = [[NSString alloc] initWithData:incomingServerUUIDData encoding:NSUTF8StringEncoding];
   if (!incomingServerUUID || [incomingServerUUID length] == 0) {
     DLog(@"The TXT record UUID was zero length.");
     [incomingServerUUID release], incomingServerUUID = nil;
+    [serviceResolutionLock unlock];
     return;
   }
-  
+
+  NSArray *deregisteredServers = [[NSUserDefaults standardUserDefaults] objectForKey:zsDeregisteredServersKey];
+  if (deregisteredServers && [deregisteredServers containsObject:incomingServerUUID]) {
+    [self setServerAction:ZSyncServerActionLatentDeregistration];
+    [self beginLatentDeregistrationWithService:bonjourService];
+  }
+
   NSString *registeredServerUUID = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID];
   NSString *registeredServerName = [[NSUserDefaults standardUserDefaults] valueForKey:zsServerName];
 
-  if (!registeredServerUUID) { // See if the server is in the deregistered list
-    NSArray *deregisteredServers = [[NSUserDefaults standardUserDefaults] objectForKey:zsDeregisteredServersKey];
-    if (deregisteredServers && [deregisteredServers containsObject:incomingServerUUID]) {
-      [self setServerAction:ZSyncServerActionLatentDeregistration];
-      BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:bonjourService];
-      [self setConnection:conn];
-      [conn setDelegate:self];
-      [conn open];
-      [conn release], conn = nil;
-    }
-
+  if (!registeredServerUUID) {     // See if the server is in the deregistered list
     ZSyncService *zSyncService = [[ZSyncService alloc] init];
     [zSyncService setService:bonjourService];
     [zSyncService setName:incomingServerName];
@@ -840,6 +1087,7 @@
 
     [incomingServerUUID release], incomingServerUUID = nil;
 
+    [serviceResolutionLock unlock];
     return;
   }
 
@@ -848,6 +1096,7 @@
     if (!incomingServerNameData) {
       DLog(@"TXT record did not contain server name data");
       [incomingServerUUID release], incomingServerUUID = nil;
+      [serviceResolutionLock unlock];
       return;
     }
 
@@ -856,6 +1105,7 @@
       DLog(@"Incoming server name did not match registered server name, %@ != %@", incomingServerName, registeredServerName);
       [incomingServerUUID release], incomingServerUUID = nil;
       [incomingServerName release], incomingServerName = nil;
+      [serviceResolutionLock unlock];
       return;
     }
 
@@ -869,9 +1119,12 @@
       [incomingServerUUID release], incomingServerUUID = nil;
       [incomingServerName release], incomingServerName = nil;
 
+      [serviceResolutionLock unlock];
       return;
     }
   }
+
+  [incomingServerUUID release], incomingServerUUID = nil;
 
   [networkTimer invalidate], networkTimer = nil;
   DLog(@"our server found");
@@ -879,8 +1132,12 @@
   [[self serviceBrowser] setDelegate:nil];
   [[self serviceBrowser] stop];
 
-  [self beginSyncWithService:bonjourService];
-  
+  [self setRegisteredService:bonjourService];
+
+  [self handleServerActionWithService:bonjourService];
+
+  [serviceResolutionLock unlock];
+
   return;
 }
 
@@ -888,7 +1145,7 @@
  */
 - (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary *)errorDict
 {
-  [lock lock];
+  [serviceResolutionLock lock];
 
   DLog(@"%s", __PRETTY_FUNCTION__);
   [[self discoveredServers] removeObject:sender];
@@ -899,7 +1156,7 @@
     [self setServerAction:ZSyncServerActionNoActivity];
   }
 
-  [lock unlock];
+  [serviceResolutionLock unlock];
 }
 
 /* Sent to the NSNetService instance's delegate when the instance's previously running publication or resolution request has stopped.
@@ -948,9 +1205,13 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   DLog(@"%s entered", __PRETTY_FUNCTION__);
-  [[self connection] close];
-  [self setConnection:nil];
+  [conn setDelegate:nil];
+  [conn close];
+//  [[self connection] close];
+  [[self openConnections] removeObject:conn];
+//  [self setConnection:nil];
   [[self delegate] zSync:self errorOccurred:error];
+  [self setRegisteredService:nil];
 }
 
 - (void)connection:(BLIPConnection *)conn receivedResponse:(BLIPResponse *)response;
@@ -964,81 +1225,28 @@
   NSInteger action = [[[response properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
     case zsActionLatentDeregisterClient:
-      DLog(@"%s zsActionLatentDeregisterClient", __PRETTY_FUNCTION__);
-
-      NSString *registeredServerUUID = [response valueOfProperty:zsServerUUID];
-      DLog(@"%s registeredServerUUID %@", __PRETTY_FUNCTION__, registeredServerUUID);
-      // TODO: Compare version numbers
-      ZAssert(registeredServerUUID != nil, @"Body string is nil in request\n%@", [[response properties] allProperties]);
-
-      NSMutableArray *deregisteredServers = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:zsDeregisteredServersKey]];
-      if (!deregisteredServers) {
-        return; // Shouldn't really happen...
-      }
-
-      if (registeredServerUUID) {
-        [deregisteredServers removeObject:registeredServerUUID];
-        [[NSUserDefaults standardUserDefaults] setObject:deregisteredServers forKey:zsDeregisteredServersKey];
-      }
-
-      [[NSUserDefaults standardUserDefaults] synchronize];
-
-      [deregisteredServers release], deregisteredServers = nil;
-
-      [self setServerAction:ZSyncServerActionNoActivity];
-      [[self connection] close];
-      [self setConnection:nil];
-
+      [self processLatentDeregisterResponse:response fromConnection:conn];
       return;
 
     case zsActionDeregisterClient:
-      DLog(@"%s zsActionDeregisterClient", __PRETTY_FUNCTION__);
-      if ([[self delegate] respondsToSelector:@selector(zSyncDeregisterComplete:)]) {
-        [[self delegate] zSyncDeregisterComplete:self];
-      }
-
-      [self setServerAction:ZSyncServerActionNoActivity];
-      [[self connection] close];
-      [self setConnection:nil];
-
+      [self processDeregisterResponse:response fromConnection:conn];
       return;
 
     case zsActionFileReceived:
-      DLog(@"%s zsActionFileReceived", __PRETTY_FUNCTION__);
-      ZAssert([self storeFileIdentifiers] != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
-      [[self storeFileIdentifiers] removeObject:[[response properties] valueOfProperty:zsStoreIdentifier]];
-      if ([[self storeFileIdentifiers] count] == 0) {
-        [self sendUploadComplete];
-        [self setStoreFileIdentifiers:nil];
-      }
+      [self processFileReceivedResponse:response fromConnection:conn];
       return;
 
-//    case zsActionAuthenticatePassed:
-//      DLog(@"%s zsActionAuthenticatePassed", __PRETTY_FUNCTION__);
-//      ALog(@"%s server UUID accepted: %@", [response valueOfProperty:zsServerUUID]);
-//      return;
-//
     case zsActionSchemaUnsupported:
-      DLog(@"%s zsActionSchemaUnsupported", __PRETTY_FUNCTION__);
-      if ([[self delegate] respondsToSelector:@selector(zSync:serverVersionUnsupported:)]) {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[response bodyString] forKey:NSLocalizedDescriptionKey];
-        NSError *error = [NSError errorWithDomain:zsErrorDomain code:[[response valueOfProperty:zsErrorCode] integerValue] userInfo:userInfo];
-
-        [[self delegate] zSync:self serverVersionUnsupported:error];
-      }
-      [[self connection] close];
-      [self setConnection:nil];
-      [self setServerAction:ZSyncServerActionNoActivity];
+      [self processSchemaUnsupportedResponse:response fromConnection:conn];
       return;
 
     case zsActionSchemaSupported:
-      DLog(@"%s zsActionSchemaSupported", __PRETTY_FUNCTION__);
-      [self connectionEstablished];
+      [self processSchemaSupportedResponse:response fromConnection:conn];
       return;
 
     default:
-      DLog(@"%s default", __PRETTY_FUNCTION__);
-      ALog(@"%s unknown action received %i", action);
+      DLog(@"%s default case encountered", __PRETTY_FUNCTION__);
+      ALog(@"%s Unknown response action received: %i", __PRETTY_FUNCTION__, action);
   }
 }
 
@@ -1047,58 +1255,28 @@
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
   switch (action) {
     case zsActionAuthenticateFailed:
-      DLog(@"%s zsActionAuthenticateFailed", __PRETTY_FUNCTION__);
-      /*
-       * The pairing code was not entered correctly so we reset back to a default state
-       * so that the user can start all over again.
-       */
-      [[self connection] close];
-      [self setConnection:nil];
-      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
-        [[self delegate] zSyncPairingCodeRejected:self];
-      }
-      [self setServerAction:ZSyncServerActionNoActivity];
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
+      [self processAuthenticationFailedRequest:request fromConnection:conn];
       return YES;
 
     case zsActionAuthenticatePairing:
-      DLog(@"%s zsActionAuthenticatePairing", __PRETTY_FUNCTION__);
-      if ([[request bodyString] isEqualToString:[self passcode]]) {
-        [[request response] setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
-        [[NSUserDefaults standardUserDefaults] setValue:[request valueOfProperty:zsServerUUID] forKey:zsServerUUID];
-        [self performSelector:@selector(uploadDataToServer) withObject:nil afterDelay:0.1];
-      } else {
-        [[request response] setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
-      }
-      [[self delegate] zSyncPairingCodeCompleted:self];
+      [self processAuthenticatePairingRequest:request fromConnection:conn];
       return YES;
 
     case zsActionCompleteSync:
-      DLog(@"%s zsActionCompleteSync", __PRETTY_FUNCTION__);
-      [self performSelector:@selector(completeSync) withObject:nil afterDelay:0.01];
+      [self processCompleteSyncRequest:request fromConnection:conn];
       return YES;
 
     case zsActionStoreUpload:
-      DLog(@"%s zsActionStoreUpload", __PRETTY_FUNCTION__);
-      [self receiveFile:request];
+      [self processStoreUploadRequest:request fromConnection:conn];
       return YES;
 
     case zsActionCancelPairing:
-      DLog(@"%s zsActionCancelPairing", __PRETTY_FUNCTION__);
-      [[self connection] close];
-      [self setConnection:nil];
-      if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeCancelled:)]) {
-        [[self delegate] zSyncPairingCodeCancelled:self];
-      }
-      [self setServerAction:ZSyncServerActionNoActivity];
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
+      [self processCancelPairingRequest:request fromConnection:conn];
       return YES;
 
     default:
-      DLog(@"%s default", __PRETTY_FUNCTION__);
-      ALog(@"Unknown action received: %i", action);
+      DLog(@"%s default case encountered", __PRETTY_FUNCTION__);
+      ALog(@"%s Unknown request action received: %i", __PRETTY_FUNCTION__, action);
       return NO;
   }
 }
@@ -1106,13 +1284,17 @@
 - (void)connectionDidClose:(TCPConnection *)conn;
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
-  if (![self connection]) {
+  if (![[self openConnections] containsObject:conn]) {
+//    if (![self connection]) {
     return;
   }
 
   // premature closing
-  [self setConnection:nil];
+  [[self openConnections] removeObject:conn];
+  //  [self setConnection:nil];
   [self setServerAction:ZSyncServerActionNoActivity];
+
+  [self setRegisteredService:nil];
 
   if (![[self delegate] respondsToSelector:@selector(zSync:errorOccurred:)]) {
     return;
@@ -1129,7 +1311,7 @@
 @synthesize delegate = _delegate;
 
 @synthesize serviceBrowser = _serviceBrowser;
-@synthesize connection = _connection;
+// @synthesize connection = _connection;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
 @synthesize majorVersionNumber;
@@ -1138,9 +1320,13 @@
 @synthesize serverAction;
 @synthesize availableServers;
 @synthesize discoveredServers;
+@synthesize resolvedServices;
 @synthesize lock;
+@synthesize serviceResolutionLock;
 @synthesize storeFileIdentifiers;
 @synthesize receivedFileLookupDictionary;
+@synthesize openConnections;
+@synthesize registeredService;
 
 @end
 

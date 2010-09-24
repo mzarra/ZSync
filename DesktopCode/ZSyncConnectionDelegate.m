@@ -485,7 +485,6 @@
   DLog(@"%s entered", __PRETTY_FUNCTION__);
 
   NSInteger action = [[[request properties] valueOfProperty:zsAction] integerValue];
-  BLIPResponse *response = [request response];
   switch (action) {
     case zsActionLatentDeregisterClient:
       DLog(@"%s zsActionLatentDeregisterClient", __PRETTY_FUNCTION__);
@@ -508,25 +507,6 @@
       [self setPairingCode:[request bodyString]];
       [self showCodeWindow];
       return YES;
-
-//    case zsActionAuthenticatePairing:
-//      DLog(@"%s zsActionAuthenticatePairing", __PRETTY_FUNCTION__);
-//      ALog(@"Is this ever called?");
-//      if ([[self pairingCode] isEqualToString:[request bodyString]]) {
-//        DLog(@"%s passed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
-//        // TODO: Register the unique ID of this service
-//        [response setValue:zsActID(zsActionAuthenticatePassed) ofProperty:zsAction];
-//        [response setValue:[[NSUserDefaults standardUserDefaults] valueForKey:zsServerUUID] ofProperty:zsServerUUID];
-//        [response setValue:[[ZSyncHandler shared] serverName] ofProperty:zsServerName];
-//        [response send];
-//        [[self pairingCodeWindowController] close];
-//        [self setPairingCodeWindowController:nil];
-//      } else {
-//        DLog(@"%s failed '%@' '%@'", __PRETTY_FUNCTION__, [request bodyString], [self pairingCode]);
-//        [response setValue:zsActID(zsActionAuthenticateFailed) ofProperty:zsAction];
-//        [response send];
-//      }
-//      return YES;
 
     case zsActionVerifyPairing:
       // TODO: This method should verify that the client is paired properly, responding accordingly
