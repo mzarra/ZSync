@@ -139,7 +139,6 @@ typedef enum {
   NSNetService *registeredService;
 
   ServerBrowser *_serviceBrowser;
-//  BLIPConnection *_connection;
 
   NSInteger majorVersionNumber;
   NSInteger minorVersionNumber;
@@ -166,8 +165,6 @@ typedef enum {
 @property (nonatomic, retain) ServerBrowser *serviceBrowser;
 @property (nonatomic, retain) NSMutableArray *openConnections;
 @property (nonatomic, retain) NSNetService *registeredService;
-// @property (nonatomic, retain) BLIPConnection *connection;
-// @property (nonatomic, assign) BLIPConnection *connection;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
 @property (nonatomic, copy) NSString *passcode;
@@ -190,7 +187,6 @@ typedef enum {
 - (void)requestSync;
 - (void)stopRequestingSync;
 - (void)requestPairing:(ZSyncService *)server;
-// - (void)authenticatePairing:(NSString *)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
 

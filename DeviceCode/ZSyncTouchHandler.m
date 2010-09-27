@@ -144,7 +144,6 @@
 
   BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
   [[self openConnections] addObject:conn];
-  //  [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
   [conn release], conn = nil;
@@ -154,7 +153,6 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   if ([[self openConnections] count] == 0) {
-//    if (![self connection]) {
     return;
   }
 
@@ -194,11 +192,6 @@
   [[self openConnections] removeAllObjects];
 
   [self setRegisteredService:nil];
-//  if ([self connection]) {
-//    [[self connection] close];
-//    [[self openConnections] removeObject:conn];
-//    //  [self setConnection:nil];
-//  }
 
   [self setServerAction:ZSyncServerActionNoActivity];
 }
@@ -254,11 +247,6 @@
   }
 
   [[self openConnections] removeAllObjects];
-//  if ([self connection]) {
-//    [[self connection] close];
-//    [[self openConnections] removeObject:conn];
-//    //  [self setConnection:nil];
-//  }
 
   if ([self serviceBrowser]) {
     [[self serviceBrowser] setDelegate:nil];
@@ -409,7 +397,6 @@
   DLog(@"%s", __PRETTY_FUNCTION__);
   BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
   [[self openConnections] addObject:conn];
-  //  [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
   [conn release], conn = nil;
@@ -420,7 +407,6 @@
   DLog(@"%s", __PRETTY_FUNCTION__);
   BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
   [[self openConnections] addObject:conn];
-  //  [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
   [conn release], conn = nil;
@@ -431,7 +417,6 @@
   DLog(@"%s", __PRETTY_FUNCTION__);
   BLIPConnection *conn = [[BLIPConnection alloc] initToNetService:service];
   [[self openConnections] addObject:conn];
-  //  [self setConnection:conn];
   [conn setDelegate:self];
   [conn open];
   [conn release], conn = nil;
@@ -528,9 +513,7 @@
 
   [conn setDelegate:nil];
   [conn close];
-//  [[self connection] close];
   [[self openConnections] removeObject:conn];
-  //  [self setConnection:nil];
 
   if ([[self delegate] respondsToSelector:@selector(zSyncFinished:)]) {
     [[self delegate] zSyncFinished:self];
@@ -704,9 +687,7 @@
   [self setServerAction:ZSyncServerActionNoActivity];
   [conn setDelegate:nil];
   [conn close];
-//  [[self connection] close];
   [[self openConnections] removeObject:conn];
-  //  [self setConnection:nil];
 }
 
 - (void)processDeregisterResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
@@ -720,9 +701,7 @@
   [self setServerAction:ZSyncServerActionNoActivity];
   [conn setDelegate:nil];
   [conn close];
-  //  [[self connection] close];
   [[self openConnections] removeObject:conn];
-  //  [self setConnection:nil];
 
   [self setRegisteredService:nil];
 }
@@ -736,7 +715,6 @@
   [[self storeFileIdentifiers] removeObject:[[response properties] valueOfProperty:zsStoreIdentifier]];
 
   if ([[self storeFileIdentifiers] count] == 0) {
-//    [self sendUploadComplete];
     DLog(@"sending upload complete");
 
     NSMutableDictionary *requestPropertiesDictionary = [[NSMutableDictionary alloc] init];
@@ -767,9 +745,7 @@
   [self setServerAction:ZSyncServerActionNoActivity];
   [conn setDelegate:nil];
   [conn close];
-  //  [[self connection] close];
   [[self openConnections] removeObject:conn];
-  //  [self setConnection:nil];
   [self setRegisteredService:nil];
 }
 
@@ -809,10 +785,11 @@
   [conn setDelegate:nil];
   [conn close];
   [[self openConnections] removeObject:conn];
-  //  [self setConnection:nil];
+
   if ([[self delegate] respondsToSelector:@selector(zSyncPairingCodeRejected:)]) {
     [[self delegate] zSyncPairingCodeRejected:self];
   }
+
   [self setServerAction:ZSyncServerActionNoActivity];
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerUUID];
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:zsServerName];
@@ -962,22 +939,6 @@
   return storeFileIdentifiers;
 }
 
-// - (void)setConnection:(BLIPConnection *)conn
-// {
-//  if ([conn isEqual:[self connection]]) {
-//    return;
-//  }
-//
-//  if ([self connection]) {
-//    [[self connection] close];
-//    [[self connection] setDelegate:nil];
-//  }
-//
-//  BLIPConnection *tmp = [conn retain];
-//  [_connection release], _connection = nil;
-//  _connection = tmp;
-// }
-
 #pragma mark -
 #pragma mark ServerBrowserDelegate methods
 
@@ -1033,16 +994,26 @@
 {
   [serviceResolutionLock lock];
 
+  DLog(@"%s", __PRETTY_FUNCTION__);
+  NSLog(@"%s description:%@", __PRETTY_FUNCTION__, [bonjourService description]);
+  NSLog(@"%s hostName:%@", __PRETTY_FUNCTION__, [bonjourService hostName]);
+  NSLog(@"%s name:%@", __PRETTY_FUNCTION__, [bonjourService name]);
+  NSLog(@"%s domain:%@", __PRETTY_FUNCTION__, [bonjourService domain]);
+  NSLog(@"%s addresses:%@", __PRETTY_FUNCTION__, [bonjourService addresses]);
+  for (NSData *socketData in [bonjourService addresses]) {
+    NSString *socketString = [[NSString alloc] initWithData:socketData encoding:NSASCIIStringEncoding];
+    NSLog(@"%s address:%@", __PRETTY_FUNCTION__, socketString);
+    [socketString release], socketString = nil;
+  }
+  NSLog(@"%s type:%@", __PRETTY_FUNCTION__, [bonjourService type]);
   NSString *incomingServerName = [bonjourService name];
 
   if ([bonjourService isEqual:[self registeredService]]) {
-//  if ([[self resolvedServices] containsObject:bonjourService]) {
     NSLog(@"%s We've already resolved our service, bailing out before we start a sync. Service Name:%@", __PRETTY_FUNCTION__, incomingServerName);
     [serviceResolutionLock unlock];
     return;
   }
 
-  DLog(@"%s", __PRETTY_FUNCTION__);
 
   NSDictionary *txtRecordDictionary = [NSNetService dictionaryFromTXTRecordData:[bonjourService TXTRecordData]];
   if (!txtRecordDictionary) {
@@ -1203,13 +1174,10 @@
  */
 - (void)connection:(TCPConnection *)conn failedToOpen:(NSError *)error
 {
-  DLog(@"%s", __PRETTY_FUNCTION__);
-  DLog(@"%s entered", __PRETTY_FUNCTION__);
+  DLog(@"%s error:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
   [conn setDelegate:nil];
   [conn close];
-//  [[self connection] close];
   [[self openConnections] removeObject:conn];
-//  [self setConnection:nil];
   [[self delegate] zSync:self errorOccurred:error];
   [self setRegisteredService:nil];
 }
@@ -1285,13 +1253,11 @@
 {
   DLog(@"%s", __PRETTY_FUNCTION__);
   if (![[self openConnections] containsObject:conn]) {
-//    if (![self connection]) {
     return;
   }
 
   // premature closing
   [[self openConnections] removeObject:conn];
-  //  [self setConnection:nil];
   [self setServerAction:ZSyncServerActionNoActivity];
 
   [self setRegisteredService:nil];
@@ -1311,7 +1277,6 @@
 @synthesize delegate = _delegate;
 
 @synthesize serviceBrowser = _serviceBrowser;
-// @synthesize connection = _connection;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
 @synthesize majorVersionNumber;
