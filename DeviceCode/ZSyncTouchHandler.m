@@ -692,7 +692,7 @@
 
 - (void)processDeregisterResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   if ([[self delegate] respondsToSelector:@selector(zSyncDeregisterComplete:)]) {
     [[self delegate] zSyncDeregisterComplete:self];
@@ -708,7 +708,7 @@
 
 - (void)processFileReceivedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   ZAssert([self storeFileIdentifiers] != nil, @"zsActionFileReceived with a nil storeFileIdentifiers");
 
@@ -733,7 +733,7 @@
 
 - (void)processSchemaUnsupportedResponse:(BLIPResponse *)response fromConnection:(BLIPConnection *)conn
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   if ([[self delegate] respondsToSelector:@selector(zSync:serverVersionUnsupported:)]) {
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[response bodyString] forKey:NSLocalizedDescriptionKey];
@@ -776,7 +776,7 @@
 
 - (void)processAuthenticationFailedRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   /*
    * The pairing code was not entered correctly so we reset back to a default state
@@ -797,7 +797,7 @@
 
 - (void)processAuthenticatePairingRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   if ([[request bodyString] isEqualToString:[self passcode]]) {
     [[NSUserDefaults standardUserDefaults] setValue:[request valueOfProperty:zsServerUUID] forKey:zsServerUUID];
@@ -809,7 +809,7 @@
 
 - (void)processCompleteSyncRequest:(BLIPRequest *)request fromConnection:(BLIPConnection *)conn
 {
-  NSLog(@"%s", __PRETTY_FUNCTION__);
+  DLog(@"%s", __PRETTY_FUNCTION__);
 
   [self performSelector:@selector(completeSyncFromConnection:) withObject:conn afterDelay:0.01];
 }
@@ -995,21 +995,21 @@
   [serviceResolutionLock lock];
 
   DLog(@"%s", __PRETTY_FUNCTION__);
-  NSLog(@"%s description:%@", __PRETTY_FUNCTION__, [bonjourService description]);
-  NSLog(@"%s hostName:%@", __PRETTY_FUNCTION__, [bonjourService hostName]);
-  NSLog(@"%s name:%@", __PRETTY_FUNCTION__, [bonjourService name]);
-  NSLog(@"%s domain:%@", __PRETTY_FUNCTION__, [bonjourService domain]);
-  NSLog(@"%s addresses:%@", __PRETTY_FUNCTION__, [bonjourService addresses]);
+  DLog(@"%s description:%@", __PRETTY_FUNCTION__, [bonjourService description]);
+  DLog(@"%s hostName:%@", __PRETTY_FUNCTION__, [bonjourService hostName]);
+  DLog(@"%s name:%@", __PRETTY_FUNCTION__, [bonjourService name]);
+  DLog(@"%s domain:%@", __PRETTY_FUNCTION__, [bonjourService domain]);
+  DLog(@"%s addresses:%@", __PRETTY_FUNCTION__, [bonjourService addresses]);
   for (NSData *socketData in [bonjourService addresses]) {
     NSString *socketString = [[NSString alloc] initWithData:socketData encoding:NSASCIIStringEncoding];
-    NSLog(@"%s address:%@", __PRETTY_FUNCTION__, socketString);
+    DLog(@"%s address:%@", __PRETTY_FUNCTION__, socketString);
     [socketString release], socketString = nil;
   }
-  NSLog(@"%s type:%@", __PRETTY_FUNCTION__, [bonjourService type]);
+  DLog(@"%s type:%@", __PRETTY_FUNCTION__, [bonjourService type]);
   NSString *incomingServerName = [bonjourService name];
 
   if ([bonjourService isEqual:[self registeredService]]) {
-    NSLog(@"%s We've already resolved our service, bailing out before we start a sync. Service Name:%@", __PRETTY_FUNCTION__, incomingServerName);
+    DLog(@"%s We've already resolved our service, bailing out before we start a sync. Service Name:%@", __PRETTY_FUNCTION__, incomingServerName);
     [serviceResolutionLock unlock];
     return;
   }
