@@ -61,9 +61,10 @@
   if (useGzip) {
     windowBits += 16; // enable gzip header instead of zlib header
   }
-  int retCode;
-  if ((retCode = deflateInit2(&strm, level, Z_DEFLATED, windowBits,
-                              memLevel, Z_DEFAULT_STRATEGY)) != Z_OK) {
+  
+  int retCode = deflateInit2(&strm, level, Z_DEFLATED, windowBits,
+							 memLevel, Z_DEFAULT_STRATEGY);
+  if (retCode != Z_OK) {
     // COV_NF_START - no real way to force this in a unittest (we guard all args)
     _GTMDevLog(@"Failed to init for deflate w/ level %d, error %d",
                level, retCode);
@@ -209,8 +210,8 @@
 
   int windowBits = 15; // 15 to enable any window size
   windowBits += 32; // and +32 to enable zlib or gzip header detection.
-  int retCode;
-  if ((retCode = inflateInit2(&strm, windowBits)) != Z_OK) {
+  int retCode = inflateInit2(&strm, windowBits);
+  if (retCode != Z_OK) {
     // COV_NF_START - no real way to force this in a unittest (we guard all args)
     _GTMDevLog(@"Failed to init for inflate, error %d", retCode);
     return nil;

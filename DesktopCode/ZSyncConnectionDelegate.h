@@ -32,7 +32,7 @@
 
 @interface ZSyncConnectionDelegate : NSObject <BLIPConnectionDelegate, NSPersistentStoreCoordinatorSyncing, PairingCodeDelegate>
 {
-  PairingCodeWindowController *codeController;
+  PairingCodeWindowController *pairingCodeWindowController;
   BLIPConnection *_connection;
   NSString *pairingCode;
   NSInteger pairingCodeEntryCount;
@@ -46,10 +46,15 @@
   NSManagedObjectContext *managedObjectContext;
 }
 
+@property (retain) NSMutableArray *storeFileIdentifiers;
+@property (retain) NSManagedObjectModel *managedObjectModel;
+@property (retain) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (retain) NSManagedObjectContext *managedObjectContext;
+@property (retain) NSManagedObject *syncApplication;
 @property (retain) BLIPConnection *connection;
 @property (retain) NSString *pairingCode;
 @property (assign) NSInteger pairingCodeEntryCount;
 
-@property (retain) id codeController;
+@property (retain) id pairingCodeWindowController;
 
 @end

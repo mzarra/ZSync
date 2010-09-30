@@ -129,42 +129,52 @@ typedef enum {
 {
   NSTimer *networkTimer;
   NSDate *findServerTimeoutDate;
-  
+
   NSMutableArray *storeFileIdentifiers;
   NSMutableArray *availableServers;
   NSMutableArray *discoveredServers;
+  NSMutableArray *resolvedServices;
+  NSMutableArray *openConnections;
+
+  NSNetService *registeredService;
+
   ServerBrowser *_serviceBrowser;
-  BLIPConnection *_connection;
-  
+
   NSInteger majorVersionNumber;
   NSInteger minorVersionNumber;
-  
+
   NSMutableDictionary *receivedFileLookupDictionary;
-  
+
   NSString *passcode;
-  
+
   id _delegate;
-  
+
   /* We are going to start off by trying to swap out the persistent stores
    * internally.  If this goes badly then we can had it back out to the
    * application instead.
    */
   NSPersistentStoreCoordinator *_persistentStoreCoordinator;
-  
+
   ZSyncServerAction serverAction;
-  
+
   NSLock *lock;
+  NSLock *serviceResolutionLock;
 }
 
 @property (nonatomic, assign) ZSyncServerAction serverAction;
 @property (nonatomic, retain) ServerBrowser *serviceBrowser;
-@property (nonatomic, assign) BLIPConnection *connection;
+@property (nonatomic, retain) NSMutableArray *openConnections;
+@property (nonatomic, retain) NSNetService *registeredService;
 @property (nonatomic, assign) NSInteger majorVersionNumber;
 @property (nonatomic, assign) NSInteger minorVersionNumber;
 @property (nonatomic, copy) NSString *passcode;
 @property (retain) NSMutableArray *availableServers;
 @property (retain) NSMutableArray *discoveredServers;
+@property (retain) NSMutableArray *resolvedServices;
 @property (retain) NSLock *lock;
+@property (retain) NSLock *serviceResolutionLock;
+@property (nonatomic, retain) NSMutableArray *storeFileIdentifiers;
+@property (nonatomic, retain) NSMutableDictionary *receivedFileLookupDictionary;
 
 /* This shared singleton design should probably go away.  We cannot assume
  * that the parent app will want to keep us around all of the time and may
@@ -177,7 +187,6 @@ typedef enum {
 - (void)requestSync;
 - (void)stopRequestingSync;
 - (void)requestPairing:(ZSyncService *)server;
-- (void)authenticatePairing:(NSString *)code;
 - (void)cancelPairing;
 - (void)disconnectPairing;
 

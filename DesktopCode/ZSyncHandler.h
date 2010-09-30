@@ -45,6 +45,7 @@
 @property (readonly) NSMutableArray *connections;
 @property (assign) id delegate;
 @property (retain) NSString *serverName;
+@property (retain) BLIPListener *listener;
 
 + (id)shared;
 
