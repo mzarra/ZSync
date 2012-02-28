@@ -1,0 +1,3 @@
+This project has been deprecated by the release of iCloud by Apple.
+
+The repository is left here for historical purposes.
